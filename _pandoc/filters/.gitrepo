@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/pandoc/lua-filters
+	branch = master
+	commit = f8017c4c432d4dcc994f45e854d53618de95c3f6
+	parent = fae149214ab46b94def37f9093714357b2231d1e
+	method = merge
+	cmdver = 0.4.5
