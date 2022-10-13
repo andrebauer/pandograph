@@ -171,8 +171,8 @@ def init_pandoc(self):
                     template     = None,
                     # csl          = 'csl/autor-jahr-3.csl',
                     # knitr = '',
-                    to           = 'pdf',
-                    from_        = 'markdown',
+                    # to           = 'pdf',
+                    # from_        = 'markdown',
                     pdf_engine   = 'xelatex',
                     ext          = '',
                     standalone   = False)
