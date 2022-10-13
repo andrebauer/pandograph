@@ -1,0 +1,9 @@
+defaults:
+  # - common
+  # - ../pandoc/defaults/common
+  - _pandoc/defaults/common
+  # - _pandoc/defaults/metadata/docs.yaml
+metadata-files:
+  - _pandoc/metadata/common.yaml
+  - _pandoc/metadata/doc.yaml
+  - _pandoc/metadata/exercise.yaml

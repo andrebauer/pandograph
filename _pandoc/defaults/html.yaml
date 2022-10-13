@@ -1,0 +1,3 @@
+strip-comments: true
+to: html
+standalone: false
