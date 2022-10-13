@@ -4,12 +4,12 @@ filters:
   - pfs/strip-classes.lua
   - pfs/nbspace.lua
   - pfs/thinspace.lua
-  - lua-filters/pagebreak.lua
-  - lua-filters/include-files.lua
-  - lua-filters/diagram-generator.lua
+  - lua-filters/pagebreak/pagebreak.lua
+  - lua-filters/include-files/include-files.lua
+  - lua-filters/diagram-generator/diagram-generator.lua
   - pfs/diagram.lua
   - pfs/solution.lua
   - pfs/task.lua
-  - lua-filters/list-table.lua
+  - lua-filters/list-table/list-table.lua
   # - pfs/mdsvex.lua
   # - markup-to-component.lua
