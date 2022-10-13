@@ -1,0 +1,57 @@
+\input{headers/partials/center-graphics.tex}
+\input{headers/partials/tiny-caption.tex}
+
+\useinnertheme{circles}
+
+% Uni Marburg #23396e
+% Uni Marburg Logo Schrift #94a3ba
+% FB 12 #6689e3
+
+\definecolor{UMRblue}[rgb]{HTML}{23396e}
+\definecolor{UMRblue99}[rgb]{HTML}{fbfcff}
+\definecolor{UMRblue98}[rgb]{HTML}{f3f7ff}
+\definecolor{UMRblue95}[rgb]{HTML}{eff4ff}
+\definecolor{UMRblue92}[rgb]{HTML}{e0e7f5}
+\definecolor{UMRblue90}[rgb]{HTML}{d9e1f3}
+\definecolor{UMRblue85}[rgb]{HTML}{c4d0ec}
+\definecolor{UMRblue36}[rgb]{HTML}{2c498b}
+\definecolor{UMRblue45}[rgb]{HTML}{375cad}
+\definecolor{UMRblue20}[rgb]{HTML}{052161}
+
+\definecolor{FBMIblue}{HTML}{6689e3}
+
+\setbeamercolor{normal text}{bg=UMRblue99,fg=UMRblue20}
+\setbeamercolor{structure}{fg=UMRblue} % itemize, enumerate, etc
+\setbeamercolor{palette primary}{bg=UMRblue,fg=UMRblue99}
+\setbeamercolor{palette secondary}{bg=UMRblue,fg=UMRblue99}
+\setbeamercolor{palette tertiary}{bg=UMRblue,fg=UMRblue99}
+\setbeamercolor{palette quaternary}{bg=UMRblue,fg=UMRblue99}
+\setbeamercolor{titlelike}{bg=UMRblue36,fg=UMRblue99}
+\setbeamercolor{section in toc}{fg=UMRblue} % TOC sections
+\setbeamercolor*{frametitle}{fg=UMRblue20,bg=UMRblue95}
+\setbeamercolor*{framesubtitle}{fg=UMRblue,bg=red}
+\setbeamercolor*{shorttitle}{bg=UMRblue92,fg=UMRblue20}
+\setbeamercolor{block title}{bg=UMRblue36,fg=UMRblue99}
+\setbeamercolor{block body}{fg=UMRblue,bg=UMRblue95}
+% Override palette coloring with secondary
+\setbeamercolor{subsection in head/foot}{bg=UMRblue90,fg=UMRblue20}
+\setbeamercolor{title in head/foot}{bg=UMRblue90,fg=UMRblue20}
+\setbeamercolor{part title}{bg=UMRblue92}
+\setbeamercolor{section title}{bg=UMRblue98}
+\setbeamercolor{subsection title}{bg=UMRblue99}
+
+\makeatletter
+\newcommand\disablecolorlinks{\def\HyColor@UseColor##1{}}
+\makeatletter
+\addtobeamertemplate{headline}{\disablecolorlinks{}}{}
+\addtobeamertemplate{footline}{\disablecolorlinks{}}{}
+
+\renewcommand*{\arraystretch}{1.2}
+\rowcolors{3}{}{UMRblue95}
+
+% Workaround für XeTeX
+% \ifxetex
+%   \renewcommand{\figurename}{Abbildung}
+% \fi
+\usepackage{caption}% http://ctan.org/pkg/caption
+\captionsetup[figure]{labelformat=empty}

@@ -1,0 +1,8 @@
+% Center graphics
+\usepackage{letltxmacro}
+% Save the meaning of \includegraphics
+\LetLtxMacro\latexincludegraphics\includegraphics
+% Update the include graphics command to include centering
+\renewcommand{\includegraphics}[2][]{%
+  \centering
+  \latexincludegraphics[#1]{#2}}

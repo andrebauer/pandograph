@@ -1,0 +1,21 @@
+\usepackage{ifthen}
+\newboolean{default}
+\newcommand{\case}{}
+\newcommand{\default}{}
+
+\newenvironment{switch}[1]{%
+    \setboolean{default}{true}
+    \renewcommand{\case}[2]{\ifthenelse{\equal{#1}{##1}}{%
+        \setboolean{default}{false}##2}{}}%
+    \renewcommand{\default}[1]{\ifthenelse{\boolean{default}}{##1}{}}
+}{}
+
+%% Example
+%%   \begin{switch}{#1}
+%%     \case{1}{\section{\itemText{#2}}}%
+%%     \case{2}{\subsection{\itemText{#2}}}%
+%%     \case{3}{\subsubsection{\itemText{#2}}}%
+%%     \case{4}{\textbf{\itemText{#2}}}%
+%%     \case{5}{\textbf{\itemText{#2}}}%
+%%     \default{\textbf{\itemText{#2}}}
+%%   \end{switch}

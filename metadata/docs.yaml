@@ -1,0 +1,13 @@
+---
+papersize: A4
+fontsize: 12pt
+documentclass: extarticle
+geometry:
+- margin=2.5cm
+linestretch: 1.25
+toc-title: Inhalt
+toc-depth: 4
+numbersections: true
+secnumdepth: 3
+colorlinks: true
+---

@@ -1,0 +1,14 @@
+---
+toc-title: Gliederung
+toc-depth: 1
+slide-level: 3
+aspectratio: 1610 # 149 # slide aspect ratio (43 for 4:3 [default], 169 for 16:9, 1610 for 16:10, 149 for 14:9, 141 for 1.41:1, 54 for 5:4, 32 for 3:2)
+# Seminarraum IV: 1280 * 800
+# Seminarraum VII: 1280 * 800
+navigation: horizontal
+theme: Antibes
+colortheme: beaver
+outertheme: infolines
+section-titles: false
+filter: [slides]
+---

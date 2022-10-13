@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:jgm/pandoc-templates.git
+	branch = master
+	commit = 67ca7bf7dc40c96ea0fea4b55409cc6d33202d7f
+	parent = 511c9e5603a62e28e9e7cabebbbca34dcd37fb8a
+	method = merge
+	cmdver = 0.4.0

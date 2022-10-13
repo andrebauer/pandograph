@@ -1,0 +1,25 @@
+\usepackage[most]{tcolorbox}
+
+\definecolor{lsgbg}[rgb]{HTML}{fcfcd0}
+
+\newlength{\lsgmargins}
+\setlength{\lsgmargins}{\dimexpr(\paperwidth-\textwidth)/2\relax}
+
+\newtcolorbox{lsgbox2}[1][]{
+    breakable,
+    colback=lsgbg,
+    colframe=lsgbg,
+    spread sidewards,
+    left*=0pt,
+    right=\lsgmargins,
+    #1,
+}
+    
+\tcbset{list/.style={%
+            enlarge left by=-\lsgmargins-#1,
+            after skip=0pt,
+            parbox=true,
+        }%
+}
+
+\newenvironment{loesung}{\begin{lsgbox2}}{\end{lsgbox2}}

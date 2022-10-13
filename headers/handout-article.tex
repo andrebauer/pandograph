@@ -1,0 +1,9 @@
+\batchmode
+\documentclass[a4paper]{article}
+%% \usepackage{color} \definecolor{bgclr}{RGB}{200,200,200} \pagecolor{bgclr}
+\usepackage[utf8]{inputenc}
+\usepackage{pdfpages}
+
+\begin{document}
+\includepdfmerge[nup=2x1,nup=1x2,scale=0.85,offset=-6cm 0cm]{test.pdf,-}
+\end{document}

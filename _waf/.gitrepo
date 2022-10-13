@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = git@gitlab.com:andrebauer/waf-pandoc.git
+	branch = main
+	commit = 9987dae36eeedf6d82876c40680de659a9ea66ff
+	parent = 21c98717a003d1f3789be2f28428e3bd27e6c53d
+	method = merge
+	cmdver = 0.4.3

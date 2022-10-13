@@ -1,0 +1,13 @@
+% Level 4 and 5 headings on their own line in LaTeX
+
+%% In LaTeX level 4 headings are rendered with the \paragraph command and level 5 headings are rendered with the \subparagraph command. These commands set the (first) paragraph after the heading run-in with the heading. There is an easy way to fix this. Make sure to include the following in your LaTeX preamble:
+
+% Make "clones" of the commands
+\let\originalparagraph\paragraph
+\let\originalsubparagraph\subparagraph
+
+% Redefine the commands using the "clones"
+\renewcommand{\paragraph}[1]%
+{\originalparagraph{#1}\hfill}
+\renewcommand{\subparagraph}[1]%
+{\originalsubparagraph{#1}\hfill}

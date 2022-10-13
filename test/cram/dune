@@ -1,0 +1,26 @@
+(cram
+ (deps myecho2 
+       pandoc.sh 
+       Text/Pandoc/Filter/slides.hs 
+       Text/Pandoc/Filter/format.hs 
+       Text/Pandoc/Filter/FilterSets.hs
+       Text/Pandoc/Filter/Align.hs
+       Text/Pandoc/Filter/Tools.hs
+       Text/Pandoc/Filter/Autoref.hs
+       Text/Pandoc/Filter/SpanKVToLatexCommand.hs
+       Text/Pandoc/Filter/Microtype.hs
+       Text/Pandoc/Filter/Tasks.hs
+       Text/Pandoc/Filter/DivSubtask.hs
+       Text/Pandoc/Filter/LsgFilter.hs
+       Text/Pandoc/Filter/ClearNotes.hs
+       Text/Pandoc/Filter/IncludeCode.hs
+       Text/Pandoc/Filter/TikzPicture.hs
+       Text/Pandoc/Filter/DivToLatexEnv.hs
+       Text/Pandoc/Filter/Size.hs
+       Text/Pandoc/Filter/TinyCitations.hs
+       Text/Pandoc/Filter/ClearDiv.hs
+       Text/Pandoc/Filter/Ditaa.hs
+       Text/Pandoc/Filter/Range.hs
+       Text/Pandoc/Filter/Task.hs
+       Text/Pandoc/Filter/Util.hs
+       ))
