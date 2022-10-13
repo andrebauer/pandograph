@@ -1,0 +1,483 @@
+
+  $ pandoc -L task.lua -t native <<EOF
+  > ::: task
+  > Hello
+  > :::
+  > EOF
+  [ Div
+      ( "" , [ "task" ] , [] )
+      [ Header
+          3
+          ( "aufgabe-1" , [] , [] )
+          [ Str "Aufgabe" , Space , Str "1" ]
+      , Para [ Str "Hello" ]
+      ]
+  ]
+
+  $ pandoc -L task.lua -t native <<EOF
+  > ::: {.task title="More of Lua"}
+  > Hello
+  > :::
+  > EOF
+  [ Div
+      ( "" , [ "task" ] , [ ( "title" , "More of Lua" ) ] )
+      [ Header
+          3
+          ( "aufgabe-1" , [] , [] )
+          [ Str "Aufgabe"
+          , Space
+          , Str "1:"
+          , Space
+          , Str "More"
+          , Space
+          , Str "of"
+          , Space
+          , Str "Lua"
+          ]
+      , Para [ Str "Hello" ]
+      ]
+  ]
+
+  $ pandoc -L task.lua -t native <<EOF
+  > ::: {.task title="The Return of Lua"}
+  > Hello
+  > :::
+  > ::: task
+  > World
+  > :::
+  > EOF
+  [ Div
+      ( "" , [ "task" ] , [ ( "title" , "The Return of Lua" ) ] )
+      [ Header
+          3
+          ( "aufgabe-1" , [] , [] )
+          [ Str "Aufgabe"
+          , Space
+          , Str "1:"
+          , Space
+          , Str "The"
+          , Space
+          , Str "Return"
+          , Space
+          , Str "of"
+          , Space
+          , Str "Lua"
+          ]
+      , Para [ Str "Hello" ]
+      ]
+  , Div
+      ( "" , [ "task" ] , [] )
+      [ Header
+          3
+          ( "aufgabe-2" , [] , [] )
+          [ Str "Aufgabe" , Space , Str "2" ]
+      , Para [ Str "World" ]
+      ]
+  ]
+
+  $ pandoc -L task.lua -t native <<EOF
+  > ::: {.task title="The Return of [Lua](https://www.lua.org/)"}
+  > Hello
+  > 
+  > ::: subtask
+  > Subtask a
+  > :::
+  > ::: subtask
+  > Subtask b
+  > :::
+  > :::
+  > EOF
+  [ Div
+      ( ""
+      , [ "task" ]
+      , [ ( "title"
+          , "The Return of [Lua](https://www.lua.org/)"
+          )
+        ]
+      )
+      [ Header
+          3
+          ( "aufgabe-1" , [] , [] )
+          [ Str "Aufgabe"
+          , Space
+          , Str "1:"
+          , Space
+          , Str "The"
+          , Space
+          , Str "Return"
+          , Space
+          , Str "of"
+          , Space
+          , Link
+              ( "" , [] , [] )
+              [ Str "Lua" ]
+              ( "https://www.lua.org/" , "" )
+          ]
+      , Para [ Str "Hello" ]
+      , OrderedList
+          ( 1 , LowerAlpha , OneParen )
+          [ [ Div
+                ( "" , [ "subtask" ] , [] )
+                [ Para [ Str "Subtask" , Space , Str "a" ] ]
+            ]
+          ]
+      , OrderedList
+          ( 2 , LowerAlpha , OneParen )
+          [ [ Div
+                ( "" , [ "subtask" ] , [] )
+                [ Para [ Str "Subtask" , Space , Str "b" ] ]
+            ]
+          ]
+      ]
+  ]
+
+  $ pandoc -L task.lua -t native <<EOF
+  > ---
+  > exercise-heading-level: 2
+  > ---
+  > ::: {.task title="Next level of Lua"}
+  > This is not a task
+  > :::
+  > EOF
+  [ Div
+      ( "" , [ "task" ] , [ ( "title" , "Next level of Lua" ) ] )
+      [ Header
+          2
+          ( "aufgabe-1" , [] , [] )
+          [ Str "Aufgabe"
+          , Space
+          , Str "1:"
+          , Space
+          , Str "Next"
+          , Space
+          , Str "level"
+          , Space
+          , Str "of"
+          , Space
+          , Str "Lua"
+          ]
+      , Para
+          [ Str "This"
+          , Space
+          , Str "is"
+          , Space
+          , Str "not"
+          , Space
+          , Str "a"
+          , Space
+          , Str "task"
+          ]
+      ]
+  ]
+
+  $ pandoc -L task.lua -t native <<EOF
+  > ::: {.task title="The _First_"}
+  > fst
+  > 
+  > ::: subtask
+  > Subtask a
+  > :::
+  > ::: subtask
+  > Subtask b
+  > :::
+  > :::
+  > ::: {.task title="The **Second**"}
+  > snd
+  > 
+  > ::: subtask
+  > Subtask a
+  > :::
+  > :::
+  > EOF
+  [ Div
+      ( "" , [ "task" ] , [ ( "title" , "The _First_" ) ] )
+      [ Header
+          3
+          ( "aufgabe-1" , [] , [] )
+          [ Str "Aufgabe"
+          , Space
+          , Str "1:"
+          , Space
+          , Str "The"
+          , Space
+          , Emph [ Str "First" ]
+          ]
+      , Para [ Str "fst" ]
+      , OrderedList
+          ( 1 , LowerAlpha , OneParen )
+          [ [ Div
+                ( "" , [ "subtask" ] , [] )
+                [ Para [ Str "Subtask" , Space , Str "a" ] ]
+            ]
+          ]
+      , OrderedList
+          ( 2 , LowerAlpha , OneParen )
+          [ [ Div
+                ( "" , [ "subtask" ] , [] )
+                [ Para [ Str "Subtask" , Space , Str "b" ] ]
+            ]
+          ]
+      ]
+  , Div
+      ( "" , [ "task" ] , [ ( "title" , "The **Second**" ) ] )
+      [ Header
+          3
+          ( "aufgabe-2" , [] , [] )
+          [ Str "Aufgabe"
+          , Space
+          , Str "2:"
+          , Space
+          , Str "The"
+          , Space
+          , Strong [ Str "Second" ]
+          ]
+      , Para [ Str "snd" ]
+      , OrderedList
+          ( 1 , LowerAlpha , OneParen )
+          [ [ Div
+                ( "" , [ "subtask" ] , [] )
+                [ Para [ Str "Subtask" , Space , Str "a" ] ]
+            ]
+          ]
+      ]
+  ]
+
+  $ pandoc -L task.lua -t plain <<EOF
+  > ::: {.task title="The First" points=auto}
+  > fst
+  > 
+  > ::: {.subtask points=2}
+  > Subtask a
+  > :::
+  > ::: {.subtask points=5}
+  > Subtask b
+  > :::
+  > :::
+  > ::: {.task title="The Second"}
+  > snd
+  > 
+  > ::: {.subtask setcounter=4 style=LowerRoman}
+  > Subtask d
+  > :::
+  > :::
+  > EOF
+  Aufgabe 1 (7 P.): The First
+  
+  fst
+  
+  a)  (2 P.) Subtask a
+  
+  b)  (5 P.) Subtask b
+  
+  Aufgabe 2: The Second
+  
+  snd
+  
+  iv) Subtask d
+
+
+  $ pandoc -L task.lua -t native <<EOF
+  > ::: {.task title="The First" points=auto}
+  > fst
+  > 
+  > ::: {.subtask points=2}
+  > Subtask a
+  > :::
+  > ::: {.subtask points=4.5}
+  > Subtask b
+  > :::
+  > :::
+  > ::: {.task title="The Second" level=5}
+  > snd
+  > 
+  > ::: subtask
+  > Subtask a
+  > :::
+  > :::
+  > EOF
+  [ Div
+      ( ""
+      , [ "task" ]
+      , [ ( "title" , "The First" ) , ( "points" , "auto" ) ]
+      )
+      [ Header
+          3
+          ( "aufgabe-1" , [] , [] )
+          [ Str "Aufgabe"
+          , Space
+          , Str "1"
+          , Space
+          , Str "(6.5"
+          , Space
+          , Str "P.):"
+          , Space
+          , Str "The"
+          , Space
+          , Str "First"
+          ]
+      , Para [ Str "fst" ]
+      , OrderedList
+          ( 1 , LowerAlpha , OneParen )
+          [ [ Div
+                ( "" , [ "subtask" ] , [ ( "points" , "2" ) ] )
+                [ Para
+                    [ Strong [ Str "(2" , Space , Str "P.)" , Space ]
+                    , Str "Subtask"
+                    , Space
+                    , Str "a"
+                    ]
+                ]
+            ]
+          ]
+      , OrderedList
+          ( 2 , LowerAlpha , OneParen )
+          [ [ Div
+                ( "" , [ "subtask" ] , [ ( "points" , "4.5" ) ] )
+                [ Para
+                    [ Strong [ Str "(4.5" , Space , Str "P.)" , Space ]
+                    , Str "Subtask"
+                    , Space
+                    , Str "b"
+                    ]
+                ]
+            ]
+          ]
+      ]
+  , Div
+      ( ""
+      , [ "task" ]
+      , [ ( "title" , "The Second" ) , ( "level" , "5" ) ]
+      )
+      [ Header
+          5
+          ( "aufgabe-2" , [] , [] )
+          [ Str "Aufgabe"
+          , Space
+          , Str "2:"
+          , Space
+          , Str "The"
+          , Space
+          , Str "Second"
+          ]
+      , Para [ Str "snd" ]
+      , OrderedList
+          ( 1 , LowerAlpha , OneParen )
+          [ [ Div
+                ( "" , [ "subtask" ] , [] )
+                [ Para [ Str "Subtask" , Space , Str "a" ] ]
+            ]
+          ]
+      ]
+  ]
+
+  $ pandoc -L task.lua -t native <<EOF
+  > ::: {.task title="The Return of Lua" .nonnumbered}
+  > Hello
+  > :::
+  > ::: task
+  > Numbered
+  > :::
+  > ::: {.task .nonnumbered}
+  > World
+  > :::
+  > EOF
+  [ Div
+      ( ""
+      , [ "task" , "nonnumbered" ]
+      , [ ( "title" , "The Return of Lua" ) ]
+      )
+      [ Header
+          3
+          ( "aufgabe-nn-1" , [] , [] )
+          [ Str "Aufgabe:"
+          , Space
+          , Str "The"
+          , Space
+          , Str "Return"
+          , Space
+          , Str "of"
+          , Space
+          , Str "Lua"
+          ]
+      , Para [ Str "Hello" ]
+      ]
+  , Div
+      ( "" , [ "task" ] , [] )
+      [ Header
+          3
+          ( "aufgabe-1" , [] , [] )
+          [ Str "Aufgabe" , Space , Str "1" ]
+      , Para [ Str "Numbered" ]
+      ]
+  , Div
+      ( "" , [ "task" , "nonnumbered" ] , [] )
+      [ Header 3 ( "aufgabe-nn-2" , [] , [] ) [ Str "Aufgabe" ]
+      , Para [ Str "World" ]
+      ]
+  ]
+
+
+  $ pandoc -L task.lua -t latex <<EOF
+  > ::: {.task title="The First" points=auto level=1}
+  > fst
+  > 
+  > ::: {.subtask points=2}
+  > Subtask a
+  > :::
+  > ::: {.subtask points=4.5}
+  > Subtask b
+  > :::
+  > :::
+  > ::: {.task .nonnumbered}
+  > Hello
+  > :::
+  > ::: {.task title="The Third" setcounter=3}
+  > trd
+  > 
+  > ::: {.subtask setcounter=5}
+  > Subtask e
+  > :::
+  > :::
+  > ::: {.task .nonnumbered}
+  > World
+  > :::
+  > EOF
+  \hypertarget{aufgabe-1}{%
+  \section{Aufgabe 1 (6.5 P.): The First}\label{aufgabe-1}}
+  
+  fst
+  
+  \begin{enumerate}
+  \def\labelenumi{\alph{enumi})}
+  \item
+    \textbf{(2 P.) }Subtask a
+  \end{enumerate}
+  
+  \begin{enumerate}
+  \def\labelenumi{\alph{enumi})}
+  \setcounter{enumi}{1}
+  \item
+    \textbf{(4.5 P.) }Subtask b
+  \end{enumerate}
+  
+  \hypertarget{aufgabe-nn-1}{%
+  \subsubsection{Aufgabe}\label{aufgabe-nn-1}}
+  
+  Hello
+  
+  \hypertarget{aufgabe-3}{%
+  \subsubsection{Aufgabe 3: The Third}\label{aufgabe-3}}
+  
+  trd
+  
+  \begin{enumerate}
+  \def\labelenumi{\alph{enumi})}
+  \setcounter{enumi}{4}
+  \item
+    Subtask e
+  \end{enumerate}
+  
+  \hypertarget{aufgabe-nn-2}{%
+  \subsubsection{Aufgabe}\label{aufgabe-nn-2}}
+  
+  World

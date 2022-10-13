@@ -1,0 +1,5 @@
+(cram
+ (deps
+  (glob_files strip-classes.lua)))
+
+(copy_files ../*.lua)

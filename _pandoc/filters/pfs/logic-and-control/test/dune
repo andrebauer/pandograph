@@ -1,0 +1,8 @@
+(cram
+ (deps
+  (glob_files logic-and-control.lua)
+))
+
+
+(copy_files ../*.lua)
+

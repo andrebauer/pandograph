@@ -1,0 +1,32 @@
+(cram
+ (deps
+  (file scratchblock.lua)
+  (file scratchblock.js)
+  (file package.json)
+  (file style.css)
+  (file lib/tools.lua)
+  (glob_files_rec node_modules/**/*.*)
+  (source_tree node_modules)
+  ;(dir scratchblock/node_modules)
+  ;(file scratchblock/node_modules/commander/index.js)
+  ;(glob_files_rec node_modules/puppeteer/**/*.js)
+
+))
+
+; (copy_files *.*)
+
+
+; (subdir scratchblock/node_modules
+;  (rule
+;   (target (dir node_modules))
+;   (deps ../package.json)
+;   (action (run npm install))))
+
+; (subdir scratchblock
+;  (copy_files %{project_root}/scratchblock/*.{js,json,css}))
+
+;(subdir node_modules
+;(copy_files ../node_modules/*.js))
+
+(subdir lib
+ (copy_files %{project_root}/lib/*.lua))

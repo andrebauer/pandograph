@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = git@gitlab.com:andrebauer/pandoc-filter-set.git
+	branch = main
+	commit = 39f54d3889bcd29ec82be9fb4acf4136e2394164
+	parent = ff93c68826976b0337d2e55623de4a5718a401ca
+	method = merge
+	cmdver = 0.4.5

@@ -1,0 +1,9 @@
+{
+  "type": "module",
+  "dependencies": {
+    "commander": "^9.4.0",
+    "mkdirp": "^1.0.4",
+    "puppeteer": "^18.0.1",
+    "scratchblocks": "github:scratchblocks/scratchblocks"
+  }
+}

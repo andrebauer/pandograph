@@ -1,0 +1,5 @@
+(cram
+ (deps
+  (glob_files read-yaml-key.lua)))
+
+(copy_files ../*.lua)

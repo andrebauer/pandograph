@@ -1,0 +1,5 @@
+(cram
+ (deps
+  (glob_files relativize.lua)))
+
+(copy_files ../*.lua)

@@ -1,0 +1,5 @@
+(cram
+ (deps
+  (glob_files dependencies.lua)))
+
+(copy_files ../*.lua)

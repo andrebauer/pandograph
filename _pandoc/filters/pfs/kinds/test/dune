@@ -1,0 +1,5 @@
+(cram
+ (deps
+  (glob_files kinds.lua)))
+
+(copy_files ../*.lua)
