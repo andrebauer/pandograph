@@ -6,7 +6,7 @@
 [subrepo]
 	remote = git@github.com:andrebauer/pandoc-templates.git
 	branch = master
-	commit = 4a89474da14222b15018af542ef7bc169734dcad
-	parent = 8b4d3c0ab88f5bf91765dc9cca53680487592995
+	commit = f8b1e087358435e7910bc56a8a1517fc06e81153
+	parent = 1c3a854dc3baad003f1f9f75bcb9c6aa72999509
 	method = merge
-	cmdver = 0.4.0
+	cmdver = 0.4.5
