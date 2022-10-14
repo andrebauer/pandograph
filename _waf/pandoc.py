@@ -83,15 +83,19 @@ def get_meta(ctx):
 def configure(ctx):
     if not ctx.env.content:
         ctx.env.content = '**/*.md'
+    ctx.env.ignore = ctx.env.ignore or []
     if not ctx.env.assets_exclude:
-        ctx.env.assets_exclude = [ctx.env.out + '/**/*',
-                                  '__pycache__/**/*',
-                                  '_waf/**/*']
+        ctx.env.assets_exclude = ctx.env.ignore + [
+            ctx.env.out + '/**/*',
+            '_pandoc/filters/pfs/_build/**/*',
+            '__pycache__/**/*',
+            '_waf/**/*']
     if not ctx.env.exclude:
-        ctx.env.exclude = [ctx.env.out + '/**/*',
-                           '_pandoc/**/*',
-                           '__pycache__/**/*',
-                           '_waf/**/*']
+        ctx.env.exclude = ctx.env.ignore + [
+            ctx.env.out + '/**/*',
+            '_pandoc/**/*',
+            '__pycache__/**/*',
+            '_waf/**/*']
     if not ctx.env.default_kind:
         ctx.env.default_kind = 'doc'
     if not ctx.env.formats:
@@ -112,6 +116,14 @@ def options(opt):
 
 def copy_pandoc_assets(bld):
     base_dir = os.sep.join(bld.env.data_dir)
+
+    for node in bld.path.ant_glob(['**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.pdf', '**/*.svg'],
+                                  quiet=True,
+                                  excl=bld.env.exclude):
+        bld(features='subst',
+            source=node.srcpath(),
+            target=node.srcpath(),
+            is_copy=True)
 
     for node in bld.path.ant_glob('**/*.yaml',
                                   quiet=True,
