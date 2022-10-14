@@ -63,3 +63,7 @@ Thinspace-Filter
   logo: assets/images/ars-logo-2015.pdf
   ---
   
+  $ pandoc --from native --to native -L thinspace.lua <<EOF
+  > [ Plain [ Str "" ] ]
+  > EOF
+  [ Plain [ Str "" ] ]

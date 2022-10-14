@@ -10,6 +10,7 @@ end
 
 local function concat(i, sep)
   local s = i()
+  if not(s) then return "" end
   for e in i do s = s .. sep .. e end
   return s
 end
@@ -29,6 +30,6 @@ local thinspace = {
 
 function Pandoc(doc) 
   -- Only apply thinspace on the content, not the metadata
-  doc.blocks = pandoc.walk_block(pandoc.Div(doc.blocks), thinspace).content
+  doc.blocks = doc.blocks:walk(thinspace)
   return doc
 end
