@@ -1,7 +1,12 @@
 from waflib import TaskGen, Utils, Context
 from waflib.TaskGen import feature, after_method
 from waflib.Configure import conf
-import os, pprint
+import os, pprint, frontmatter
+
+def to_list(l):
+    if type(l) is str:
+        return [l]
+    return l
 
 @conf
 def get_meta(ctx):
@@ -15,31 +20,13 @@ def get_meta(ctx):
                 quiet=True,
                 excl=ctx.env.exclude):
         path = node.srcpath()
-        kinds = ctx.cmd_and_log(
-            ['pandoc',
-             '-L',
-             os.sep.join(ctx.env.data_dir +
-                         ['filters', 'pfs', 'read-yaml-key.lua']),
-             '--to', 'plain',
-             path],
-            env={ 'YAML_KEY' : 'kinds'},
-            output=Context.STDOUT, quiet=Context.STDOUT).strip().split('\n')
+        src = node.read(encoding='utf-8')
+        post = frontmatter.loads(src)
 
-        if kinds == ['']:
-            kinds = [ctx.env.default_kind]
+        kinds = to_list(post.get('kinds') or ctx.env.default_kind)
         ctx.env.meta['kinds'][path] = kinds
 
-        outpath = ctx.cmd_and_log(
-            ['pandoc',
-             '-L',
-             os.sep.join(ctx.env.data_dir +
-                         ['filters', 'pfs', 'read-yaml-key.lua']),
-             '--to', 'plain',
-             path],
-            env={ 'YAML_KEY' : 'output'},
-            output=Context.STDOUT, quiet=Context.STDOUT).strip().split('\n')
-        if outpath == ['']:
-            outpath = None
+        outpath = to_list(post.get('output')) or None
         ctx.env.meta['output'][path] = outpath
 
         dependencies = ctx.cmd_and_log(
@@ -140,6 +127,20 @@ def copy_pandoc_assets(bld):
             target=node.srcpath(),
             is_copy=True)
 
+    for node in bld.path.ant_glob(base_dir + '/writers/**/*.lua',
+                                  excl=bld.env.assets_exclude):
+        bld(features='subst',
+            source=node.srcpath(),
+            target=node.srcpath(),
+            is_copy=True)
+
+    for node in bld.path.ant_glob(base_dir + '/templates/**/*',
+                                  excl=bld.env.assets_exclude):
+        bld(features='subst',
+            source=node.srcpath(),
+            target=node.srcpath(),
+            is_copy=True)
+
     for node in bld.path.ant_glob(base_dir + '/**/*.bib',
                                   excl=bld.env.assets_exclude):
         bld(features='subst',
@@ -209,14 +210,14 @@ def pandoc(self):
 
     self.env.options = self.options
 
-    if self.to:
-        self.env.append_value('options', ['--to=%s' % self.to])
+    def add_options(opts):
+        self.env.append_value('options', opts)
 
-    if self.from_:
-        self.env.append_value('options', ['--from=%s' % self.from_])
+    if self.to: add_options(['--to=%s' % self.to])
 
-    if self.standalone:
-        self.env.append_value('options', ['-s'])
+    if self.from_: add_options(['--from=%s' % self.from_])
+
+    if self.standalone: add_options(['-s'])
 
     if not self.ext: self.ext = self.to
 
@@ -225,26 +226,13 @@ def pandoc(self):
 
     self.target = self.target.change_ext('.%s' % self.ext)
 
-    self.env.append_value(
-        'options',
-        ['--defaults=%s' % x for x in self.defaults])
+    add_options(['--defaults=%s' % x for x in self.defaults])
 
-    # self.env.append_value(
-    #     'options',
-    #     ['--strip-comments'])
+    if self.bibliography: add_options(['--citeproc'])
 
-    if self.bibliography:
-        self.env.append_value(
-            'options',
-            ['--citeproc'])
+    add_options(['--bibliography=%s' % x for x in self.bibliography])
 
-    self.env.append_value(
-        'options',
-        ['--bibliography=%s' % x for x in self.bibliography])
-
-    self.env.append_value(
-        'options',
-        ['--data-dir=' + os.sep.join(self.env.data_dir)])
+    add_options(['--data-dir=' + os.sep.join(self.env.data_dir)])
 
     """
     ${resource_path} --data-dir=${data_dir}
