@@ -4,7 +4,8 @@ from waflib.Configure import conf
 import os, pprint, frontmatter
 
 def to_list(l):
-    if type(l) is str:
+    if l is None: return l
+    if not (type(l) is list):
         return [l]
     return l
 
@@ -29,6 +30,7 @@ def get_meta(ctx):
         outpath = to_list(post.get('output')) or None
         ctx.env.meta['output'][path] = outpath
 
+        """
         dependencies = ctx.cmd_and_log(
             ['pandoc',
              '-L',
@@ -42,6 +44,7 @@ def get_meta(ctx):
         if dependencies == ['']:
             dependencies = []
         ctx.env.meta['dependencies'][path] = dependencies
+        """
 
         ctx.env.meta['kind-defaults'][path] = {}
         for kind in kinds:
@@ -70,6 +73,7 @@ def get_meta(ctx):
 def configure(ctx):
     if not ctx.env.content:
         ctx.env.content = '**/*.md'
+    ctx.env.content = to_list(ctx.env.content)
     ctx.env.ignore = ctx.env.ignore or []
     if not ctx.env.assets_exclude:
         ctx.env.assets_exclude = ctx.env.ignore + [
@@ -245,8 +249,8 @@ def pandoc(self):
 def build(bld):
     copy_pandoc_assets(bld)
 
-    for path in bld.options.paths or ['']:
-        for node in bld.path.ant_glob(path + bld.env.content,
+    for path in (bld.options.paths or bld.env.content):
+        for node in bld.path.ant_glob(path,
                 quiet=True,
                 excl= bld.env.exclude):
             srcpath = node.srcpath()

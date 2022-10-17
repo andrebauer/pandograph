@@ -5,6 +5,7 @@ import os
 def configure(ctx):
     ctx.find_program(
         os.sep.join(
+            ctx.env.knitr_program or
             [ctx.path.abspath()] +
             ctx.env.data_dir +
             ['preprocessors',
@@ -26,8 +27,8 @@ def knitr(self):
 
 
 def build(bld):
-    for path in bld.options.paths or ['']:
-        for node in bld.path.ant_glob(path + bld.env.content,
+    for path in bld.options.paths or bld.env.content:
+        for node in bld.path.ant_glob(path,
                 quiet=True,
                 excl= bld.env.exclude):
             bld(features = 'knitr', source = node)
