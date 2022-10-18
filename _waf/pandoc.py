@@ -15,7 +15,9 @@ def get_meta(ctx):
                      'output': {},
                      'dependencies': {},
                      'kind-defaults' : {},
-                     'format-defaults' : {} }
+                     'format-defaults' : {},
+                     'suffix': {}
+                    }
     ctx.start_msg('Reading metadata')
     for node in ctx.path.ant_glob(ctx.env.content,
                 quiet=True,
@@ -58,6 +60,7 @@ def get_meta(ctx):
                 segments.pop(-1)
 
         ctx.env.meta['format-defaults'][path] = {}
+        ctx.env.meta['suffix'][path] = {}
         for format in ctx.env.formats:
             segments = Utils.split_path(node.parent.srcpath())
             ctx.env.meta['format-defaults'][path][format] = ctx.env.data_dir + ['defaults', format + '.yaml']
@@ -105,6 +108,12 @@ def options(opt):
                    help='restrict build to path')
 
 
+def read_yaml(node):
+    rawyaml = node.read(encoding='utf8')
+    yaml = frontmatter.loads("---\n" + rawyaml + "\n---\n")
+    return yaml
+
+
 def copy_pandoc_assets(bld):
     base_dir = os.sep.join(bld.env.data_dir)
 
@@ -116,9 +125,11 @@ def copy_pandoc_assets(bld):
             target=node.srcpath(),
             is_copy=True)
 
+    bld.env.yaml = {}
     for node in bld.path.ant_glob('**/*.yaml',
                                   quiet=True,
                                   excl=bld.env.assets_exclude):
+        bld.env.yaml[node.srcpath()] = read_yaml(node)
         bld(features='subst',
             source=node.srcpath(),
             target=node.srcpath(),
@@ -184,6 +195,7 @@ def init_pandoc(self):
     Utils.def_attrs(self,
                     options      = [],
                     defaults     = [],
+                    variables    = {},
                     bibliography = [],
                     template     = None,
                     # csl          = 'csl/autor-jahr-3.csl',
@@ -193,6 +205,9 @@ def init_pandoc(self):
                     pdf_engine   = 'xelatex',
                     ext          = '',
                     standalone   = False)
+
+
+
 
 @feature('pandoc')
 @after_method('init_pandoc')
@@ -230,7 +245,9 @@ def pandoc(self):
 
     self.target = self.target.change_ext('.%s' % self.ext)
 
-    add_options(['--defaults=%s' % x for x in self.defaults])
+    add_options(['--defaults=%s' % d for d in self.defaults])
+
+    add_options(['-V %s=%s' % (k, v) for k, v in self.variables.items()])
 
     if self.bibliography: add_options(['--citeproc'])
 
@@ -247,6 +264,10 @@ def pandoc(self):
 
 
 def build(bld):
+    revision = bld.cmd_and_log(
+        ['git', 'rev-parse', '--short=8', 'HEAD'],
+        output=Context.STDOUT, quiet=Context.STDOUT).strip()
+
     copy_pandoc_assets(bld)
 
     for path in (bld.options.paths or bld.env.content):
@@ -262,27 +283,39 @@ def build(bld):
 
             output = bld.env.meta['output'][srcpath]
 
-            if output:
-                targets = [bld.path.find_or_declare(o + bld.env.suffix) for o in output]
-            else:
-                root, _ = os.path.splitext(srcpath)
-                targets = [bld.path.find_or_declare(root + bld.env.suffix)]
-
             kinds = bld.env.meta['kinds'][srcpath] or [bld.env.default_kind]
 
             formats = bld.env.formats
 
-            for target in targets:
-                for kind in kinds:
-                    for format in formats:
+            for kind in kinds:
+                for format in formats:
+                    defaults=[
+                        os.sep.join(bld.env.meta['format-defaults'][srcpath][format]),
+                        os.sep.join(bld.env.meta['kind-defaults'][srcpath][kind])
+                    ]
+
+                    suffix = bld.env.suffix
+                    for default in defaults:
+                        variables = bld.env.yaml[default].get('variables')
+                        if variables:
+                            suffix = variables.get('suffix') or suffix
+                    # print("final SUFFIX", srcpath, kind, format, suffix)
+
+                    if output:
+                        targets = [bld.path.find_or_declare(o + suffix) for o in output]
+                    else:
+                        root, _ = os.path.splitext(srcpath)
+                        targets = [bld.path.find_or_declare(root + suffix)]
+
+
+                    for target in targets:
                         if bld.cmd == 'build_' + format or bld.cmd == 'build':
                             bld(features='pandoc',
                                 source = source,
                                 target = target,
                                 ext = formats[format],
-                                defaults=[
-                                    os.sep.join(bld.env.meta['format-defaults'][srcpath][format]),
-                                    os.sep.join(bld.env.meta['kind-defaults'][srcpath][kind])]
+                                defaults = defaults,
+                                variables = { 'revision': revision }
                                 )
 
 
