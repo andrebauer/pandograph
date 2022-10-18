@@ -1,0 +1,3 @@
+bash:
+  name: Bash
+  path: $lib/components/codeblock/Bash.svelte

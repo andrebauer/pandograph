@@ -1,0 +1,24 @@
+task:
+  name: Task
+  path: $lib/components/div/Task.svelte
+step:
+  name: Step
+  path: $lib/components/div/Step.svelte
+help:
+  name: Help
+  path: $lib/components/div/Help.svelte
+todo:
+  name: ToDo
+  path: $lib/components/div/ToDo.svelte
+Counter:
+  name: Counter
+  path: $lib/Counter.svelte
+solution:
+  name: Solution
+  path: $lib/components/div/Solution.svelte
+lsg:
+  name: Solution
+  path: $lib/components/div/Solution.svelte
+sol:
+  name: Solution
+  path: $lib/components/div/Solution.svelte

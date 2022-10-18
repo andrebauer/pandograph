@@ -1,8 +1,10 @@
+$if(imports)$
 <script>
 $for(imports)$
-$imports$
+  $imports$
 $endfor$
 </script>
+$endif$
 
 $for(include-before)$ $include-before$ $endfor$ $if(title)$
 <header id="title-block-header">

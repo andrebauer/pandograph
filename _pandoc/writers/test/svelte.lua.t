@@ -1,0 +1,1 @@
+  $ echo -e "[](index.html){.underline .green}\n\n::: {.task .nonnumbered hello="world"}\n Aufgabentext [Lsg]{.sol}\n:::\n~~~ bash\n$ echo Hello World\n~~~" | pandoc -t svelte.lua --template=../templates/svelte/default.svelte
