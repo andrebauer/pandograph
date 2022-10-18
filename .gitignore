@@ -3,3 +3,4 @@ _build/
 *.lock
 README.pdf
 .lock-waf*
+_pandoc/headers/.auctex-auto/

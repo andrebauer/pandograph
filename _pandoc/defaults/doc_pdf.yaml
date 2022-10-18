@@ -3,3 +3,8 @@ defaults:
 metadata-files:
   - _pandoc/metadata/common.yaml
   - _pandoc/metadata/doc.yaml
+include-in-header:
+  - _pandoc/headers/common.tex
+  - _pandoc/headers/exercise.tex
+to: pdf
+pdf-engine: xelatex

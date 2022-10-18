@@ -11,26 +11,21 @@ def to_list(l):
 
 @conf
 def get_meta(ctx):
-    ctx.env.meta = { 'kinds': {},
-                     'output': {},
-                     'dependencies': {},
-                     'kind-defaults' : {},
-                     'format-defaults' : {},
-                     'suffix': {}
-                    }
+    meta = {}
+
     ctx.start_msg('Reading metadata')
     for node in ctx.path.ant_glob(ctx.env.content,
                 quiet=True,
                 excl=ctx.env.exclude):
         path = node.srcpath()
+        meta[path] = {}
+
         src = node.read(encoding='utf-8')
         post = frontmatter.loads(src)
 
-        kinds = to_list(post.get('kinds') or ctx.env.default_kind)
-        ctx.env.meta['kinds'][path] = kinds
+        kinds = post.get('kinds') or ctx.env.default_kinds
 
         outpath = to_list(post.get('output')) or None
-        ctx.env.meta['output'][path] = outpath
 
         """
         dependencies = ctx.cmd_and_log(
@@ -48,28 +43,42 @@ def get_meta(ctx):
         ctx.env.meta['dependencies'][path] = dependencies
         """
 
-        ctx.env.meta['kind-defaults'][path] = {}
+        if type(kinds) is str:
+            meta[path][kinds] = {
+                'outpath' : outpath,
+            }
+
+        elif type(kinds) is dict:
+            for kind, outpath in kinds.items():
+                meta[path][kind] = {
+                    'outpath' : outpath
+                }
+
+        elif type(kinds) is list:
+            for kind in kinds:
+                if type(kind) is str:
+                    meta[path][kind] = {
+                        'outpath' : outpath,
+                    }
+
+                elif type(kind) is dict:
+                    for kind, outpath in kind.items():
+                        meta[path][kind] = {
+                            'outpath' : outpath
+                        }
+
+        kinds = list(meta[path].keys())
         for kind in kinds:
             segments = Utils.split_path(node.parent.srcpath())
-            ctx.env.meta['kind-defaults'][path][kind] = ctx.env.data_dir + ['defaults', kind + '.yaml']
+            meta[path][kind]['defaults'] = ctx.env.data_dir + ['defaults', kind + '.yaml']
             while(len(segments) > 0):
                 default_path = segments + [kind + '.yaml']
                 if ctx.path.find_node(default_path):
-                    ctx.env.meta['kind-defaults'][path][kind] = default_path
+                    meta[path][kind]['defaults'] = default_path
                     break
                 segments.pop(-1)
 
-        ctx.env.meta['format-defaults'][path] = {}
-        ctx.env.meta['suffix'][path] = {}
-        for format in ctx.env.formats:
-            segments = Utils.split_path(node.parent.srcpath())
-            ctx.env.meta['format-defaults'][path][format] = ctx.env.data_dir + ['defaults', format + '.yaml']
-            while(len(segments) > 0):
-                default_path = segments + [format + '.yaml']
-                if ctx.path.find_node(default_path):
-                    ctx.env.meta['format-defaults'][path][format] = default_path
-                    break
-                segments.pop(-1)
+    ctx.env.meta = meta
 
     ctx.end_msg(pprint.pformat(ctx.env.meta))
 
@@ -77,7 +86,7 @@ def configure(ctx):
     if not ctx.env.content:
         ctx.env.content = '**/*.md'
     ctx.env.content = to_list(ctx.env.content)
-    ctx.env.ignore = ctx.env.ignore or []
+    ctx.env.ignore = to_list(ctx.env.ignore or [])
     if not ctx.env.assets_exclude:
         ctx.env.assets_exclude = ctx.env.ignore + [
             ctx.env.out + '/**/*',
@@ -90,10 +99,9 @@ def configure(ctx):
             '_pandoc/**/*',
             '__pycache__/**/*',
             '_waf/**/*']
-    if not ctx.env.default_kind:
-        ctx.env.default_kind = 'doc'
-    if not ctx.env.formats:
-        ctx.env.formats = {'html' : 'html', 'pdf': 'pdf', 'docx' : 'docx', 'odt' : 'odt', 'tex' : 'tex'}
+    ctx.env.add_resource_path = to_list(ctx.env.add_resource_path or [])
+    if not ctx.env.default_kinds:
+        ctx.env.default_kinds = ['svelte', 'doc_pdf', 'doc_docx', 'solution_pdf']
     if not ctx.env.data_dir:
         ctx.env.data_dir = ['_pandoc']
     if not ctx.env.suffix:
@@ -198,15 +206,12 @@ def init_pandoc(self):
                     variables    = {},
                     bibliography = [],
                     template     = None,
-                    # csl          = 'csl/autor-jahr-3.csl',
-                    # knitr = '',
-                    to           = None, # 'pdf',
-                    from_        = None, # 'markdown',
+                    to           = None,
+                    from_        = None,
                     pdf_engine   = 'xelatex',
-                    ext          = '',
-                    standalone   = False)
-
-
+                    ext          = None,
+                    standalone   = False,
+                    resource_path = False)
 
 
 @feature('pandoc')
@@ -245,7 +250,7 @@ def pandoc(self):
 
     self.target = self.target.change_ext('.%s' % self.ext)
 
-    add_options(['--defaults=%s' % d for d in self.defaults])
+    add_options(['--defaults=%s' % d for d in to_list(self.defaults)])
 
     add_options(['-V %s=%s' % (k, v) for k, v in self.variables.items()])
 
@@ -255,9 +260,8 @@ def pandoc(self):
 
     add_options(['--data-dir=' + os.sep.join(self.env.data_dir)])
 
-    """
-    ${resource_path} --data-dir=${data_dir}
-    """
+    if self.resource_path:
+        add_options(['--resource-path=%s' % ':'.join(self.resource_path)])
 
     self.rule= '${PANDOC} ${defaults} ${options} ${SRC} -o ${TGT}'
 
@@ -281,60 +285,75 @@ def build(bld):
             else:
                 source = node
 
-            output = bld.env.meta['output'][srcpath]
 
-            kinds = bld.env.meta['kinds'][srcpath] or [bld.env.default_kind]
-
-            formats = bld.env.formats
+            kinds = list(bld.env.meta[srcpath].keys())
 
             for kind in kinds:
-                for format in formats:
-                    defaults=[
-                        os.sep.join(bld.env.meta['format-defaults'][srcpath][format]),
-                        os.sep.join(bld.env.meta['kind-defaults'][srcpath][kind])
-                    ]
+                default = os.sep.join(bld.env.meta[srcpath][kind]['defaults'])
+                suffix = bld.env.suffix
+                variables = bld.env.yaml[default].get('variables')
+                if variables:
+                    suffix = variables.get('suffix') or suffix
 
-                    suffix = bld.env.suffix
-                    for default in defaults:
-                        variables = bld.env.yaml[default].get('variables')
-                        if variables:
-                            suffix = variables.get('suffix') or suffix
-                    # print("final SUFFIX", srcpath, kind, format, suffix)
+                # print("final SUFFIX ", srcpath, kind, " : " , suffix)
 
-                    if output:
-                        targets = [bld.path.find_or_declare(o + suffix) for o in output]
-                    else:
-                        root, _ = os.path.splitext(srcpath)
-                        targets = [bld.path.find_or_declare(root + suffix)]
+                outpath = bld.env.meta[srcpath][kind]['outpath']
+
+                if outpath:
+                    targets = bld.path.find_or_declare(outpath + suffix)
+                else:
+                    root, _ = os.path.splitext(srcpath)
+                    target = bld.path.find_or_declare(root + suffix)
 
 
-                    for target in targets:
-                        if bld.cmd == 'build_' + format or bld.cmd == 'build':
-                            bld(features='pandoc',
-                                source = source,
-                                target = target,
-                                ext = formats[format],
-                                defaults = defaults,
-                                variables = { 'revision': revision }
-                                )
+                if bld.cmd == 'build_' + kind or bld.cmd == 'build':
+                    bld(features='pandoc',
+                        source = source,
+                        target = target,
+                        ext = bld.ext or kind,
+                        defaults = default,
+                        variables = { 'revision': revision },
+                        resource_path = ['.'] + bld.env.add_resource_path + [node.parent.srcpath()],
+                    )
 
 
 from waflib.Build import BuildContext
 
 class tmp(BuildContext):
-    cmd = 'build_pdf'
+    cmd = 'build_beamer'
+    ext = 'pdf'
 
 class tmp(BuildContext):
-    cmd = 'build_docx'
+    cmd = 'build_handout'
+    ext = 'pdf'
 
 class tmp(BuildContext):
-    cmd = 'build_odt'
+    cmd = 'build_notes'
+    ext = 'pdf'
 
 class tmp(BuildContext):
-    cmd = 'build_tex'
+    cmd = 'build_doc_pdf'
+    ext = 'pdf'
 
 class tmp(BuildContext):
-    cmd = 'build_html'
+    cmd = 'build_doc_docx'
+    ext = 'docx'
+
+class tmp(BuildContext):
+    cmd = 'build_doc_odt'
+    ext = 'odt'
+
+class tmp(BuildContext):
+    cmd = 'build_doc_tex'
+    ext = 'tex'
+
+class tmp(BuildContext):
+    cmd = 'build_svelte'
+    ext = 'svelte'
+
+class tmp(BuildContext):
+    cmd = 'build_solution_pdf'
+    ext = 'svelte'
 
 class tmp(BuildContext):
     cmd = 'build_pandoc_assets'
@@ -361,4 +380,34 @@ pandoc
 metadata/common.yaml metadata/docs.yaml metadata/exam.yaml
 content/exam/2022-09-30-klausur.md
 -o "_build/exam/2022-09-30-klausur-auds-ssü-ss-2022.pdf"
+"""
+
+
+"""
+pandoc
+ --include-in-header=headers/common.tex
+--include-in-header=headers/handout.tex
+-V revision="21c98717"
+--strip-comments
+-L diagram-generator.lua
+-L include-files.lua
+-L list-table.lua
+-L pagebreak.lua
+--filter Text/Pandoc/Filter/slides.hs
+--citeproc
+--resource-path=.:content
+--bibliography literature/literature.bib
+--template=templates/slides/default.latex
+--slide-level=3
+--csl csl/autor-jahr-3.csl
+--pdf-engine=xelatex
+--from=markdown
+-t beamer
+metadata/common.yaml
+metadata/handout.yaml
+content/lecture/example-lecture-dagstuhl-dreieck.md
+-o "_build/lecture/example-lecture-dagstuhl-dreieck-pandoc-template-handout-slides.pdf
+
+pandoc  --include-in-header=headers/common.tex --include-in-header=headers/slides.tex -V revision="21c98717" --strip-comments -L diagram-generator.lua -L include-files.lua -L list-table.lua -L pagebreak.lua    --filter Text/Pandoc/Filter/slides.hs --citeproc --resource-path=.:content  --bibliography literature/literature.bib  --template=templates/slides/default.latex --slide-level=3  --csl csl/autor-jahr-3.csl  --pdf-engine=xelatex --from=markdown -t beamer  metadata/common.yaml  metadata/slides.yaml content/lecture/example-lecture-cs-unplugged.md -o "_build/lecture/example-lecture-cs-unplugged-pandoc-template-slides.pdf"
+pandoc  --include-in-header=headers/common.tex --include-in-header=headers/notes.tex -V revision="21c98717" --strip-comments -L diagram-generator.lua -L include-files.lua -L list-table.lua -L pagebreak.lua    --filter Text/Pandoc/Filter/notes.hs --citeproc --resource-path=.:content  --bibliography literature/literature.bib   --template=templates/default/default.latex  --csl csl/autor-jahr-3.csl  --pdf-engine=xelatex --from=markdown   metadata/common.yaml metadata/docs.yaml metadata/notes.yaml content/lecture/example-lecture-cs-unplugged.md -o "_build/lecture/example-lecture-cs-unplugged-pandoc-template-notes.pdf"
 """

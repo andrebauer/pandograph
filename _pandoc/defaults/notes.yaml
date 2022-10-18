@@ -1,2 +1,5 @@
 defaults:
+  - _pandoc/defaults/common.yaml
+metadata:
   - _pandoc/metadata/notes.yaml
+  - _pandoc/metadata/beamer.yaml

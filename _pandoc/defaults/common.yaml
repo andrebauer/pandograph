@@ -1,9 +1,9 @@
 # verbosity: INFO
 citeproc: true
 filters:
-  # - pfs/strip-classes.lua
-  # - pfs/thinspace.lua
-  # - pfs/nbspace.lua
+  - pfs/strip-classes.lua
+  - pfs/thinspace.lua
+  - pfs/nbspace.lua
   # - pfs/diagram.lua
   # - lua-filters/pagebreak/pagebreak.lua
   # - lua-filters/include-files/include-files.lua
@@ -13,4 +13,4 @@ filters:
   # - lua-filters/list-table/list-table.lua
   # - pfs/mdsvex.lua
   # - markup-to-component.lua
-resource-path: ['.', 'content']
+# resource-path: ['.', 'content']
