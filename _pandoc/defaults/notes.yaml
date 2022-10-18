@@ -1,0 +1,2 @@
+defaults:
+  - _pandoc/metadata/notes.yaml
