@@ -10,7 +10,7 @@ function block_for_change {
 function build {
     # build.sh
     # make --jobs=4 build
-    waf build_pdf
+    waf build_html
 }
 
 build

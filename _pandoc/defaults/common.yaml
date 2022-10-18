@@ -1,15 +1,16 @@
 # verbosity: INFO
 citeproc: true
 filters:
-  - pfs/strip-classes.lua
-  - pfs/nbspace.lua
-  - pfs/thinspace.lua
-  - lua-filters/pagebreak/pagebreak.lua
-  - lua-filters/include-files/include-files.lua
-  - lua-filters/diagram-generator/diagram-generator.lua
-  - pfs/diagram.lua
-  - pfs/solution.lua
+  # - pfs/strip-classes.lua
+  # - pfs/thinspace.lua
+  # - pfs/nbspace.lua
+  # - pfs/diagram.lua
+  # - lua-filters/pagebreak/pagebreak.lua
+  # - lua-filters/include-files/include-files.lua
+  # - lua-filters/diagram-generator/diagram-generator.lua
+  # - pfs/solution.lua
   - pfs/task.lua
-  - lua-filters/list-table/list-table.lua
+  # - lua-filters/list-table/list-table.lua
   # - pfs/mdsvex.lua
   # - markup-to-component.lua
+resource-path: ['.', 'content']

@@ -1,5 +1,5 @@
 include-in-header:
   - _pandoc/headers/common.tex
-  - _pandoc/headers/exam.tex
+  - _pandoc/headers/exercise.tex
 to: pdf
 pdf-engine: xelatex
