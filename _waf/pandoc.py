@@ -25,7 +25,7 @@ def get_meta(ctx):
 
         kinds = post.get('kinds') or ctx.env.default_kinds
 
-        outpath = to_list(post.get('output')) or None
+        outpaths = to_list(post.get('output')) or None
 
         """
         dependencies = ctx.cmd_and_log(
@@ -45,26 +45,26 @@ def get_meta(ctx):
 
         if type(kinds) is str:
             meta[path][kinds] = {
-                'outpath' : outpath,
+                'outpaths' : outpaths,
             }
 
         elif type(kinds) is dict:
-            for kind, outpath in kinds.items():
+            for kind, outpaths in kinds.items():
                 meta[path][kind] = {
-                    'outpath' : outpath
+                    'outpaths' : to_list(outpaths)
                 }
 
         elif type(kinds) is list:
             for kind in kinds:
                 if type(kind) is str:
                     meta[path][kind] = {
-                        'outpath' : outpath,
+                        'outpaths' : outpaths,
                     }
 
                 elif type(kind) is dict:
-                    for kind, outpath in kind.items():
+                    for kind, outpaths in kind.items():
                         meta[path][kind] = {
-                            'outpath' : outpath
+                            'outpaths' : to_list(outpaths)
                         }
 
         kinds = list(meta[path].keys())
@@ -297,24 +297,24 @@ def build(bld):
 
                 # print("final SUFFIX ", srcpath, kind, " : " , suffix)
 
-                outpath = bld.env.meta[srcpath][kind]['outpath']
+                outpaths = bld.env.meta[srcpath][kind]['outpaths']
 
-                if outpath:
-                    targets = bld.path.find_or_declare(outpath + suffix)
+                if outpaths:
+                    targets = [bld.path.find_or_declare(o + suffix) for o in outpaths]
                 else:
                     root, _ = os.path.splitext(srcpath)
-                    target = bld.path.find_or_declare(root + suffix)
+                    targets = [bld.path.find_or_declare(root + suffix)]
 
-
-                if bld.cmd == 'build_' + kind or bld.cmd == 'build':
-                    bld(features='pandoc',
-                        source = source,
-                        target = target,
-                        ext = bld.ext or kind,
-                        defaults = default,
-                        variables = { 'revision': revision },
-                        resource_path = ['.'] + bld.env.add_resource_path + [node.parent.srcpath()],
-                    )
+                for target in targets:
+                    if bld.cmd == 'build_' + kind or bld.cmd == 'build':
+                        bld(features='pandoc',
+                            source = source,
+                            target = target,
+                            ext = bld.ext or kind,
+                            defaults = default,
+                            variables = { 'revision': revision },
+                            resource_path = ['.'] + bld.env.add_resource_path + [node.parent.srcpath()],
+                        )
 
 
 from waflib.Build import BuildContext
