@@ -1,3 +1,8 @@
+defaults:
+  - _pandoc/defaults/common
+metadata-files:
+  - _pandoc/metadata/common.yaml
+  # - _pandoc/metadata/svelte.yaml
 strip-comments: true
 to: _pandoc/writers/svelte.lua
 template: _pandoc/templates/svelte/default.svelte

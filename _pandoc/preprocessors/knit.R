@@ -1,7 +1,7 @@
 #!/usr/bin/Rscript
-sink(file("/dev/null", "w"), type="message")
+# sink(file("/dev/null", "w"), type="message")
 args <- commandArgs(trailingOnly = TRUE)
-library(docknitr)
+library(docknitr, quietly = TRUE)
 quiet <- FALSE
 if (length(args) > 2 && args[3] == "quiet") {
    quiet <- TRUE

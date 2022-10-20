@@ -1,7 +1,7 @@
-from waflib import TaskGen, Utils, Context
+from waflib import TaskGen, Utils, Context, Logs
 from waflib.TaskGen import feature, after_method
 from waflib.Configure import conf
-import os, pprint, frontmatter
+import os, pprint, frontmatter, utils
 
 def to_list(l):
     if l is None: return l
@@ -12,6 +12,7 @@ def to_list(l):
 @conf
 def get_meta(ctx):
     meta = {}
+    deps = {}
 
     ctx.start_msg('Reading metadata')
     for node in ctx.path.ant_glob(ctx.env.content,
@@ -19,6 +20,7 @@ def get_meta(ctx):
                 excl=ctx.env.exclude):
         path = node.srcpath()
         meta[path] = {}
+        deps[path] = {}
 
         src = node.read(encoding='utf-8')
         post = frontmatter.loads(src)
@@ -28,6 +30,9 @@ def get_meta(ctx):
         outpaths = to_list(post.get('output')) or None
 
         """
+        for ty in ctx.env.dep_types:
+            deps[path][ty] = []
+
         dependencies = ctx.cmd_and_log(
             ['pandoc',
              '-L',
@@ -40,7 +45,10 @@ def get_meta(ctx):
                 # kinds = proc.stdout.read()
         if dependencies == ['']:
             dependencies = []
-        ctx.env.meta['dependencies'][path] = dependencies
+        for d in dependencies:
+            # print('Dep:', d)
+            [ty, dep] = d.split(' ')
+            deps[path][ty].append(dep)
         """
 
         if type(kinds) is str:
@@ -79,13 +87,15 @@ def get_meta(ctx):
                 segments.pop(-1)
 
     ctx.env.meta = meta
+    # ctx.env.deps = deps
 
-    ctx.end_msg(pprint.pformat(ctx.env.meta))
+    ctx.end_msg(pprint.pformat({ 'meta' : ctx.env.meta, 'deps' : ctx.env.deps }))
 
 def configure(ctx):
     if not ctx.env.content:
         ctx.env.content = '**/*.md'
     ctx.env.content = to_list(ctx.env.content)
+    ctx.env.dep_types = ['sourcecode', 'markup', 'image']
     ctx.env.ignore = to_list(ctx.env.ignore or [])
     if not ctx.env.assets_exclude:
         ctx.env.assets_exclude = ctx.env.ignore + [
@@ -100,6 +110,7 @@ def configure(ctx):
             '__pycache__/**/*',
             '_waf/**/*']
     ctx.env.add_resource_path = to_list(ctx.env.add_resource_path or [])
+    ctx.env.resource_path = ['.'] + ctx.env.add_resource_path
     if not ctx.env.default_kinds:
         ctx.env.default_kinds = ['svelte', 'doc_pdf', 'doc_docx', 'solution_pdf']
     if not ctx.env.data_dir:
@@ -196,7 +207,12 @@ def copy_pandoc_assets(bld):
             target=node.srcpath(),
             is_copy=True)
 
-
+    for node in bld.path.ant_glob('content/**/*.sh',
+                                  excl= bld.env.assets_exclude):
+        bld(features='subst',
+            source=node.srcpath(),
+            target=node.srcpath(),
+            is_copy=True)
 
 @feature('pandoc')
 def init_pandoc(self):
@@ -217,20 +233,59 @@ def init_pandoc(self):
 @feature('pandoc')
 @after_method('init_pandoc')
 def pandoc(self):
-    """
+
+
     srcpath = self.target.srcpath()
-    node = self.target
-    print('Node' , node)
+    node = self.node
 
+
+    # print('Node' , node)
+
+    """
     def scan(ctx):
-        deps = self.env.meta['dependencies'][srcpath]
+        deps = self.env.deps[srcpath]
 
-        depnodes = list(map(node.find_or_declare, deps))
-        print('Depnodes:', depnodes)
+        # depnodes = list(map(node.find_or_declare, deps))
+        #print('Depnodes:', depnodes)
         return (depnodes, [])
-        # return ([], [])
+
     self.scan = scan
     """
+
+    def scan(ctx):
+        # print('SCAN', srcpath)
+
+        # deps = self.env.deps[node.srcpath()]
+        deps = utils.dependencies(ctx, 'pandoc', node.srcpath())
+
+        nodes = []
+
+        for d in to_list(self.defaults):
+            nodes.append(self.path.find_resource(d))
+
+        for ty in ctx.env.dep_types:
+            # print('Ty:', ty )
+            for dep in deps[ty]:
+                # print('dep', dep)
+                found = None
+                for respath in self.resource_path:
+                    # add another loop for the tex include paths?
+                    Logs.debug('knitr: trying %s%s', respath, dep)
+                    fi = self.path.find_resource([respath, dep])
+                    if fi:
+                        Logs.debug('knitr: found %s%s', respath, dep)
+                        found = True
+                        nodes.append(fi)
+                        # no break
+                if not found:
+                    Logs.debug('knitr: could not find %s', dep)
+
+        # print('Dep', ty, dep)
+        # depnodes.append(self.path.parent.find_resource('content/' + dep))
+        # print('Depnodes:', nodes)
+        return (nodes, [])
+
+    self.scan = scan
 
     self.env.options = self.options
 
@@ -265,7 +320,13 @@ def pandoc(self):
 
     self.rule= '${PANDOC} ${defaults} ${options} ${SRC} -o ${TGT}'
 
+    """
+    def scan(task):
+        print('SCAN')
+        return ([], [])
 
+    self.scan = scan
+    """
 
 def build(bld):
     revision = bld.cmd_and_log(
@@ -279,6 +340,7 @@ def build(bld):
                 quiet=True,
                 excl= bld.env.exclude):
             srcpath = node.srcpath()
+
 
             if bld.env.knitr_dir:
                 source = bld.bldnode.find_or_declare(os.sep.join([bld.env.knitr_dir, srcpath]))
@@ -308,12 +370,13 @@ def build(bld):
                 for target in targets:
                     if bld.cmd == 'build_' + kind or bld.cmd == 'build':
                         bld(features='pandoc',
+                            node = node,
                             source = source,
                             target = target,
                             ext = bld.ext or kind,
                             defaults = default,
                             variables = { 'revision': revision },
-                            resource_path = ['.'] + bld.env.add_resource_path + [node.parent.srcpath()],
+                            resource_path = bld.env.resource_path + [node.parent.srcpath()],
                         )
 
 

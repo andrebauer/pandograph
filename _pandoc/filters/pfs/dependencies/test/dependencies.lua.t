@@ -178,3 +178,68 @@
   image images/deps.png
   markup content/lua/lua.md
   markup more_content/java/Test.md
+
+  $ CATEGORIES="pandoc knitr" pandoc -L dependencies.lua -t plain <<EOF
+  > ---
+  > dependencies:
+  >   - src/lua/demo.lua
+  >   - src/tex/diagram.tex
+  > ---
+  > 
+  > \`\`\`{r test-main, child='knitr-child.Rmd'}
+  > \`\`\`
+  > 
+  > \`\`\`{ .include }
+  > content/lua/lua.md
+  > more_content/java/Test.md
+  > \`\`\`
+  > ![](images/deps.png)
+  > EOF
+  src/lua/demo.lua
+  src/tex/diagram.tex
+  markup knitr-child.Rmd
+  image images/deps.png
+  markup content/lua/lua.md
+  markup more_content/java/Test.md
+
+  $ CATEGORIES="pandoc" pandoc -L dependencies.lua -t plain <<EOF
+  > ---
+  > dependencies:
+  >   - src/lua/demo.lua
+  >   - src/tex/diagram.tex
+  > ---
+  > 
+  > \`\`\`{r test-main, child='knitr-child.Rmd'}
+  > \`\`\`
+  > 
+  > \`\`\`{ .include }
+  > content/lua/lua.md
+  > more_content/java/Test.md
+  > \`\`\`
+  > ![](images/deps.png)
+  > EOF
+  src/lua/demo.lua
+  src/tex/diagram.tex
+  image images/deps.png
+  markup content/lua/lua.md
+  markup more_content/java/Test.md
+
+  $ CATEGORIES="knitr" pandoc -L dependencies.lua -t plain <<EOF
+  > ---
+  > dependencies:
+  >   - src/lua/demo.lua
+  >   - src/tex/diagram.tex
+  > ---
+  > 
+  > \`\`\`{r test-main, child='knitr-child.Rmd'}
+  > \`\`\`
+  > 
+  > \`\`\`{ .include }
+  > content/lua/lua.md
+  > more_content/java/Test.md
+  > \`\`\`
+  > ![](images/deps.png)
+  > EOF
+  src/lua/demo.lua
+  src/tex/diagram.tex
+  markup knitr-child.Rmd
