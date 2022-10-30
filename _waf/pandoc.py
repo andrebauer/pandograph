@@ -362,7 +362,7 @@ def build(bld):
                 outpaths = bld.env.meta[srcpath][kind]['outpaths']
 
                 if outpaths:
-                    targets = [bld.path.find_or_declare(o + suffix) for o in outpaths]
+                    targets = [bld.path.find_or_declare(o) for o in outpaths]
                 else:
                     root, _ = os.path.splitext(srcpath)
                     targets = [bld.path.find_or_declare(root + suffix)]
@@ -473,4 +473,14 @@ content/lecture/example-lecture-dagstuhl-dreieck.md
 
 pandoc  --include-in-header=headers/common.tex --include-in-header=headers/slides.tex -V revision="21c98717" --strip-comments -L diagram-generator.lua -L include-files.lua -L list-table.lua -L pagebreak.lua    --filter Text/Pandoc/Filter/slides.hs --citeproc --resource-path=.:content  --bibliography literature/literature.bib  --template=templates/slides/default.latex --slide-level=3  --csl csl/autor-jahr-3.csl  --pdf-engine=xelatex --from=markdown -t beamer  metadata/common.yaml  metadata/slides.yaml content/lecture/example-lecture-cs-unplugged.md -o "_build/lecture/example-lecture-cs-unplugged-pandoc-template-slides.pdf"
 pandoc  --include-in-header=headers/common.tex --include-in-header=headers/notes.tex -V revision="21c98717" --strip-comments -L diagram-generator.lua -L include-files.lua -L list-table.lua -L pagebreak.lua    --filter Text/Pandoc/Filter/notes.hs --citeproc --resource-path=.:content  --bibliography literature/literature.bib   --template=templates/default/default.latex  --csl csl/autor-jahr-3.csl  --pdf-engine=xelatex --from=markdown   metadata/common.yaml metadata/docs.yaml metadata/notes.yaml content/lecture/example-lecture-cs-unplugged.md -o "_build/lecture/example-lecture-cs-unplugged-pandoc-template-notes.pdf"
+"""
+
+"""
+TODO
+
+- Autodetect kinds in _pandoc/defaults and generate BuildContexts
+
+- waf build # fails
+  → should run all special build commands
+
 """

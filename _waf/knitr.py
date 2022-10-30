@@ -33,6 +33,7 @@ def knitr(self):
         # print(deps)
 
         nodes = []
+
         for ty in ctx.env.dep_types:
             # print('Ty:', ty )
             for dep in deps[ty]:

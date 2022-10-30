@@ -1,5 +1,13 @@
 from waflib import Context
-import os
+import os, yaml
+
+
+"""
+try:
+    from yaml import CLoader as Loader, CDumper as Dumper
+except ImportError:
+"""
+from yaml import Loader, Dumper
 
 def dependencies(ctx, cat, path):
     deps = {}
@@ -24,3 +32,7 @@ def dependencies(ctx, cat, path):
         [ty, dep] = d.split(' ')
         deps[ty].append(dep)
     return deps
+
+def load_yaml(node):
+    raw = node.read(encoding='utf-8')
+    return yaml.load(raw, Loader)

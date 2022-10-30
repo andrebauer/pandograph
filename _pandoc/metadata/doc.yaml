@@ -1,4 +1,3 @@
----
 papersize: A4
 fontsize: 12pt
 documentclass: extarticle
@@ -10,4 +9,3 @@ toc-depth: 4
 numbersections: true
 secnumdepth: 3
 colorlinks: true
----

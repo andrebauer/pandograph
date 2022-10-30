@@ -3,9 +3,11 @@ defaults:
 metadata-files:
   - _pandoc/metadata/common.yaml
   - _pandoc/metadata/handout.yaml
+template: _pandoc/templates/slides/default.latex
 include-in-header:
   - _pandoc/headers/common.tex
   - _pandoc/headers/handout.tex
 to: beamer
+slide-level: 3
 variables:
   suffix: -handout
