@@ -2,6 +2,7 @@ local fmt = string.format
 
 local pandoc_script_dir = pandoc.path.directory(PANDOC_SCRIPT_FILE)
 package.path = fmt("%s;%s/?.lua", package.path, pandoc_script_dir)
+package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
 
 require 'lib.list'
 

@@ -7,6 +7,6 @@ strip-comments: true
 to: _pandoc/writers/svelte.lua
 template: _pandoc/templates/svelte/default.svelte
 standalone: false
-extract-media: _media
-variables:
-  suffix: -htm
+# extract-media: _media
+# variables:
+#   suffix: -htm

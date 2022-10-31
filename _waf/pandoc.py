@@ -319,7 +319,7 @@ def pandoc(self):
     if self.resource_path:
         add_options(['--resource-path=%s' % ':'.join(self.resource_path)])
 
-    self.rule= '${PANDOC} ${defaults} ${options} ${SRC} -o ${TGT}'
+    self.rule= '"${PANDOC}" ${defaults} ${options} ${SRC} -o ${TGT}'
 
     """
     def scan(task):

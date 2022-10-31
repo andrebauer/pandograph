@@ -18,7 +18,7 @@ def dependencies(ctx, cat, path):
         ctx.generator.bld.env.PANDOC +
         ['-L',
          os.sep.join(ctx.env.data_dir +
-                     ['filters', 'pfs', 'dependencies.lua']),
+                     ['filters', 'pfs', 'dependencies', 'dependencies.lua']),
          '--to', 'plain',
          path],
         env={ 'CATEGORIES' : cat },

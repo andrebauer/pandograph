@@ -1,1 +1,0 @@
-strip-classes/strip-classes.lua
