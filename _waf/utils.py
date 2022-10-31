@@ -15,8 +15,8 @@ def dependencies(ctx, cat, path):
         deps[ty] = []
 
     dependencies = ctx.generator.bld.cmd_and_log(
-        ['pandoc',
-         '-L',
+        ctx.generator.bld.env.PANDOC +
+        ['-L',
          os.sep.join(ctx.env.data_dir +
                      ['filters', 'pfs', 'dependencies.lua']),
          '--to', 'plain',

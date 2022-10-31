@@ -1,4 +1,4 @@
-#!/usr/bin/Rscript
+## #!/usr/bin/env Rscript
 # sink(file("/dev/null", "w"), type="message")
 args <- commandArgs(trailingOnly = TRUE)
 library(docknitr, quietly = TRUE)

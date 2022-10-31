@@ -3,19 +3,16 @@ from waflib.TaskGen import feature, after_method
 import os, utils
 
 def configure(ctx):
-    ctx.find_program(
-        os.sep.join(
-            ctx.env.knitr_program or
-            [ctx.path.abspath()] +
-            ctx.env.data_dir +
-            ['preprocessors',
-             'knit.R'])
-        , var='KNITR')
+    ctx.find_program('Rscript', var='RSCRIPT')
+
+    ctx.env.KNITR = os.sep.join(
+            ctx.env.knitr_path or
+            ([ctx.path.abspath()] +
+             ctx.env.data_dir +
+             ['preprocessors', 'knit.R']))
     ctx.env.knitr_dir = '_knitr'
 
 
-
-    
 @feature('knitr')
 def init_knitr(self):
     Utils.def_attrs(self, ext_in = '.md')
@@ -62,9 +59,9 @@ def knitr(self):
     self.target = self.bld.bldnode.find_or_declare(
         os.sep.join([self.env.knitr_dir, node.srcpath()]))
     if self.verbose > 1:
-        self.rule='${KNITR} ${SRC} ${TGT}'
+        self.rule='"${RSCRIPT}" "${KNITR}" "${SRC}" "${TGT}"'
     else:
-        self.rule='${KNITR} ${SRC} ${TGT} quiet'
+        self.rule='"${RSCRIPT}" "${KNITR}" "${SRC}" "${TGT}" quiet'
 
 
 def build(bld):

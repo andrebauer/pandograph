@@ -118,6 +118,7 @@ def configure(ctx):
     if not ctx.env.suffix:
         ctx.env.suffix = ''
     ctx.find_program('pandoc', var='PANDOC')
+    ctx.find_program('git', var='GIT')
     ctx.get_meta()
 
 def options(opt):
@@ -330,7 +331,7 @@ def pandoc(self):
 
 def build(bld):
     revision = bld.cmd_and_log(
-        ['git', 'rev-parse', '--short=8', 'HEAD'],
+        bld.env.GIT + ['rev-parse', '--short=8', 'HEAD'],
         output=Context.STDOUT, quiet=Context.STDOUT).strip()
 
     copy_pandoc_assets(bld)
