@@ -1,0 +1,61 @@
+span:
+  sol:
+    name: Solution
+    path: $lib/components/div/Solution.svelte
+
+codeblock:
+  bash:
+    name: Bash
+    path: $lib/components/codeblock/Bash.svelte
+
+div:
+  task:
+    name: Task
+    path: $lib/components/div/Task.svelte
+  step:
+    name: Step
+    path: $lib/components/div/Step.svelte
+  help:
+    name: Help
+    path: $lib/components/div/Help.svelte
+  todo:
+    name: ToDo
+    path: $lib/components/div/ToDo.svelte
+  Counter:
+    name: Counter
+    path: $lib/Counter.svelte
+  solution:
+    name: Solution
+    path: $lib/components/div/Solution.svelte
+  lsg:
+    name: Solution
+    path: $lib/components/div/Solution.svelte
+  sol:
+    name: Solution
+    path: $lib/components/div/Solution.svelte
+
+element:
+  Link:
+    name: Link
+    path: $lib/components/element/Link.svelte
+  Image:
+    name: Image
+    path: $lib/components/element/Image.svelte
+  Code:
+    name: Code
+    path: $lib/components/element/Code.svelte
+  Cite:
+    name: Cite
+    path: $lib/components/element/Cite.svelte
+  Para:
+    name: Para
+    path: $lib/components/element/Para.svelte
+  Header:
+    name: Header
+    path: $lib/components/element/Header.svelte
+  BlockQuote:
+    name: BlockQuote
+    path: $lib/components/element/BlockQuote.svelte
+  HorizontalRule:
+    name: HorizontalRule
+    path: $lib/components/element/HorizontalRule.svelte

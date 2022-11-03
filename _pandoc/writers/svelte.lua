@@ -86,22 +86,24 @@ local function readYaml(path)
   return yaml.eval(f:read('*all'))
 end
 
-local known_span_components = readYaml('_pandoc/writers/span-components.yaml')
+local components = readYaml('_pandoc/writers/components.yaml')
 
 function isSpanComponent(name)
-  return not (known_span_components[name] == nil)
+  return not (components.span[name] == nil)
 end
-
-local known_div_components = readYaml('_pandoc/writers/div-components.yaml')
 
 function isDivComponent(name)
-  return not (known_div_components[name] == nil)
+  return not (components.div[name] == nil)
 end
 
-local known_codeblock_components = readYaml('_pandoc/writers/codeblock-components.yaml')
-
 function isCodeblockComponent(name)
-  return not (known_codeblock_components[name] == nil)
+  return not (components.codeblock[name] == nil)
+end
+
+function useComponent(kind, name)
+  local component = components[kind][name]
+  imports[name] = component
+  return component
 end
 
 local function classes(attr)
@@ -199,18 +201,20 @@ function Strikeout(s)
 end
 
 function Link(s, tgt, tit, attr)
-  imports['A'] = { name = 'A', path = "$lib/components/element/A.svelte" }
-  return '<A href="' .. escape(tgt,true) .. '" title="' ..
-         escape(tit,true) .. '"' .. attributes(attr) .. '>' .. s .. '</A>'
+  useComponent('element', 'Link')
+  return '<Link href="' .. escape(tgt,true) .. '" title="' ..
+         escape(tit,true) .. '"' .. attributes(attr) .. '>' .. s .. '</Link>'
 end
 
 function Image(s, src, tit, attr)
-  return '<img src="' .. escape(src,true) .. '" title="' ..
+  useComponent('element', 'Image')
+  return '<Image src="' .. escape(src,true) .. '" title="' ..
          escape(tit,true) .. '"/>'
 end
 
 function Code(s, attr)
-  return '<code' .. attributes(attr) .. '>' .. escape(s) .. '</code>'
+  useComponent('element', 'Code')
+  return '<Code' .. attributes(attr) .. '>' .. escape(s) .. '</Code>'
 end
 
 function InlineMath(s)
@@ -248,8 +252,7 @@ function Span(s, attr)
     return '<span' .. attributes(attr) .. '>' .. s .. '</span>'
   end 
 
-  local component = known_span_components[class_name]
-  imports[class_name] = component
+  local component = useComponent('span', class_name)
 
   return createComponent(component.name, attr, s)
 end
@@ -267,8 +270,9 @@ function Cite(s, cs)
   for _,cit in ipairs(cs) do
     table.insert(ids, cit.citationId)
   end
-  return '<span class="cite" data-citation-ids="' .. table.concat(ids, ',') ..
-    '">' .. s .. '</span>'
+  useComponent('element', 'Cite')
+  return '<Cite class="cite" data-citation-ids="' .. table.concat(ids, ',') ..
+    '">' .. s .. '</Cite>'
 end
 
 function Plain(s)
@@ -276,20 +280,24 @@ function Plain(s)
 end
 
 function Para(s)
-  return '<p>' .. s .. '</p>'
+  useComponent('element', 'Para')
+  return '<Para>' .. s .. '</Para>'
 end
 
 -- lev is an integer, the header level.
 function Header(lev, s, attr)
-  return '<h' .. lev .. attributes(attr) ..  '>' .. s .. '</h' .. lev .. '>'
+  useComponent('element', 'Header')
+  return '<Header ' .. 'level=' .. lev  .. attributes(attr) ..  '>' .. s .. '</Header>'
 end
 
 function BlockQuote(s)
-  return '<blockquote>\n' .. s .. '\n</blockquote>'
+  useComponent('element', 'BlockQuote')
+  return '<BlockQuote>\n' .. s .. '\n</BlockQuote>'
 end
 
 function HorizontalRule()
-  return "<hr/>"
+  useComponent('element', 'HorizontalRule')
+  return "<HorizontalRule/>"
 end
 
 function LineBlock(ls)
@@ -311,9 +319,8 @@ function CodeBlock(s, attr)
       return '<pre><code' .. attributes(attr) .. '>' .. escape(s) ..
       '</code></pre>'
     end 
-  
-    local component = known_codeblock_components[class_name]
-    imports[class_name] = component
+
+    local component = useComponent('codeblock', class_name)
 
     -- raw = { questionsAsJSON = json.encode(yaml.eval(s)) }
 
@@ -369,7 +376,8 @@ end
 
 function CaptionedImage(src, tit, caption, attr)
   if #caption == 0 then
-    return '<p><img src="' .. escape(src,true) .. '" id="' .. attr.id ..
+    useComponent('element', 'Image')
+    return '<p><Image src="' .. escape(src,true) .. '" id="' .. attr.id ..
       '"/></p>'
   else
     local ecaption = escape(caption)
@@ -438,8 +446,7 @@ function Div(s, attr)
     return '<div' .. attributes(attr) .. '>\n' .. s .. '</div>'  
   end 
 
-  local component = known_div_components[class_name]
-  imports[class_name] = component
+  local component = useComponent('div', class_name)
 
   return createComponent(component.name, attr, s)
 end
