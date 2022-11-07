@@ -59,6 +59,13 @@ local function escape(s, in_attribute)
     end)
 end
 
+local function latex_escape(s)
+  return s:gsub('\\',
+    function(x)
+      return '\\\\'
+    end
+  )
+end
 -- Helper function to convert an attributes table into
 -- a string that can be put into HTML tags.
 local function attributes(attr)
@@ -136,22 +143,25 @@ function Doc(body, metadata, variables)
     table.insert(buffer, s)
   end
   
-  if next(imports) then
-    metadata.imports = {}
-    for _, i in pairs(imports) do
-      table.insert(metadata.imports, 
-        fmt("import %s from \"%s\";", i.name, i.path))
-    end
-    
-  end 
   add(body)
+
   if #notes > 0 then
-    add('<ol class="footnotes">')
+    useComponent('element', 'Footnotes')
+    add('<Footnotes>')
     for _,note in pairs(notes) do
       add(note)
     end
-    add('</ol>')
+    add('</Footnotes>')
   end
+
+  if next(imports) then
+    metadata.imports = {}
+    for _, i in pairs(imports) do
+      table.insert(metadata.imports,
+        fmt("import %s from \"%s\";", i.name, i.path))
+    end
+  end
+
   return table.concat(buffer,'\n') .. '\n', metadata, variables
 end
 
@@ -218,11 +228,15 @@ function Code(s, attr)
 end
 
 function InlineMath(s)
-  return '\\(' .. escape(s) .. '\\)'
+  useComponent('element', 'InlineMath')
+  return '<InlineMath latex={`' .. latex_escape(s) .. '`} />'
+  -- return '\\(' .. escape(s) .. '\\)'
 end
 
 function DisplayMath(s)
-  return '\\[' .. escape(s) .. '\\]'
+  useComponent('element', 'DisplayMath')
+  return '<DisplayMath latex={`' .. latex_escape(s) .. '`} />'
+  -- return '\\[' .. escape(s) .. '\\]'
 end
 
 function SingleQuoted(s)
@@ -234,15 +248,20 @@ function DoubleQuoted(s)
 end
 
 function Note(s)
+  useComponent('element', 'Note')
+  useComponent('element', 'NoteReference')
+  useComponent('element', 'NoteBackReference')
   local num = #notes + 1
   -- insert the back reference right before the final closing tag.
   s = string.gsub(s,
-          '(.*)</', '%1 <a href="#fnref' .. num ..  '">&#8617;</a></')
+          '(.*)</',
+          '%1 <NoteBackReference href="#fnref' ..
+          num .. '" /></')
   -- add a list item with the note to the note table.
-  table.insert(notes, '<li id="fn' .. num .. '">' .. s .. '</li>')
+  table.insert(notes, '<Note id="fn' .. num .. '">' .. s .. '</Note>')
   -- return the footnote reference, linked to the note.
-  return '<a id="fnref' .. num .. '" href="#fn' .. num ..
-            '"><sup>' .. num .. '</sup></a>'
+  return '<NoteReference id="fnref' .. num .. '" href="#fn' .. num ..
+            '">' .. num .. '</NoteReference>'
 end
 
 function Span(s, attr)
@@ -316,9 +335,12 @@ function CodeBlock(s, attr)
     local class_name = classes(attr)[1]
   
     if not isCodeblockComponent(class_name) then
-      return '<pre><code' .. attributes(attr) .. '>' .. escape(s) ..
-      '</code></pre>'
-    end 
+      useComponent('element', 'CodeBlock')
+      return '<CodeBlock ' ..
+        'language="' ..  class_name ..
+        '" source={`' ..  s .. '`}' ..
+        attributes(attr) .. '/>'
+    end
 
     local component = useComponent('codeblock', class_name)
 
@@ -335,29 +357,41 @@ function CodeBlock(s, attr)
 end
 
 function BulletList(items)
+  useComponent('element', 'BulletList')
+  useComponent('element', 'BulletListItem')
   local buffer = {}
   for _, item in pairs(items) do
-    table.insert(buffer, '<li>' .. item .. '</li>')
+    table.insert(buffer, '<BulletListItem>' .. item .. '</BulletListItem>')
   end
-  return '<ul>\n' .. table.concat(buffer, '\n') .. '\n</ul>'
+  return '<BulletList>\n' .. table.concat(buffer, '\n') .. '\n</BulletList>'
 end
 
 function OrderedList(items)
+  useComponent('element', 'OrderedList')
+  useComponent('element', 'OrderedListItem')
   local buffer = {}
   for _, item in pairs(items) do
-    table.insert(buffer, '<li>' .. item .. '</li>')
+    table.insert(buffer, '<OrderedListItem>' .. item .. '</OrderedListItem>')
   end
-  return '<ol>\n' .. table.concat(buffer, '\n') .. '\n</ol>'
+  return '<OrderedList>\n' .. table.concat(buffer, '\n') .. '\n</OrderedList>'
 end
 
 function DefinitionList(items)
+  useComponent('element', 'DefinitionDescription')
+  useComponent('element', 'DefinitionTerm')
+  useComponent('element', 'DefinitionGroup')
+  useComponent('element', 'DefinitionList')
   local buffer = {}
   for _,item in pairs(items) do
     local k, v = next(item)
-    table.insert(buffer, '<dt>' .. k .. '</dt>\n<dd>' ..
-                   table.concat(v, '</dd>\n<dd>') .. '</dd>')
+    table.insert(buffer, '<DefinitionGroup>\n<DefinitionTerm>' .. k ..
+                 '</DefinitionTerm>\n<DefinitionDescription>' ..
+                 table.concat(v, '</DefinitionDescription>\n<DefinitionDescription>') ..
+                 '</DefinitionDescription>\n</DefinitionGroup>')
   end
-  return '<dl>\n' .. table.concat(buffer, '\n') .. '\n</dl>'
+  return '<DefinitionList>\n' ..
+    table.concat(buffer, '\n') ..
+    '\n</DefinitionList>'
 end
 
 -- Convert pandoc alignment to something HTML can use.

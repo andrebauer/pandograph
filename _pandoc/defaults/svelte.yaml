@@ -10,3 +10,4 @@ standalone: false
 # extract-media: _media
 # variables:
 #   suffix: -htm
+highlight-style: pygments

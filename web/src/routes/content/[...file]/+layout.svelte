@@ -1,5 +1,4 @@
 <script>
-	import './styles.postcss';
 </script>
 
 <slot />

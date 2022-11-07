@@ -1,4 +1,8 @@
 <script>
+	import 'katex/dist/katex.css';
+
+	import './styles.postcss';
+
 	export let data;
 </script>
 
