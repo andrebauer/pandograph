@@ -336,8 +336,13 @@ function CodeBlock(s, attr)
   
     if not isCodeblockComponent(class_name) then
       useComponent('element', 'CodeBlock')
+
+      local language = ''
+      if class_name then
+        language = 'language="' ..  class_name
+      end
       return '<CodeBlock ' ..
-        'language="' ..  class_name ..
+         language ..
         '" source={`' ..  s .. '`}' ..
         attributes(attr) .. '/>'
     end
