@@ -53,6 +53,9 @@ element:
   BulletListItem:
     name: BulletListItem
     path: $lib/components/element/block/BulletListItem.svelte
+  CaptionedImage:
+    name: CaptionedImage
+    path: $lib/components/element/block/CaptionedImage.svelte
   CodeBlock:
     name: CodeBlock
     path: $lib/components/element/block/CodeBlock.svelte
@@ -77,6 +80,30 @@ element:
   Footnotes:
     name: Footnotes
     path: $lib/components/element/block/Footnotes.svelte
+  LineBlock:
+    name: LineBlock
+    path: $lib/components/element/block/LineBlock.svelte
+  Table:
+    name: Table
+    path: $lib/components/element/block/Table.svelte
+  TableCaption:
+    name: TableCaption
+    path: $lib/components/element/block/TableCaption.svelte
+  TableColumn:
+    name: TableColumn
+    path: $lib/components/element/block/TableColumn.svelte
+  TableDataRow:
+    name: TableDataRow
+    path: $lib/components/element/block/TableDataRow.svelte
+  TableHeaderRow:
+    name: TableHeaderRow
+    path: $lib/components/element/block/TableHeaderRow.svelte
+  TableHeader:
+    name: TableHeader
+    path: $lib/components/element/inline/TableHeader.svelte
+  TableData:
+    name: TableData
+    path: $lib/components/element/inline/TableData.svelte
   Link:
     name: Link
     path: $lib/components/element/inline/Link.svelte
@@ -95,6 +122,18 @@ element:
   Cite:
     name: Cite
     path: $lib/components/element/inline/Cite.svelte
+  DoubleQuoted:
+    name: DoubleQuoted
+    path: $lib/components/element/inline/DoubleQuoted.svelte
+  Emph:
+    name: Emph
+    path: $lib/components/element/inline/Emph.svelte
+  Linebreak:
+    name: Linebreak
+    path: $lib/components/element/inline/Linebreak.svelte
+  InlineNote:
+    name: InlineNote
+    path: $lib/components/element/inline/InlineNote.svelte
   Note:
     name: Note
     path: $lib/components/element/inline/Note.svelte
@@ -104,3 +143,27 @@ element:
   NoteBackReference:
     name: NoteBackReference
     path: $lib/components/element/inline/NoteBackReference.svelte
+  NoteReferenceWidget:
+    name: NoteReferenceWidget
+    path: $lib/components/element/inline/NoteReferenceWidget.svelte
+  SingleQuoted:
+    name: SingleQuoted
+    path: $lib/components/element/inline/SingleQuoted.svelte
+  Softbreak:
+    name: Softbreak
+    path: $lib/components/element/inline/Softbreak.svelte
+  Strikeout:
+    name: Strikeout
+    path: $lib/components/element/inline/Strikeout.svelte
+  Strong:
+    name: Strong
+    path: $lib/components/element/inline/Strong.svelte
+  Subscript:
+    name: Subscript
+    path: $lib/components/element/inline/Subscript.svelte
+  Superscript:
+    name: Superscript
+    path: $lib/components/element/inline/Superscript.svelte
+  SmallCaps:
+    name: SmallCaps
+    path: $lib/components/element/inline/SmallCaps.svelte

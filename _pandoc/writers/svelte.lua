@@ -179,35 +179,43 @@ function Space()
 end
 
 function SoftBreak()
-  return '\n'
+  useComponent('element', 'Softbreak')
+  return '<Softbreak />\n'
 end
 
 function LineBreak()
-  return '<br/>'
+  useComponent('element', 'Linebreak')
+  return '<Linebreak />'
 end
 
 function Emph(s)
-  return '<em>' .. s .. '</em>'
+  useComponent('element', 'Emph')
+  return '<Emph>' .. s .. '</Emph>'
 end
 
 function Strong(s)
-  return '<strong>' .. s .. '</strong>'
+  useComponent('element', 'Strong')
+  return '<Strong>' .. s .. '</Strong>'
 end
 
 function Subscript(s)
-  return '<sub>' .. s .. '</sub>'
+  useComponent('element', 'Subscript')
+  return '<Subscript>' .. s .. '</Subscript>'
 end
 
 function Superscript(s)
-  return '<sup>' .. s .. '</sup>'
+  useComponent('element', 'Superscript')
+  return '<Superscript>' .. s .. '</Superscript>'
 end
 
 function SmallCaps(s)
-  return '<span style="font-variant: small-caps;">' .. s .. '</span>'
+  useComponent('element', 'SmallCaps')
+  return '<SmallCaps>' .. s .. '</SmallCaps>'
 end
 
 function Strikeout(s)
-  return '<del>' .. s .. '</del>'
+  useComponent('element', 'Strikeout')
+  return '<Strikeout>' .. s .. '</Strikeout>'
 end
 
 function Link(s, tgt, tit, attr)
@@ -240,28 +248,36 @@ function DisplayMath(s)
 end
 
 function SingleQuoted(s)
-  return '&lsquo;' .. s .. '&rsquo;'
+  useComponent('element', 'SingleQuoted')
+  return '<SingleQuoted>' .. s .. '</SingleQuoted>'
 end
 
 function DoubleQuoted(s)
-  return '&ldquo;' .. s .. '&rdquo;'
+  useComponent('element', 'DoubleQuoted')
+  return '<DoubleQuoted>' .. s .. '</DoubleQuoted>'
 end
 
 function Note(s)
   useComponent('element', 'Note')
+  useComponent('element', 'InlineNote')
   useComponent('element', 'NoteReference')
+  useComponent('element', 'NoteReferenceWidget')
   useComponent('element', 'NoteBackReference')
   local num = #notes + 1
   -- insert the back reference right before the final closing tag.
-  s = string.gsub(s,
+  note = string.gsub(s,
           '(.*)</',
           '%1 <NoteBackReference href="#fnref' ..
           num .. '" /></')
   -- add a list item with the note to the note table.
-  table.insert(notes, '<Note id="fn' .. num .. '">' .. s .. '</Note>')
+  table.insert(notes, '<Note id="fn' .. num .. '">' .. note .. '</Note>')
   -- return the footnote reference, linked to the note.
-  return '<NoteReference id="fnref' .. num .. '" href="#fn' .. num ..
-            '">' .. num .. '</NoteReference>'
+  return '<NoteReferenceWidget>' ..
+    '<NoteReference slot="notereference" id="fnref' ..
+    num .. '" href="#fn' .. num .. '">' .. num ..
+    '</NoteReference>' ..
+    '<InlineNote slot="inlinenote">' .. s .. '</InlineNote>' ..
+    '</NoteReferenceWidget>'
 end
 
 function Span(s, attr)
@@ -320,8 +336,8 @@ function HorizontalRule()
 end
 
 function LineBlock(ls)
-  return '<div style="white-space: pre-line;">' .. table.concat(ls, '\n') ..
-         '</div>'
+  useComponent('element', 'LineBlock')
+  return '<LineBlock>' .. table.concat(ls, '\n') .. '</LineBlock>'
 end
 
 function CodeBlock(s, attr)
@@ -416,13 +432,13 @@ end
 function CaptionedImage(src, tit, caption, attr)
   if #caption == 0 then
     useComponent('element', 'Image')
-    return '<p><Image src="' .. escape(src,true) .. '" id="' .. attr.id ..
-      '"/></p>'
+    return '<Image src="' .. escape(src,true) .. '" id="' .. attr.id ..
+      '"/>'
   else
+    useComponent('element', 'CaptionedImage')
     local ecaption = escape(caption)
-    return '<figure>\n<img src="' .. escape(src,true) ..
-        '" id="' .. attr.id .. '" alt="' .. ecaption  .. '"/>' ..
-        '<figcaption>' .. ecaption .. '</figcaption>\n</figure>'
+    return '<CaptionedImage src="' .. escape(src,true) ..
+        '" id="' .. attr.id .. '" caption="' .. ecaption  .. '"/>'
   end
 end
 
@@ -430,43 +446,53 @@ end
 -- widths is an array of floats, headers is an array of
 -- strings, rows is an array of arrays of strings.
 function Table(caption, aligns, widths, headers, rows)
+  useComponent('element', 'Table')
+  useComponent('element', 'TableDataRow')
+  useComponent('element', 'TableData')
   local buffer = {}
   local function add(s)
     table.insert(buffer, s)
   end
-  add('<table>')
+  add('<Table>')
   if caption ~= '' then
-    add('<caption>' .. escape(caption) .. '</caption>')
+    useComponent('element', 'TableCaption')
+    add('<TableCaption>' .. escape(caption) .. '</TableCaption>')
   end
   if widths and widths[1] ~= 0 then
+    useComponent('element', 'TableCaption')
     for _, w in pairs(widths) do
-      add('<col width="' .. string.format('%.0f%%', w * 100) .. '" />')
+      add('<TableColumn width="' .. string.format('%.0f%%', w * 100) .. '" />')
     end
   end
   local header_row = {}
   local empty_header = true
   for i, h in pairs(headers) do
     local align = html_align(aligns[i])
-    table.insert(header_row,'<th align="' .. align .. '">' .. h .. '</th>')
+    table.insert(header_row, '<TableHeader align="' .. align .. '">' ..
+                 h .. '</TableHeader>')
     empty_header = empty_header and h == ''
   end
   if not empty_header then
-    add('<tr class="header">')
+    useComponent('element', 'TableHeader')
+    useComponent('element', 'TableHeaderRow')
+    add('<thead><TableHeaderRow>')
     for _,h in pairs(header_row) do
       add(h)
     end
-    add('</tr>')
+    add('</TableHeaderRow></thead>')
   end
   local class = 'even'
+  -- add('<tbody>')
   for _, row in pairs(rows) do
     class = (class == 'even' and 'odd') or 'even'
-    add('<tr class="' .. class .. '">')
+    add('<TableDataRow class="' .. class .. '">')
     for i,c in pairs(row) do
-      add('<td align="' .. html_align(aligns[i]) .. '">' .. c .. '</td>')
+      add('<TableData align="' .. html_align(aligns[i]) .. '">' .. c .. '</TableData>')
     end
-    add('</tr>')
+    add('</TableDataRow>')
   end
-  add('</table>')
+  -- add('</tbody>')
+  add('</Table>')
   return table.concat(buffer,'\n')
 end
 

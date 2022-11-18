@@ -4,7 +4,7 @@
 </script>
 
 {#if level == 1}
-	<h1 {id} class="text-5xl mb-6 font-bold .leading-tight"><slot /></h1>
+	<h1 {id} class="text-5xl mb-6 font-bold leading-tight"><slot /></h1>
 {:else if level == 2}
 	<h2 {id} class="text-4xl mt-12 mb-3 font-bold"><slot /></h2>
 {:else if level == 3}

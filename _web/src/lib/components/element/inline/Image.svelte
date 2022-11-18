@@ -1,8 +1,7 @@
 <script lang="ts">
+	export let id: string;
 	export let src: string;
 	export let title: string;
 </script>
 
-<div class="inline-block border-2 border-red-300">
-	<img {src} {title} />
-</div>
+<p><img {id} {src} {title} class="rounded-lg" /></p>

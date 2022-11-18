@@ -42,6 +42,8 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"gray-matter": "^4.0.3"
+		"gray-matter": "^4.0.3",
+		"svelte-icons": "^2.1.0",
+		"tailwindcss-opentype": "^1.1.0"
 	}
 }

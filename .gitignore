@@ -4,3 +4,6 @@ _build/
 README.pdf
 .lock-waf*
 _pandoc/headers/.auctex-auto/
+.RData
+.Rhistory
+_pandoc/writers/sample.lua

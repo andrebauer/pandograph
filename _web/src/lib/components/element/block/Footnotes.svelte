@@ -1,6 +1,5 @@
 <section id="footnotes" role="doc-endnotes">
-	<hr />
-	<ol class="my-4 list-decimal">
+	<ol class="px-4 list-decimal border-t-2 border-neutral-200">
 		<slot />
 	</ol>
 </section>
