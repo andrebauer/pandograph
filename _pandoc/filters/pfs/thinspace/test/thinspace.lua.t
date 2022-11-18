@@ -68,6 +68,9 @@ Thinspace-Filter
   > EOF
   [ Plain [ Str "" ] ]
 
+
+Preserve URIs
+
   $ pandoc --to native -L thinspace.lua << EOF
   > <https://example.org/>
   > EOF
@@ -76,5 +79,19 @@ Thinspace-Filter
           ( "" , [ "uri" ] , [] )
           [ Str "https://example.org/" ]
           ( "https://example.org/" , "" )
+      ]
+  ]
+
+
+Preserve email-addresses
+
+  $ pandoc --to native -L thinspace.lua << EOF
+  > <send.me.mail@example.org>
+  > EOF
+  [ Para
+      [ Link
+          ( "" , [ "email" ] , [] )
+          [ Str "send.me.mail@example.org" ]
+          ( "mailto:send.me.mail@example.org" , "" )
       ]
   ]

@@ -8,6 +8,10 @@ local function is_uri(e)
   return next({e.text:match '%a+://.+'})
 end
 
+local function is_mail_address(e)
+  return next({e.text:match '[^@]+@[^@]+'})
+end
+
 local function split_after_each_dot(s)
   return s:gmatch '([^%.]+%.?)'
 end
@@ -21,11 +25,7 @@ end
 
 local thinspace = {
   Str = function(e)
-    if is_numeric(e) then
-      return nil
-    end
-
-    if is_uri(e) then
+    if is_numeric(e) or is_uri(e) or is_mail_address(e) then
       return nil
     end
 
