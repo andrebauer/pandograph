@@ -4,6 +4,10 @@ local function is_numeric(e)
   return next({e.text:match '^[%d%p]+$'})
 end
 
+local function is_uri(e)
+  return next({e.text:match '%a+://.+'})
+end
+
 local function split_after_each_dot(s)
   return s:gmatch '([^%.]+%.?)'
 end
@@ -18,6 +22,10 @@ end
 local thinspace = {
   Str = function(e)
     if is_numeric(e) then
+      return nil
+    end
+
+    if is_uri(e) then
       return nil
     end
 

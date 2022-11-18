@@ -67,3 +67,14 @@ Thinspace-Filter
   > [ Plain [ Str "" ] ]
   > EOF
   [ Plain [ Str "" ] ]
+
+  $ pandoc --to native -L thinspace.lua << EOF
+  > <https://example.org/>
+  > EOF
+  [ Para
+      [ Link
+          ( "" , [ "uri" ] , [] )
+          [ Str "https://example.org/" ]
+          ( "https://example.org/" , "" )
+      ]
+  ]
