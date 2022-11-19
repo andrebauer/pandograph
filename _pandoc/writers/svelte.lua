@@ -355,11 +355,11 @@ function CodeBlock(s, attr)
 
       local language = ''
       if class_name then
-        language = 'language="' ..  class_name
+        language = 'language="' ..  class_name .. '" '
       end
       return '<CodeBlock ' ..
          language ..
-        '" source={`' ..  s .. '`}' ..
+        'source={`' ..  s .. '`}' ..
         attributes(attr) .. '/>'
     end
 
