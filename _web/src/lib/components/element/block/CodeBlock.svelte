@@ -47,17 +47,18 @@
 	};
 </script>
 
-<!-- <button on:click={onClick}>highlight</button>
--->
-
 <div class="line-numbers bg-neutral-50 p-4 rounded rounded-lg">
-	<pre bind:this={pre} {id} data-line="2" data-start="1" class="line-numbers language-{language}">
+  {#if language}
+    <pre bind:this={pre} {id} data-line="2" data-start="1" class="line-numbers language-{language}">
 <code class="language-{language}"
-			>{@html hljs.highlight(source, { language })
-				.value}<!--{@html Prism.highlight(
-				source,
-				Prism.languages[language],
-				language
-			)}-->
+			  >{@html hljs.highlight(source, { language })
+				  .value}<!--{@html Prism.highlight(
+				  source,
+				  Prism.languages[language],
+				  language
+			  )}-->
 </code></pre>
+{:else}
+    <pre><code>{source}</code></pre>
+{/if}
 </div>

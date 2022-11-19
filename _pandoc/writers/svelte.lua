@@ -59,6 +59,19 @@ local function escape(s, in_attribute)
     end)
 end
 
+local function escape_code(s)
+  return s:gsub('[\\`]',
+    function(x)
+      if x == '\\' then
+        return '\\\\'
+      elseif x == '`' then
+        return '\\`'
+      else
+        return x
+      end
+  end)
+end
+
 local function latex_escape(s)
   return s:gsub('\\',
     function(x)
@@ -232,7 +245,17 @@ end
 
 function Code(s, attr)
   useComponent('element', 'Code')
-  return '<Code' .. attributes(attr) .. '>' .. escape(s) .. '</Code>'
+  local class_name = classes(attr)[1]
+
+  local language = ''
+  if class_name then
+    language = 'language="' ..  class_name .. '" '
+  end
+
+  return '<Code ' ..
+    language ..
+    attributes(attr) ..
+    ' source={`' .. escape_code(s) .. '`} />'
 end
 
 function InlineMath(s)
@@ -359,7 +382,7 @@ function CodeBlock(s, attr)
       end
       return '<CodeBlock ' ..
          language ..
-        'source={`' ..  s .. '`}' ..
+        'source={`' .. escape_code(s) .. '`}' ..
         attributes(attr) .. '/>'
     end
 
