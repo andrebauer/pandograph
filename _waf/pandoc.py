@@ -302,9 +302,9 @@ def pandoc(self):
     if not self.ext: self.ext = self.to
 
     if not(self.target):
-        self.target = self.node.change_ext('.%s' % self.ext)
+        self.target = self.node.change_ext(self.ext)
 
-    self.target = self.target.change_ext('.%s' % self.ext)
+    self.target = self.target.change_ext(self.ext)
 
     add_options(['--defaults=%s' % d for d in to_list(self.defaults)])
 
@@ -385,39 +385,39 @@ from waflib.Build import BuildContext
 
 class tmp(BuildContext):
     cmd = 'build_beamer'
-    ext = 'pdf'
+    ext = '.pdf'
 
 class tmp(BuildContext):
     cmd = 'build_handout'
-    ext = 'pdf'
+    ext = '.pdf'
 
 class tmp(BuildContext):
     cmd = 'build_notes'
-    ext = 'pdf'
+    ext = '.pdf'
 
 class tmp(BuildContext):
     cmd = 'build_doc_pdf'
-    ext = 'pdf'
+    ext = '.pdf'
 
 class tmp(BuildContext):
     cmd = 'build_doc_docx'
-    ext = 'docx'
+    ext = '.docx'
 
 class tmp(BuildContext):
     cmd = 'build_doc_odt'
-    ext = 'odt'
+    ext = '.odt'
 
 class tmp(BuildContext):
     cmd = 'build_doc_tex'
-    ext = 'tex'
+    ext = '.tex'
 
 class tmp(BuildContext):
     cmd = 'build_svelte'
-    ext = 'svelte'
+    ext = '.svelte'
 
 class tmp(BuildContext):
     cmd = 'build_solution_pdf'
-    ext = 'pdf'
+    ext = '-lsg.pdf'
 
 class tmp(BuildContext):
     cmd = 'build_pandoc_assets'

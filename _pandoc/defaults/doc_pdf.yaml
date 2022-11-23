@@ -8,3 +8,8 @@ include-in-header:
   - _pandoc/headers/exercise.tex
 to: pdf
 pdf-engine: xelatex
+metadata:
+  strip-classes:
+    - lsg
+    - sol
+    - solution
