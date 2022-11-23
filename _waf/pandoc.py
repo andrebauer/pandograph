@@ -417,7 +417,7 @@ class tmp(BuildContext):
 
 class tmp(BuildContext):
     cmd = 'build_solution_pdf'
-    ext = 'svelte'
+    ext = 'pdf'
 
 class tmp(BuildContext):
     cmd = 'build_pandoc_assets'
