@@ -353,7 +353,7 @@ def build(bld):
 
             for kind in kinds:
                 default = os.sep.join(bld.env.meta[srcpath][kind]['defaults'])
-                suffix = bld.env.suffix
+                suffix = bld.suffix or bld.env.suffix
                 variables = bld.env.yaml[default].get('variables')
                 if variables:
                     suffix = variables.get('suffix') or suffix
