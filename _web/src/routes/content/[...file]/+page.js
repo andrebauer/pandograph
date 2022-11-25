@@ -6,6 +6,7 @@ import { json } from '@sveltejs/kit';
 export async function load({ params }) {
 	const segments = params.file.split('/');
 	let post;
+
 	switch (segments.length) {
 		case 1:
 			post = await import(`../../../../../_build/content/${segments[0]}.svelte`);
@@ -20,7 +21,19 @@ export async function load({ params }) {
 	}
 	const content = post.default;
 
+	const breadcrumb = [
+		{ href: '/', title: 'Home', home: true },
+		{ href: '/content', title: 'Content' }
+	];
+
+	let path = '/content';
+	segments.forEach((seg) => {
+		path += '/' + seg;
+		breadcrumb.push({ href: path, title: post.title });
+	});
+
 	return {
-		content
+		content,
+		breadcrumb
 	};
 }
