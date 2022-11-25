@@ -155,47 +155,14 @@ def copy_pandoc_assets(bld):
             target=node.srcpath(),
             is_copy=True)
 
-    for node in bld.path.ant_glob(base_dir + '/**/*.csl',
-                                  excl=bld.env.assets_exclude):
-        bld(features='subst',
-            source=node.srcpath(),
-            target=node.srcpath(),
-            is_copy=True)
-
-    for node in bld.path.ant_glob(base_dir + '/writers/**/*.lua',
-                                  excl=bld.env.assets_exclude):
-        bld(features='subst',
-            source=node.srcpath(),
-            target=node.srcpath(),
-            is_copy=True)
-
-    for node in bld.path.ant_glob(base_dir + '/templates/**/*',
-                                  excl=bld.env.assets_exclude):
-        bld(features='subst',
-            source=node.srcpath(),
-            target=node.srcpath(),
-            is_copy=True)
-
-    for node in bld.path.ant_glob(base_dir + '/**/*.bib',
-                                  excl=bld.env.assets_exclude):
-        bld(features='subst',
-            source=node.srcpath(),
-            target=node.srcpath(),
-            is_copy=True)
-
     for node in bld.path.ant_glob(
-            [base_dir + '/filters/*.lua',
-             base_dir + '/filters/lua-filters/**/*.lua',
-             base_dir + '/filters/lib/**/*.lua',
-             base_dir + '/filters/pfs/**/*.lua'],
+            [base_dir + '/**/*.csl',
+             base_dir + '/writers/**/*.lua',
+             base_dir + '/templates/**/*',
+             base_dir + '/**/*.bib',
+             base_dir + '/filters/**/*.lua',
+             base_dir + '/**/*.tex'],
             excl=bld.env.assets_exclude):
-        bld(features='subst',
-            source=node.srcpath(),
-            target=node.srcpath(),
-            is_copy=True)
-
-    for node in bld.path.ant_glob(base_dir + '/**/*.tex',
-                                  excl=bld.env.assets_exclude):
         bld(features='subst',
             source=node.srcpath(),
             target=node.srcpath(),
