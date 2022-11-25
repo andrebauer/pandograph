@@ -66,7 +66,9 @@ def knitr(self):
 
 def build(bld):
     for path in (bld.options.paths or bld.env.content):
-        for node in bld.path.ant_glob(path,
+        for node in bld.path.ant_glob(
+                [path + '/**/*.' + ext
+                 for ext in bld.env.content_extensions],
                 quiet=True,
                 excl= bld.env.exclude):
             bld(features = 'knitr',

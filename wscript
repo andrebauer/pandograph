@@ -4,8 +4,8 @@ tooldir = '_waf'
 
 def configure(ctx):
     ctx.env.out = out
-    ctx.env.suffix = '-pandoc-template'
-    ctx.env.ignore = '_web/**/*'
+    ctx.env.content_extensions = 'md'
+    ctx.env.suffix = '-pt'
     ctx.env.add_resource_path = 'content'
     ctx.load('pandoc', tooldir=tooldir)
     ctx.load('knitr', tooldir=tooldir)

@@ -12,15 +12,15 @@ def to_list(l):
 @conf
 def get_meta(ctx):
     meta = {}
-    deps = {}
 
     ctx.start_msg('Reading metadata')
-    for node in ctx.path.ant_glob(ctx.env.content,
+    for node in ctx.path.ant_glob([c + '/**/*.' + ext
+                                   for c in ctx.env.content
+                                   for ext in ctx.env.content_extensions],
                 quiet=True,
                 excl=ctx.env.exclude):
         path = node.srcpath()
         meta[path] = {}
-        deps[path] = {}
 
         src = node.read(encoding='utf-8')
         post = frontmatter.loads(src)
@@ -28,28 +28,6 @@ def get_meta(ctx):
         kinds = post.get('kinds') or ctx.env.default_kinds
 
         outpaths = to_list(post.get('output')) or None
-
-        """
-        for ty in ctx.env.dep_types:
-            deps[path][ty] = []
-
-        dependencies = ctx.cmd_and_log(
-            ['pandoc',
-             '-L',
-             os.sep.join(ctx.env.data_dir +
-                         ['filters', 'pfs', 'dependencies.lua']),
-             '--to', 'plain',
-             path],
-            env={ 'YAML_KEY' : 'dependencies'},
-            output=Context.STDOUT, quiet=Context.STDOUT).strip().split('\n')
-                # kinds = proc.stdout.read()
-        if dependencies == ['']:
-            dependencies = []
-        for d in dependencies:
-            # print('Dep:', d)
-            [ty, dep] = d.split(' ')
-            deps[path][ty].append(dep)
-        """
 
         if type(kinds) is str:
             meta[path][kinds] = {
@@ -87,28 +65,26 @@ def get_meta(ctx):
                 segments.pop(-1)
 
     ctx.env.meta = meta
-    # ctx.env.deps = deps
 
-    ctx.end_msg(pprint.pformat({ 'meta' : ctx.env.meta, 'deps' : ctx.env.deps }))
+    ctx.end_msg(pprint.pformat({ 'meta' : ctx.env.meta }))
 
 def configure(ctx):
     if not ctx.env.content:
-        ctx.env.content = '**/*.md'
+        ctx.env.content = 'content'
     ctx.env.content = to_list(ctx.env.content)
+    ctx.env.content_extensions = to_list(ctx.env.content_extensions or 'md')
     ctx.env.dep_types = ['sourcecode', 'markup', 'image']
     ctx.env.ignore = to_list(ctx.env.ignore or [])
+    common_exclude = ctx.env.ignore + [
+        ctx.env.out + '/**/*',
+        '_web/**/*',
+        '__pycache__/**/*',
+        '_waf/**/*']
     if not ctx.env.assets_exclude:
-        ctx.env.assets_exclude = ctx.env.ignore + [
-            ctx.env.out + '/**/*',
-            '_pandoc/filters/pfs/_build/**/*',
-            '__pycache__/**/*',
-            '_waf/**/*']
+        ctx.env.assets_exclude = common_exclude + [
+            '_pandoc/filters/pfs/_build/**/*']
     if not ctx.env.exclude:
-        ctx.env.exclude = ctx.env.ignore + [
-            ctx.env.out + '/**/*',
-            '_pandoc/**/*',
-            '__pycache__/**/*',
-            '_waf/**/*']
+        ctx.env.exclude = common_exclude + ['_pandoc/**/*']
     ctx.env.add_resource_path = to_list(ctx.env.add_resource_path or [])
     ctx.env.resource_path = ['.'] + ctx.env.add_resource_path
     if not ctx.env.default_kinds:
@@ -137,7 +113,11 @@ def read_yaml(node):
 def copy_pandoc_assets(bld):
     base_dir = os.sep.join(bld.env.data_dir)
 
-    for node in bld.path.ant_glob(['**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.pdf', '**/*.svg'],
+    for node in bld.path.ant_glob(['**/*.png}',
+                                   '**/*.jpg',
+                                   '**/*.jpeg',
+                                   '**/*.pdf',
+                                   '**/*.svg'],
                                   quiet=True,
                                   excl=bld.env.exclude):
         bld(features='subst',
@@ -304,11 +284,12 @@ def build(bld):
     copy_pandoc_assets(bld)
 
     for path in (bld.options.paths or bld.env.content):
-        for node in bld.path.ant_glob(path,
+        for node in bld.path.ant_glob(
+                [path + '/**/*.' + ext
+                 for ext in bld.env.content_extensions],
                 quiet=True,
                 excl= bld.env.exclude):
             srcpath = node.srcpath()
-
 
             if bld.env.knitr_dir:
                 source = bld.bldnode.find_or_declare(os.sep.join([bld.env.knitr_dir, srcpath]))
