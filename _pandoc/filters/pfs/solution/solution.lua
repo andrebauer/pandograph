@@ -26,7 +26,7 @@ function Div(div)
         return wrapper
     end
     ]]
-    if div.content[1].t == "Table" then
+    if div.content[1] and div.content[1].t == "Table" then
         local table = div.content[1]
         table.attributes['custom-style'] = 'Solution'
         return table
