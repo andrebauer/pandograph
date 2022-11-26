@@ -66,7 +66,10 @@ def get_meta(ctx):
 
     ctx.env.meta = meta
 
-    ctx.end_msg(pprint.pformat({ 'meta' : ctx.env.meta }))
+    if ctx.options.verbose:
+        ctx.end_msg(pprint.pformat({ 'meta' : ctx.env.meta }))
+    else:
+        ctx.end_msg('ok')
 
 def configure(ctx):
     if not ctx.env.content:
