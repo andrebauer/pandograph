@@ -5,6 +5,7 @@
 	export { class_ as class };
 	export let activeClasses: string;
 	export let inactiveClasses: string;
+	export let header: string;
 </script>
 
 <Accordion
@@ -13,7 +14,7 @@
 	inactiveClasses={inactiveClasses + ' hover:rounded-b-lg'}
 >
 	<AccordionItem>
-		<span slot="header" class="font-semibold">Lösungen</span>
+		<span slot="header" class="font-semibold">{header}</span>
 		<div><slot /></div>
 	</AccordionItem>
 </Accordion>
