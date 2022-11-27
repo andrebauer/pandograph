@@ -73,9 +73,12 @@ def get_meta(ctx):
 
 def configure(ctx):
     if not ctx.env.content:
-        ctx.env.content = 'content'
+        ctx.env.content = ['assets', 'content']
     ctx.env.content = to_list(ctx.env.content)
     ctx.env.content_extensions = to_list(ctx.env.content_extensions or 'md')
+    ctx.env.content_copy_extensions = to_list(
+        ctx.env.content_copy_extensions or
+        ['png', 'jpg', 'jpeg', 'pdf', 'svg'])
     ctx.env.dep_types = ['sourcecode', 'markup', 'image']
     ctx.env.ignore = to_list(ctx.env.ignore or [])
     common_exclude = ctx.env.ignore + [
@@ -116,13 +119,11 @@ def read_yaml(node):
 def copy_pandoc_assets(bld):
     base_dir = os.sep.join(bld.env.data_dir)
 
-    for node in bld.path.ant_glob(['**/*.png}',
-                                   '**/*.jpg',
-                                   '**/*.jpeg',
-                                   '**/*.pdf',
-                                   '**/*.svg'],
-                                  quiet=True,
-                                  excl=bld.env.exclude):
+    for node in bld.path.ant_glob(
+            [cdir + '/**/*.' + ext
+             for cdir in bld.env.content
+             for ext in bld.env.content_copy_extensions],
+            excl= bld.env.assets_exclude):
         bld(features='subst',
             source=node.srcpath(),
             target=node.srcpath(),
@@ -151,19 +152,6 @@ def copy_pandoc_assets(bld):
             target=node.srcpath(),
             is_copy=True)
 
-    for node in bld.path.ant_glob('assets/**/*',
-                                  excl= bld.env.assets_exclude):
-        bld(features='subst',
-            source=node.srcpath(),
-            target=node.srcpath(),
-            is_copy=True)
-
-    for node in bld.path.ant_glob('content/**/*.sh',
-                                  excl= bld.env.assets_exclude):
-        bld(features='subst',
-            source=node.srcpath(),
-            target=node.srcpath(),
-            is_copy=True)
 
 @feature('pandoc')
 def init_pandoc(self):
