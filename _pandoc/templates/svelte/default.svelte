@@ -1,8 +1,13 @@
 $if(imports)$
 <script>
-$for(imports)$
-  $imports$
-$endfor$
+ $for(imports)$
+ $imports$
+ $endfor$
+ $if(title)$
+ export const title = '$title$'
+ $endif$ $if(author)$
+ export const author = [$for(author)$'$author$', $endfor$]
+ $endif$
 </script>
 $endif$
 

@@ -26,14 +26,16 @@ export async function load({ params }) {
 		{ href: '/content', title: 'Content' }
 	];
 
+	/*
 	let path = '/content';
 	segments.forEach((seg) => {
 		path += '/' + seg;
 		breadcrumb.push({ href: path, title: post.title });
 	});
-
+*/
 	return {
 		content,
+		href: params.file,
 		breadcrumb
 	};
 }
