@@ -22,36 +22,45 @@ def get_meta(ctx):
         path = node.srcpath()
         meta[path] = {}
 
+        Logs.debug(path + ':')
+        Logs.debug('  outpaths:')
+
         src = node.read(encoding='utf-8')
         post = frontmatter.loads(src)
 
         kinds = post.get('kinds') or ctx.env.default_kinds
 
-        outpaths = to_list(post.get('output')) or None
+        global_outpaths = to_list(post.get('output')) or None
 
         if type(kinds) is str:
             meta[path][kinds] = {
-                'outpaths' : outpaths,
+                'outpaths' : global_outpaths,
             }
+            Logs.debug('    ' + kinds + ': ' + str(global_outpaths))
 
         elif type(kinds) is dict:
             for kind, outpaths in kinds.items():
                 meta[path][kind] = {
                     'outpaths' : to_list(outpaths)
                 }
+                Logs.debug('    ' + kind + ': ' + '/'.join(to_list(outpaths)))
 
         elif type(kinds) is list:
             for kind in kinds:
                 if type(kind) is str:
                     meta[path][kind] = {
-                        'outpaths' : outpaths,
+                        'outpaths' : global_outpaths,
                     }
+                    Logs.debug('    ' + kind + ': ' + str(global_outpaths))
 
                 elif type(kind) is dict:
                     for kind, outpaths in kind.items():
                         meta[path][kind] = {
                             'outpaths' : to_list(outpaths)
                         }
+                        Logs.debug('    ' + kind + ': ' + '/'.join(to_list(outpaths)))
+
+        Logs.debug('  defaults:')
 
         kinds = list(meta[path].keys())
         for kind in kinds:
@@ -63,13 +72,11 @@ def get_meta(ctx):
                     meta[path][kind]['defaults'] = default_path
                     break
                 segments.pop(-1)
+            Logs.debug('    ' + kind + ': ' + '/'.join(meta[path][kind]['defaults']))
 
     ctx.env.meta = meta
 
-    if ctx.options.verbose:
-        ctx.end_msg(pprint.pformat({ 'meta' : ctx.env.meta }))
-    else:
-        ctx.end_msg('ok')
+    ctx.end_msg('ok')
 
 def configure(ctx):
     if not ctx.env.content:
