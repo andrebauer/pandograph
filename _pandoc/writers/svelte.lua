@@ -456,12 +456,11 @@ function CaptionedImage(src, tit, caption, attr)
   if #caption == 0 then
     useComponent('element', 'Image')
     return '<Image src="' .. escape(src,true) .. '" id="' .. attr.id ..
-      '"/>'
+      '"' .. attributes(attr) .. '/>'
   else
     useComponent('element', 'CaptionedImage')
-    local ecaption = escape(caption)
     return '<CaptionedImage src="' .. escape(src,true) ..
-        '" id="' .. attr.id .. '" caption="' .. ecaption  .. '"/>'
+        '" id="' .. attr.id .. '" >' .. caption  .. '</CaptionedImage>'
   end
 end
 

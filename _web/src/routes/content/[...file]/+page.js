@@ -5,6 +5,7 @@ import { json } from '@sveltejs/kit';
 
 export async function load({ params }) {
 	const segments = params.file.split('/');
+
 	let post;
 
 	switch (segments.length) {
@@ -38,4 +39,5 @@ export async function load({ params }) {
 		href: params.file,
 		breadcrumb
 	};
+	// }
 }
