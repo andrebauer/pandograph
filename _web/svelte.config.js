@@ -1,6 +1,5 @@
 import adapter from '@sveltejs/adapter-auto';
 import preprocess from 'svelte-preprocess';
-import { yamlHeader } from './src/lib/preprocess/yaml-header.js';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -10,7 +9,6 @@ const config = {
 		preprocess({
 			postcss: true
 		})
-		// yamlHeader({ extensions: ['.md'] })
 	],
 	extensions: ['.svelte', '.md'],
 	kit: {
