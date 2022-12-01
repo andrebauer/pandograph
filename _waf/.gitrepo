@@ -6,7 +6,7 @@
 [subrepo]
 	remote = git@gitlab.com:andrebauer/waf-pandoc.git
 	branch = main
-	commit = dc58924201d549ec31b9afbccd0e0b249731a46f
+	commit = e977c69e64d5e2ae586fa3c92bfa38b795ec217c
 	parent = 800024f79c6961647659cf294be88a607ccc05c2
 	method = merge
 	cmdver = 0.4.5
