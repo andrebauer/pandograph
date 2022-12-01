@@ -1,0 +1,3 @@
+defaults:
+  - _pandoc/defaults/doc_pdf.yaml
+to: latex

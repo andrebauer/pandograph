@@ -101,7 +101,11 @@ def configure(ctx):
     ctx.env.add_resource_path = to_list(ctx.env.add_resource_path or [])
     ctx.env.resource_path = ['.'] + ctx.env.add_resource_path
     if not ctx.env.default_kinds:
-        ctx.env.default_kinds = ['svelte', 'doc_pdf', 'doc_docx', 'solution_pdf']
+        ctx.env.default_kinds = ['svelte',
+                                 'doc_pdf',
+                                 'doc_docx',
+                                 'solution_pdf',
+                                 'doc_tex']
     if not ctx.env.data_dir:
         ctx.env.data_dir = ['_pandoc']
     if not ctx.env.suffix:
