@@ -4,7 +4,7 @@ filters:
   - pfs/strip-classes/strip-classes.lua
   - pfs/thinspace/thinspace.lua
   - pfs/nbspace/nbspace.lua
-  # - pfs/diagram.lua
+  - pfs/ditaa/ditaa.lua
   - lua-filters/pagebreak/pagebreak.lua
   - lua-filters/include-files/include-files.lua
   - lua-filters/include-code-files/include-code-files.lua
