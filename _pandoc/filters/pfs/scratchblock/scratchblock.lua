@@ -34,7 +34,7 @@ function CodeBlock(block)
   -- Store the data in the media bag:
   -- pandoc.mediabag.insert(fname, mimetype, img)
 
-  local enable_caption = nil
+  -- local enable_caption = nil
 
   -- If the user defines a caption, read it as Markdown.
   local caption = block.attributes.caption
