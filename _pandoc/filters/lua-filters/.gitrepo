@@ -6,7 +6,7 @@
 [subrepo]
 	remote = https://github.com/pandoc/lua-filters
 	branch = master
-	commit = f8017c4c432d4dcc994f45e854d53618de95c3f6
-	parent = fae149214ab46b94def37f9093714357b2231d1e
+	commit = 1660794b991c3553968beb993f5aabb99b317584
+	parent = 77b8c5473b93effa6ea93a40d2923b84079225ac
 	method = merge
 	cmdver = 0.4.5

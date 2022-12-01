@@ -18,6 +18,24 @@ To learn about Lua filters, see the [documentation].
 
 [documentation]: http://pandoc.org/lua-filters.html
 
+Collection
+----------
+
+A curated list of pandoc Lua filters in separate repositories.
+
+- [abstract-section] – allows to write abstracts as a section in
+  the body (instead of having to put it into the metadata).
+
+- [pretty-urls] – removes the protocol prefix from link
+  descriptions.
+
+- [section-bibliographies][section-bibs] – creates a separate
+  bibliography for each section of a document.
+
+[abstract-section]: https://github.com/pandoc-ext/abstract-section
+[pretty-urls]: https://github.com/pandoc-ext/pretty-url
+[section-bibs]: https://github.com/pandoc-ext/section-bibliographies
+
 Requirements
 ------------
 
@@ -55,8 +73,12 @@ where `$PANDOC_DIR` is a user directory as listed in the output of
 Contributing
 ------------
 
-PRs for improvements, bug fixes, or new filters are welcome.
-Please see CONTRIBUTING.md for additional information.
+PRs for improvements or bug fixes are welcome. However, we do not
+accept new filters at this time. However, we *do* encourage
+submissions of external repositories to be included as a link in
+the collection.
+
+Please see CONTRIBUTING.md for information on code contributions.
 
 License
 -------
