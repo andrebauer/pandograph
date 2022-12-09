@@ -22,43 +22,56 @@ def get_meta(ctx):
         path = node.srcpath()
         meta[path] = {}
 
+        Logs.debug('')
         Logs.debug(path + ':')
-        Logs.debug('  outpaths:')
+        Logs.debug('  ' + ctx.env.outpaths_key)
 
         src = node.read(encoding='utf-8')
         post = frontmatter.loads(src)
 
         kinds = post.get('kinds') or ctx.env.default_kinds
 
-        global_outpaths = to_list(post.get('output')) or None
+        global_outpaths = to_list(
+            post.get(ctx.env.outpaths_key) or
+            post.get('output')
+        ) or None
+
+        def use_outpaths(kind, outpaths):
+            outpaths = to_list(outpaths)
+            meta[path][kind] = {
+                'outpaths' : outpaths
+            }
+            Logs.debug('    ' + kind + ': ' + str(outpaths))
+
+        def use_global_outpaths(kind):
+            use_outpaths(kind, global_outpaths)
+
+        def use_local_outpaths(kinds):
+            for kind, value in kinds.items():
+                if type(value) is str:
+                    use_outpaths(kind, value)
+                elif type(value) is list:
+                    outpaths = []
+                    for v in value:
+                        if type(v) is str:
+                            outpaths += [v]
+                        elif type(v) is dict and ctx.env.outpaths_key in v:
+                            outpaths += to_list(v.get(ctx.env.outpaths_key))
+                    use_outpaths(kind, outpaths)
 
         if type(kinds) is str:
-            meta[path][kinds] = {
-                'outpaths' : global_outpaths,
-            }
-            Logs.debug('    ' + kinds + ': ' + str(global_outpaths))
+            use_global_outpaths(kinds)
 
         elif type(kinds) is dict:
-            for kind, outpaths in kinds.items():
-                meta[path][kind] = {
-                    'outpaths' : to_list(outpaths)
-                }
-                Logs.debug('    ' + kind + ': ' + '/'.join(to_list(outpaths)))
+            use_local_outpaths(kinds)
 
         elif type(kinds) is list:
             for kind in kinds:
                 if type(kind) is str:
-                    meta[path][kind] = {
-                        'outpaths' : global_outpaths,
-                    }
-                    Logs.debug('    ' + kind + ': ' + str(global_outpaths))
+                    use_global_outpaths(kind)
 
                 elif type(kind) is dict:
-                    for kind, outpaths in kind.items():
-                        meta[path][kind] = {
-                            'outpaths' : to_list(outpaths)
-                        }
-                        Logs.debug('    ' + kind + ': ' + '/'.join(to_list(outpaths)))
+                    use_local_outpaths(kind)
 
         Logs.debug('  defaults:')
 
@@ -79,6 +92,7 @@ def get_meta(ctx):
     ctx.end_msg('ok')
 
 def configure(ctx):
+    ctx.env.outpaths_key = 'outpaths'
     if not ctx.env.content:
         ctx.env.content = ['assets', 'content']
     ctx.env.content = to_list(ctx.env.content)
@@ -327,7 +341,8 @@ def build(bld):
                             ext = bld.ext or kind,
                             defaults = default,
                             variables = { 'revision': revision },
-                            resource_path = bld.env.resource_path + [node.parent.srcpath()],
+                            resource_path = bld.env.resource_path
+                            + [node.parent.srcpath()],
                         )
 
 
