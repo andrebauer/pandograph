@@ -186,6 +186,7 @@ def init_pandoc(self):
                     options      = [],
                     defaults     = [],
                     variables    = {},
+                    metadata     = {},
                     bibliography = [],
                     template     = None,
                     to           = None,
@@ -275,6 +276,8 @@ def pandoc(self):
 
     add_options(['-V %s=%s' % (k, v) for k, v in self.variables.items()])
 
+    add_options(['-M %s=%s' % (k, v) for k, v in self.metadata.items()])
+
     if self.bibliography: add_options(['--citeproc'])
 
     add_options(['--bibliography=%s' % x for x in self.bibliography])
@@ -327,6 +330,7 @@ def build(bld):
                 # print("final SUFFIX ", srcpath, kind, " : " , suffix)
 
                 outpaths = bld.env.meta[srcpath][kind]['outpaths']
+                metadata = {}
 
                 if outpaths:
                     targets = [bld.path.find_or_declare(o) for o in outpaths]
@@ -343,6 +347,8 @@ def build(bld):
                             ext = bld.ext or kind,
                             defaults = default,
                             variables = { 'revision': revision },
+                            metadata = { 'kind': kind,
+                                         'outpath': target.bldpath() },
                             resource_path = bld.env.resource_path
                             + [node.parent.srcpath()],
                         )
