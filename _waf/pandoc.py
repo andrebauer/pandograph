@@ -58,6 +58,8 @@ def get_meta(ctx):
                         elif type(v) is dict and ctx.env.outpaths_key in v:
                             outpaths += to_list(v.get(ctx.env.outpaths_key))
                     use_outpaths(kind, outpaths)
+                elif type(value) is dict and ctx.env.outpaths_key in value:
+                    use_outpaths(kind, value.get(ctx.env.outpaths_key))
 
         if type(kinds) is str:
             use_global_outpaths(kinds)
