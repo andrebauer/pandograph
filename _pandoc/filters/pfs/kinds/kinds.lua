@@ -1,34 +1,68 @@
-local kinds = pandoc.List()
-
 local stringify = pandoc.utils.stringify
 
-local function insert(s)
-  kinds:insert(pandoc.LineBreak())
-  kinds:insert(stringify(s))
-  kinds = pandoc.Inlines(kinds)
+function find(t, key)
+  local key = stringify(key)
+  local type = pandoc.utils.type(t)
+  if type == 'table' then
+    local k = t[key]
+    if k then
+      return k
+    end
+  end
+  if type == 'List' then
+    for i, v in ipairs(t) do
+      for k, data in pairs(v) do
+        if k == key then
+          return data
+        end
+      end
+    end
+  end
+  return nil
 end
 
-local function extend(t)
-  for _, v in ipairs(t) do
-    insert(v)
+function copy_metadata(k, meta)
+  local metadata = find(k, 'metadata')
+  if metadata then
+    for k, v in pairs(metadata) do
+      meta[k] = v
+    end
   end
 end
 
-local function is_Inlines(e)
-  return pandoc.utils.type(e) == 'Inlines'
-end
+function Meta(meta)
+  local kind = meta['kind']
+  local kinds = meta['kinds']
 
-function Pandoc(doc)
-  local mkinds = doc.meta.kinds
+  if not(kind and kinds) then
+    return nil
+  end
 
-  if mkinds then
-    if is_Inlines(mkinds) then
-      insert(mkinds)
-    else
-      extend(mkinds)
+  local outpath = meta['outpath']
+
+  local function match_outpath_and_copy_metadata(t)
+    local outpaths = find(t, 'outpaths')
+    local type = pandoc.utils.type(outpaths)
+    if outpaths == nil or
+      outpath and
+      (type == 'List' and outpaths:includes(outpath) or
+       type == 'Inlines' and outpaths == outpath) then
+      copy_metadata(t, meta)
+      return meta
     end
   end
 
-  doc.blocks = pandoc.Plain(kinds)
-  return doc
+  local k = find(kinds, kind)
+
+  if pandoc.utils.type(k) == 'List' then
+    for i, t in ipairs(k) do
+      if match_outpath_and_copy_metadata(t) then
+        return meta
+      end
+    end
+  end
+
+  if match_outpath_and_copy_metadata(k) then
+    return meta
+  end
 end
