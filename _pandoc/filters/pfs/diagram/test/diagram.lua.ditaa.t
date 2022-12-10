@@ -18,7 +18,7 @@
   cat: media/8a8cfe3a8fa2e0ba927d3cbf634a0ebb7d7493d1.svg: No such file or directory
   [1]
 
-  $ PRINT_DITAA_STDOUT=1 pandoc --to html -L diagram.lua --extract-media=media <<EOF
+  $ PRINT_DITAA_STDOUT=1 pandoc --to html -L diagram.lua --extract-media=media <<EOF | grep --invert -E "^Done in .*sec"
   > \`\`\` ditaa
   > +--------+
   > | Hello  |
@@ -32,7 +32,6 @@
   Running with options:
   Reading file: b14e2edd0a6e0c1b.ditaa
   Rendering to file: b14e2edd0a6e0c1b.svg
-  Done in 1sec
   <p><img src="media/b14e2edd0a6e0c1b.svg" /></p>
 
 
