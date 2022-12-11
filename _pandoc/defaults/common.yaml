@@ -1,6 +1,7 @@
 # verbosity: INFO
 citeproc: true
 filters:
+  - pfs/kinds/kinds.lua
   - pfs/strip-classes/strip-classes.lua
   - pfs/thinspace/thinspace.lua
   - pfs/nbspace/nbspace.lua

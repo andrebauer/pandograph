@@ -40,13 +40,29 @@ function Meta(meta)
 
   local outpath = meta['outpath']
 
+  if outpath then
+    outpath = stringify(outpath)
+  end
+
+  local function includes(l, elm)
+    for i, v in ipairs(l) do
+      if stringify(v) == elm then
+        return true
+      end
+    end
+    return false
+  end
+
   local function match_outpath_and_copy_metadata(t)
+    if pandoc.utils.type(t) == 'Inlines' and t ~= outpaths then
+      return nil
+    end
     local outpaths = find(t, 'outpaths')
     local type = pandoc.utils.type(outpaths)
     if outpaths == nil or
       outpath and
-      (type == 'List' and outpaths:includes(outpath) or
-       type == 'Inlines' and outpaths == outpath) then
+      (type == 'List' and includes(outpaths, outpath) or
+       type == 'Inlines' and stringify(outpaths) == outpath) then
       copy_metadata(t, meta)
       return meta
     end
