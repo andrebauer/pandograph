@@ -4,28 +4,28 @@ $if(imports)$
  $imports$
  $endfor$
  $if(title)$
- export const title = '$title$'
+export const title = '$title$'
  $endif$ $if(author)$
- export const author = [$for(author)$'$author$', $endfor$]
- $endif$
+export const author = [$for(author)$'$author$', $endfor$]
+$endif$
 </script>
 $endif$
 
 $for(include-before)$ $include-before$ $endfor$ $if(title)$
 <header id="title-block-header">
   <h1 class="title">$title$</h1>
-  $if(subtitle)$
+$if(subtitle)$
   <p class="subtitle">$subtitle$</p>
-  $endif$ $for(author)$
+$endif$ $for(author)$
   <p class="author">$author$</p>
-  $endfor$ $if(date)$
+$endfor$ $if(date)$
   <p class="date">$date$</p>
-  $endif$ $if(abstract)$
+$endif$ $if(abstract)$
   <div class="abstract">
     <div class="abstract-title">$abstract-title$</div>
     $abstract$
   </div>
-  $endif$
+$endif$
 </header>
 $endif$ $if(toc)$
 <nav id="$idprefix$TOC" role="doc-toc">
@@ -33,4 +33,6 @@ $endif$ $if(toc)$
   <h2 id="$idprefix$toc-title">$toc-title$</h2>
   $endif$ $table-of-contents$
 </nav>
-$endif$ $body$ $for(include-after)$ $include-after$ $endfor$
+$endif$
+$body$
+$for(include-after)$ $include-after$ $endfor$
