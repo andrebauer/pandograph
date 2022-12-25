@@ -7,22 +7,23 @@ local pandoc_script_dir = pandoc.path.directory(PANDOC_SCRIPT_FILE)
 package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
 
 local tools = require 'lib.tools'
+local log = require 'lib.log'
+set_log_source('tikzpicture.lua')
 
 local output_dir = pandoc.path.directory(PANDOC_STATE.output_file or '')
 local outdir = '_tikzpicture'
 local tikz_output_dir = fmt("%s/%s", output_dir, outdir)
 
-local template_path = fmt('%s/%s', pandoc_script_dir, 'template.tex')
-
+local default_template_path = fmt('%s/templates/%s', pandoc_script_dir, 'default.tex')
 
 local env = pandoc.system.environment()
 
 local pdfengine = os.getenv("TIKZPICTURE_PDFENGINE") or "lualatex"
 local converter = os.getenv("TIKZPICTURE_CONVERTER") or "inkscape"
 
-local insert = pandoc.List.insert
+-- local insert = pandoc.List.insert
 local includes = pandoc.List.includes
-local remove = pandoc.List.remove
+-- local remove = pandoc.List.remove
 
 local filetype = "svg"
 local mimetype = "image/svg+xml"
@@ -48,7 +49,8 @@ local known_tikz_opts_kv =
   kv_of_list(known_tikz_opts)
 
 local known_tikz_args =
-    { "scale" }
+    { "scale",
+      "template" }
 
 local known_tikz_args_kv =
   kv_of_list(known_tikz_args)
@@ -105,7 +107,7 @@ local function tikzpicture(code, filetype, options)
 
     -- print("TIKZPICTURE OPTS:", join(table.unpack(opts)))
 
-    local f = io.open(template_path, 'r')
+    local f = io.open(default_template_path, 'r')
 
     local template = f:read('*all')
 
@@ -148,7 +150,7 @@ local function tikzpicture(code, filetype, options)
         end
 
 
-        print(command)
+        pinfo(command)
         local success = os.execute(command)
 
         if not(success) then  -- read and return log file
@@ -175,7 +177,7 @@ local function tikzpicture(code, filetype, options)
         end
         --]]
 
-        print(command)
+        pinfo(command)
         os.execute(command)
       end
     end
@@ -187,7 +189,7 @@ local function tikzpicture(code, filetype, options)
         imgData = r:read("*all")
         r:close()
     else
-        io.stderr:write(string.format("File '%s' could not be opened", outpath))
+        perrf("File '%s' could not be opened", outpath)
         error 'Could not create image from tikz code.'
     end
     return true, imgData, outpath
@@ -196,8 +198,8 @@ end
 
 
 -- Executes each document's code block to find matching code blocks:
-function CodeBlock(block)
-    local classes = block.classes
+function tikz(el)
+    local classes = el.classes
     local first_class = classes[1]
 
     if not(first_class == "tikzpicture") then
@@ -213,12 +215,12 @@ function CodeBlock(block)
     for _, c in ipairs(classes) do
       options[c] = true
     end
-    for k,v in pairs(block.attributes) do
+    for k,v in pairs(el.attributes) do
       options[k] = stringify(v)
     end
 
     -- Call the correct converter which belongs to the used class:
-    local success, data, fpath = tikzpicture(block.text, filetype, options)
+    local success, data, fpath = tikzpicture(el.text, filetype, options)
 
     -- Was ok?
     if success then
@@ -238,8 +240,8 @@ function CodeBlock(block)
         local enableCaption = nil
 
         -- If the user defines a caption, use it:
-        local caption = block.attributes.caption
-            and pandoc.read(block.attributes.caption).blocks[1].content
+        local caption = el.attributes.caption
+            and pandoc.read(el.attributes.caption).blocks[1].content
             or {}
 
         -- This is pandoc's current hack to enforce a caption:
@@ -255,22 +257,29 @@ function CodeBlock(block)
         -- to be referenced as @fig:example outside of the figure when used
         -- with `pandoc-crossref`.
         local img_attr = {
-            id = block.identifier,
-            name = block.attributes.name,
-            width = block.attributes.width,
-            height = block.attributes.height
+            id = el.identifier,
+            name = el.attributes.name,
+            width = el.attributes.width,
+            height = el.attributes.height
         }
 
         -- Create a new image for the document's structure. Attach the user's
         -- caption. Also use a hack (fig:) to enforce pandoc to create a
         -- figure i.e. attach a caption to the image.
-        local imgObj = pandoc.Image(caption, fpath, title, img_attr)
-
-        -- Finally, put the image inside an empty paragraph. By returning the
-        -- resulting paragraph object, the source code block gets replaced by
-        -- the image:
-        return pandoc.Para{ imgObj }
+        return pandoc.Image(caption, fpath, title, img_attr)
     end
+end
+
+
+function CodeBlock(block)
+  -- Finally, put the image inside an empty paragraph. By returning the
+  -- resulting paragraph object, the source code block gets replaced by
+  -- the image:
+  return pandoc.Para( tikz(block) )
+end
+
+function Code(inline)
+  return tikz(inline)
 end
 
 -- Normally, pandoc will run the function in the built-in order Inlines ->
@@ -279,4 +288,5 @@ end
 return {
     {Meta = Meta},
     {CodeBlock = CodeBlock},
+    {Code = Code}
 }

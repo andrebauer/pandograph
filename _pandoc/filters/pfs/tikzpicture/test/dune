@@ -1,0 +1,18 @@
+(cram
+ (deps
+  (file tikzpicture.lua)
+  (glob_files templates/*.tex)
+  (glob_files fixtures/*)
+  (glob_files lib/{log,tools}.lua)
+))
+
+(copy_files ../*.lua)
+
+(subdir templates
+ (copy_files %{project_root}/tikzpicture/templates/*.tex))
+
+(subdir fixtures
+ (copy_files %{project_root}/tikzpicture/fixtures/*))
+
+(subdir lib
+ (copy_files %{project_root}/lib/*.lua))
