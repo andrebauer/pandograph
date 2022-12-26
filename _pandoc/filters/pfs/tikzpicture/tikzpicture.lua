@@ -6,15 +6,17 @@ local fmt = string.format
 local pandoc_script_dir = pandoc.path.directory(PANDOC_SCRIPT_FILE)
 package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
 
-local tools = require 'lib.tools'
-local log = require 'lib.log'
+require 'lib.tools'
+require 'lib.os'
+require 'lib.log'
+
 set_log_source('tikzpicture.lua')
 
 local output_dir = pandoc.path.directory(PANDOC_STATE.output_file or '')
 local outdir = '_tikzpicture'
 local tikz_output_dir = fmt("%s/%s", output_dir, outdir)
 
-local default_template_path = fmt('%s/templates/%s', pandoc_script_dir, 'default.tex')
+local default_template_name = 'default'
 
 local env = pandoc.system.environment()
 
@@ -106,18 +108,27 @@ local function tikzpicture(code, filetype, options)
 
 
     -- print("TIKZPICTURE OPTS:", join(table.unpack(opts)))
+    local template_name = default_template_name
+    if options.template then
+      template_name = options.template
+    end
+    local template_path = fmt('%s/templates/%s.tex',
+                              pandoc_script_dir,
+                              template_name)
 
-    local f = io.open(default_template_path, 'r')
+
+    local f = io.open(template_path, 'r')
 
     local template = f:read('*all')
 
     local tex = template:format(code)
 
-    local hash = pandoc.utils.sha1(tex .. join(table.unpack(opts)))
-    local pdfpath = fmt('%s/%s.%s', outdir, hash, 'pdf')
-    local outpath = fmt('%s/%s.%s', outdir, hash, filetype)
-    local texpath = fmt('%s/%s.%s', outdir, hash, "tex")
-    local logpath = fmt('%s/%s.%s', outdir, hash, "log")
+    local filename = pandoc.utils.sha1(tex .. join(table.unpack(opts)))
+
+    local pdfpath = fmt('%s/%s.%s', outdir, filename, 'pdf')
+    local outpath = fmt('%s/%s.%s', outdir, filename, filetype)
+    local texpath = fmt('%s/%s.%s', outdir, filename, "tex")
+    local logpath = fmt('%s/%s.%s', outdir, filename, "log")
 
 
     if not(file_exists(outpath)) then
@@ -144,20 +155,14 @@ local function tikzpicture(code, filetype, options)
                              output_dir,
                              texpath)
 
-
-        if not(os.getenv('PRINT_TIKZPICUTRE_PDFENGINE_STDOUT') == '1') then
-            command = fmt("%s %s", command, "> /dev/null")
-        end
-
-
         pinfo(command)
-        local success = os.execute(command)
-
-        if not(success) then  -- read and return log file
-          local f = io.open(logpath, 'r')
-          local log = f:read('all')
+        local success, out = os.capture(command)
+        if not(success) then
+          perr(out)
           return false, log, nil
         end
+        pinfo(out)
+
       end
 
       if not(filetype == 'pdf') then
@@ -171,14 +176,13 @@ local function tikzpicture(code, filetype, options)
                            opts[filetype],
                            pdfpath)
 
-        --[[
-        if not(os.getenv('PRINT_TIKZPICUTRE_CONVERTER_STDOUT') == '1') then
-            command = fmt("%s %s", command, "> /dev/null")
-        end
-        --]]
-
         pinfo(command)
-        os.execute(command)
+        local success, out = os.capture(command)
+        if not(success) then
+          perr(out)
+        else
+          pinfo(out)
+        end
       end
     end
 
@@ -188,6 +192,18 @@ local function tikzpicture(code, filetype, options)
     if r then
         imgData = r:read("*all")
         r:close()
+
+        if options.filename then
+          local named_outpath = fmt('%s/%s.%s', outdir, options.filename, filetype)
+          local out = io.open(named_outpath, 'w+')
+          if out then
+            out:write(imgData)
+            out:close()
+          else
+            perrf("File '%s' could not be opened", named_outpath)
+            error 'Could not create named copy of image.'
+          end
+        end
     else
         perrf("File '%s' could not be opened", outpath)
         error 'Could not create image from tikz code.'
@@ -228,8 +244,7 @@ function tikz(el)
         pandoc.mediabag.insert(fpath, mimetype, data)
     else
         -- an error occured; data contains the error message
-        io.stderr:write(data)
-        io.stderr:write('\n')
+        perr(data)
         error 'Image conversion failed. Aborting.'
     end
 
