@@ -1,12 +1,13 @@
 local fmt = string.format
 
 local pandoc_script_dir = pandoc.path.directory(PANDOC_SCRIPT_FILE)
-package.path = fmt("%s;%s/?.lua", package.path, pandoc_script_dir)
+package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
 
 require 'lib.metavalue'
+require 'lib.latex'
 
-local inline_latex = function (text) return pandoc.RawInline('latex', text) end
-local block_latex = function (text) return pandoc.RawBlock('latex', text) end
+-- local inline_latex = function (text) return pandoc.RawInline('latex', text) end
+-- local block_latex = function (text) return pandoc.RawBlock('latex', text) end
 local stringify = pandoc.utils.stringify
 
 meta = {}
