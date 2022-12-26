@@ -452,14 +452,14 @@
   \begin{enumerate}
   \def\labelenumi{\alph{enumi})}
   \item
-    \marginpar{\small\sf {~~/ 2}}Subtask a
+    Subtask\marginpar{\small\sf {~~/ 2}} a
   \end{enumerate}
   
   \begin{enumerate}
   \def\labelenumi{\alph{enumi})}
   \setcounter{enumi}{1}
   \item
-    \marginpar{\small\sf {~~/ 4.5}}Subtask b
+    Subtask\marginpar{\small\sf {~~/ 4.5}} b
   \end{enumerate}
   
   \hypertarget{aufgabe-nn-1}{%

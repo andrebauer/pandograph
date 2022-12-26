@@ -94,8 +94,10 @@ function Div(div)
       if latex then
         i = inline_latex_fmt('\\marginpar{\\small\\sf {~~/ %s}}',
                              given_points)
+        div.content[1].content:insert(2, i)
+      else
+        div.content[1].content:insert(1, i)
       end
-      div.content[1].content:insert(1, i)
       subtask_points_sum = subtask_points_sum + given_points
     end
 
