@@ -137,9 +137,9 @@ function Div(div)
        end
 
        if latex then
-         margin = inline_latex_fmt('\\taskPoints{%s}', pts)
-           -- inline_latex_fmt('\\marginpar{\\sf\\vspace*{-1em} {~~ %s~%s}}',
-           --                        pts, points)
+         margin = blocks(block_latex_fmt(
+                           '\\marginpar{\\sf\\vspace*{-0.8em} {~~ %s~%s}}',
+                           pts, points))
        else
          hd = fmt("%s (%g %s)", hd, pts, points)
        end
@@ -154,21 +154,17 @@ function Div(div)
        heading = inlines(hd)
      end
 
-     if margin then
-       --[[
-       local m = inlines(margin)
-       m:extend(heading)
-       heading = m
-       --]]
-       heading:insert(2, margin)
-     end
-
      subtask_number = 1
      subtask_points_sum = 0
 
      local hdr = header(level, heading, pandoc.Attr(identifier))
+     hdr = list({hdr})
 
-     return pandoc.Div(list({hdr}) .. div.content, div.attr)
+     if margin then
+       hdr = hdr .. margin
+     end
+
+     return pandoc.Div(hdr .. div.content, div.attr)
   end
   return nil
 end

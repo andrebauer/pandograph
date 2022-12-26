@@ -443,7 +443,9 @@
   > :::
   > EOF
   \hypertarget{aufgabe-1}{%
-  \section{Aufgabe 1 (6.5 P.): The First}\label{aufgabe-1}}
+  \section{Aufgabe 1: The First}\label{aufgabe-1}}
+  
+  \marginpar{\sf\vspace*{-0.8em} {~~ 6.5~P.}}
   
   fst
   
