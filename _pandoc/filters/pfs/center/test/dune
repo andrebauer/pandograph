@@ -1,0 +1,10 @@
+(cram
+ (deps
+  (file center.lua)
+  (glob_files lib/{latex}.lua)
+))
+
+(copy_files ../*.lua)
+
+(subdir lib
+ (copy_files %{project_root}/lib/*.lua))
