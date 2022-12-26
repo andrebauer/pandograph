@@ -6,7 +6,7 @@
 [subrepo]
 	remote = git@gitlab.com:andrebauer/pandoc-filter-set.git
 	branch = main
-	commit = f3a70a9eac31a8cd34b1da07338c5bb6ed2125a4
-	parent = 31f513eb5243a032435d691175a4b2921f0ff6a8
+	commit = c5ce8ffd2541c184a8968e39be40ba4f4d3d46fc
+	parent = 58ea5ae3532b4b819cd04ad28d6d364fae7256de
 	method = merge
 	cmdver = 0.4.5
