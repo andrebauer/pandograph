@@ -12,6 +12,8 @@ filters:
   - lua-filters/diagram-generator/diagram-generator.lua
   - pfs/solution/solution.lua
   - pfs/task/task.lua
+  - pfs/center/center.lua
+  - pfs/tikzpicture/tikzpicture.lua
   - lua-filters/list-table/list-table.lua
   # - pfs/mdsvex.lua
   # - markup-to-component.lua
