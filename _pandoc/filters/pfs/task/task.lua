@@ -137,8 +137,9 @@ function Div(div)
        end
 
        if latex then
-         margin = inline_latex_fmt('\\marginpar{\\sf\\vspace*{-1em} {~~ %s~%s}}',
-                                   pts, points)
+         margin = inline_latex_fmt('\\taskPoints{%s}', pts)
+           -- inline_latex_fmt('\\marginpar{\\sf\\vspace*{-1em} {~~ %s~%s}}',
+           --                        pts, points)
        else
          hd = fmt("%s (%g %s)", hd, pts, points)
        end
