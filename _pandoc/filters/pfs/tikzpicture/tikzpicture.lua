@@ -215,12 +215,7 @@ end
 
 -- Executes each document's code block to find matching code blocks:
 function tikz(el)
-    local classes = el.classes
-    local first_class = classes[1]
 
-    if not(first_class == "tikzpicture") then
-        return nil
-    end
 
     local options = copy(global_options)
 
@@ -287,6 +282,13 @@ end
 
 
 function CodeBlock(block)
+  local classes = el.classes
+  local first_class = classes[1]
+
+  if not(first_class == "tikzpicture") then
+      return nil
+  end
+
   -- Finally, put the image inside an empty paragraph. By returning the
   -- resulting paragraph object, the source code block gets replaced by
   -- the image:
@@ -294,6 +296,13 @@ function CodeBlock(block)
 end
 
 function Code(inline)
+  local classes = el.classes
+  local first_class = classes[1]
+
+  if not(first_class == "tikzpicture") then
+      return nil
+  end
+
   return tikz(inline)
 end
 
