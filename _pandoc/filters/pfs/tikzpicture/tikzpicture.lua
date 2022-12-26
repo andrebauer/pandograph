@@ -215,7 +215,7 @@ end
 
 -- Executes each document's code block to find matching code blocks:
 function tikz(el)
-
+    local classes = el.classes
 
     local options = copy(global_options)
 
@@ -282,7 +282,7 @@ end
 
 
 function CodeBlock(block)
-  local classes = el.classes
+  local classes = block.classes
   local first_class = classes[1]
 
   if not(first_class == "tikzpicture") then
@@ -296,7 +296,7 @@ function CodeBlock(block)
 end
 
 function Code(inline)
-  local classes = el.classes
+  local classes = inline.classes
   local first_class = classes[1]
 
   if not(first_class == "tikzpicture") then
