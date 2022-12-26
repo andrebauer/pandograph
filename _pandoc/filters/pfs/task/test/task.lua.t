@@ -321,7 +321,7 @@
           [ [ Div
                 ( "" , [ "subtask" ] , [ ( "points" , "2" ) ] )
                 [ Para
-                    [ Strong [ Str "(2" , Space , Str "P.)" , Space ]
+                    [ Emph [ Str "(2" , Space , Str "P.)" , Space ]
                     , Str "Subtask"
                     , Space
                     , Str "a"
@@ -334,7 +334,7 @@
           [ [ Div
                 ( "" , [ "subtask" ] , [ ( "points" , "4.5" ) ] )
                 [ Para
-                    [ Strong [ Str "(4.5" , Space , Str "P.)" , Space ]
+                    [ Emph [ Str "(4.5" , Space , Str "P.)" , Space ]
                     , Str "Subtask"
                     , Space
                     , Str "b"
@@ -450,14 +450,14 @@
   \begin{enumerate}
   \def\labelenumi{\alph{enumi})}
   \item
-    \textbf{(2 P.) }Subtask a
+    \marginpar{\small\sf {~~/ 2}}Subtask a
   \end{enumerate}
   
   \begin{enumerate}
   \def\labelenumi{\alph{enumi})}
   \setcounter{enumi}{1}
   \item
-    \textbf{(4.5 P.) }Subtask b
+    \marginpar{\small\sf {~~/ 4.5}}Subtask b
   \end{enumerate}
   
   \hypertarget{aufgabe-nn-1}{%

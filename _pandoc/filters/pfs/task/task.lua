@@ -18,7 +18,9 @@
 local fmt = string.format
 
 local pandoc_script_dir = pandoc.path.directory(PANDOC_SCRIPT_FILE)
-package.path = fmt("%s;%s/?.lua", package.path, pandoc_script_dir)
+package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
+
+require 'lib.latex'
 
 local task_class = "task"
 local task = "Aufgabe"
@@ -56,7 +58,7 @@ local stringify = pandoc.utils.stringify
 local ol = pandoc.OrderedList
 local insert = pandoc.List.insert
 local strong = pandoc.Strong
-
+local emph = pandoc.Emph
 
 local task_number = 1
 
@@ -87,8 +89,13 @@ function Div(div)
 
     if given_points then
       local p = inlines(fmt("(%g %s) ", given_points, points))
-      div.content[1].content:insert(1, strong(p))
+      local i = emph(p)
 
+      if latex then
+        i = inline_latex_fmt('\\marginpar{\\small\\sf {~~/ %s}}',
+                             given_points)
+      end
+      div.content[1].content:insert(1, i)
       subtask_points_sum = subtask_points_sum + given_points
     end
 
@@ -120,6 +127,7 @@ function Div(div)
        task_number = task_number + 1
      end
 
+     local margin = nil
      if given_points then
        local pts
        if given_points == "auto" then
@@ -127,7 +135,13 @@ function Div(div)
        else
          pts = given_points
        end
-       hd = fmt("%s (%g %s)", hd, pts, points)
+
+       if latex then
+         margin = inline_latex_fmt('\\marginpar{\\sf\\vspace*{-1em} {~~ %s~%s}}',
+                                   pts, points)
+       else
+         hd = fmt("%s (%g %s)", hd, pts, points)
+       end
      end
 
      local heading
@@ -137,6 +151,15 @@ function Div(div)
        heading = hd .. ttl.blocks[1].content
      else
        heading = inlines(hd)
+     end
+
+     if margin then
+       --[[
+       local m = inlines(margin)
+       m:extend(heading)
+       heading = m
+       --]]
+       heading:insert(2, margin)
      end
 
      subtask_number = 1
