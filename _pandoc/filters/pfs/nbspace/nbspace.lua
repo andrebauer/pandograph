@@ -1,9 +1,6 @@
-local str = pandoc.Str
+local space = "\xc2\xa0"
 
 function Str(e)
-  local space = "\xc2\xa0"
-
   text = string.gsub(e.text, "%·", space)
-
-  return str(text)
+  return pandoc.Str(text)
 end
