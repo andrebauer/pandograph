@@ -11,6 +11,7 @@
   >     +-------------------------+
   > \`\`\`
   > EOF
+  [diagram.lua] Filter diagram.lua ist deprecated 
   ditaa 32546ef00cbbef32.ditaa 32546ef00cbbef32.svg      --svg      > /dev/null
   <p><img src="media/32546ef00cbbef32.svg" /></p>
 
@@ -25,6 +26,7 @@
   > +--------+
   > \`\`\`
   > EOF
+  [diagram.lua] Filter diagram.lua ist deprecated 
   ditaa b14e2edd0a6e0c1b.ditaa b14e2edd0a6e0c1b.svg           
   
   ditaa version 0.11, Copyright (C) 2004--2017  Efstathios (Stathis) Sideris
@@ -46,6 +48,7 @@
   > +--------+
   > \`\`\`
   > EOF
+  [diagram.lua] Filter diagram.lua ist deprecated 
   ditaa 543a99a6c4a34aa2.ditaa 543a99a6c4a34aa2.svg  --debug --no-separation   --svg --transparent    
   
   ditaa version 0.11, Copyright (C) 2004--2017  Efstathios (Stathis) Sideris
@@ -83,6 +86,7 @@
   >          +--------+
   > \`\`\`
   > EOF
+  [diagram.lua] Filter diagram.lua ist deprecated 
   ditaa 38ae108329dee4d7.ditaa 38ae108329dee4d7.svg  --debug --no-separation --round-corners --no-shadows --svg  --fixed-slope --background FF0044 --scale 1.4 --tabs 4
   
   ditaa version 0.11, Copyright (C) 2004--2017  Efstathios (Stathis) Sideris
@@ -128,6 +132,7 @@
   > +--------+
   > \`\`\`
   > EOF
+  [diagram.lua] Filter diagram.lua ist deprecated 
   ditaa da9f5f98fe6324f3.ditaa da9f5f98fe6324f3.svg  --debug  --round-corners --no-shadows --svg  --fixed-slope --background FF0044 --scale 1.4 --tabs 4
   
   ditaa version 0.11, Copyright (C) 2004--2017  Efstathios (Stathis) Sideris
@@ -166,6 +171,7 @@
   > +------+------+
   > \`\`\`
   > EOF
+  [diagram.lua] Filter diagram.lua ist deprecated 
   ditaa 576b8506c5576ed8.ditaa 576b8506c5576ed8.svg  --debug  --round-corners --no-shadows --svg     
   
   ditaa version 0.11, Copyright (C) 2004--2017  Efstathios (Stathis) Sideris

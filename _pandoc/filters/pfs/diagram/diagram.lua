@@ -4,16 +4,17 @@ PANDOC_VERSION:must_be_at_least '2.7.3'
 
 local fmt = string.format
 local pandoc_script_dir = pandoc.path.directory(PANDOC_SCRIPT_FILE)
-package.path = fmt("%s;%s/?.lua", package.path, pandoc_script_dir)
+package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
 
-local tools = require 'lib.tools'
+require 'lib.tools'
+require 'lib.shortening'
+require 'lib.log'
+
+set_log_source('diagram.lua')
 
 local env = pandoc.system.environment()
 
 local ditaa_path = os.getenv("DITAA") or "ditaa"
-local insert = pandoc.List.insert
-local includes = pandoc.List.includes
-local remove = pandoc.List.remove
 
 local filetype = "svg"
 local mimetype = "image/svg+xml"
@@ -172,7 +173,7 @@ function CodeBlock(block)
     if not img_converter then
       return nil
     end
-
+    pwarn 'Filter diagram.lua ist deprecated'
 
     local options = copy(global_options[first_class])
 
