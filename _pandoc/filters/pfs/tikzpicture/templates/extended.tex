@@ -1,0 +1,35 @@
+\documentclass[
+%% TIKZ_CLASSOPTION %%
+tikz
+]{standalone}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{amsmath}
+\usetikzlibrary{
+  ,arrows
+  ,automata
+  ,backgrounds
+  ,chains
+  ,decorations.pathmorphing
+  ,fit
+  ,graphs
+  ,matrix
+  ,petri
+  ,positioning
+  ,quotes
+  ,scopes
+  ,shadows
+  ,shapes.arrows
+  ,shapes.misc
+}
+\tikzset{
+    ->,
+    >=stealth,
+    node distance=3cm,
+    every state/.style={thick, fill=gray!10},
+    initial text=$ $,
+}
+%% EXTRA_TIKZ_PREAMBLE_CODE %%
+\begin{document}
+%% TIKZ_CODE %%
+%s
+\end{document}

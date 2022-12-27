@@ -9,6 +9,7 @@ package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
 require 'lib.tools'
 require 'lib.os'
 require 'lib.log'
+require 'lib.shortening'
 
 set_log_source('tikzpicture.lua')
 
@@ -87,129 +88,132 @@ end
 
 
 local function tikzpicture(code, filetype, options)
-  -- local outdir = global_options.outdir or output_dir
   os.execute('mkdir -p '  .. tikz_output_dir)
-  return with_working_directory(
-    output_dir,
-    function ()
-    local opts = append(known_tikz_opts, known_tikz_args)
 
-    for i, v in ipairs(opts) do
-        local is_arg = includes(known_tikz_args, v)
-        local is_opt = includes(known_tikz_opts, v)
-        if is_opt and (options[v] == true or options[v] == 'true') then
-            opts[i] = fmt("--%s", v)
-        elseif is_arg and type(options[v]) ~= 'boolean' then
-            opts[i] = fmt("--%s %s", v, options[v])
-        else
-            opts[i] = ""
-        end
+  local opts = append(known_tikz_opts, known_tikz_args)
+
+  for i, v in ipairs(opts) do
+      local is_arg = includes(known_tikz_args, v)
+      local is_opt = includes(known_tikz_opts, v)
+      if is_opt and (options[v] == true or options[v] == 'true') then
+          opts[i] = fmt("--%s", v)
+      elseif is_arg and type(options[v]) ~= 'boolean' then
+          opts[i] = fmt("--%s %s", v, options[v])
+      else
+          opts[i] = ""
+      end
+  end
+
+  -- print("TIKZPICTURE OPTS:", join(table.unpack(opts)))
+  local template_name = default_template_name
+  if options.template then
+    template_name = options.template
+  end
+
+  local template_path = fmt('%s/templates/%s.tex',
+                            pandoc_script_dir,
+                            template_name)
+
+  pinfo('Template path is', template_path)
+  local t = io.open(template_path, 'r')
+
+  local template = nil
+
+  if t then
+    template = t:read('*all')
+    t:close()
+  else
+    error('Cannot open template ' .. template_path, 1)
+  end
+
+  local tex = template:format(code)
+
+  local filename = pandoc.utils.sha1(tex .. join(table.unpack(opts)))
+
+  local pdfpath = fmt('%s/%s.%s', tikz_output_dir, filename, 'pdf')
+  local outpath = fmt('%s/%s.%s', tikz_output_dir, filename, filetype)
+  local texpath = fmt('%s/%s.%s', tikz_output_dir, filename, "tex")
+  local logpath = fmt('%s/%s.%s', tikz_output_dir, filename, "log")
+  local relative_outpath = fmt('%s/%s.%s', outdir, filename, filetype)
+
+  if not(file_exists(outpath)) then
+
+    if not(file_exists(pdfpath)) then
+
+      if not(file_exists(texpath)) then
+
+        -- Write the Tikz code:
+        -- print('tikz file: ', tikz_file)
+        local f, msg, errcode = io.open(texpath, 'w')
+        -- print("File: ", f, msg, errcode)
+        f:write(tex)
+        f:close()
+      end
+
+
+      local output_dir = fmt('--output-directory=%s', tikz_output_dir)
+
+      local command = join(pdfengine,
+                           '--halt-on-error',
+                           '--output-format=pdf',
+                           table.unpack(opts),
+                           output_dir,
+                           texpath)
+
+      pinfo(command)
+      local success, out = os.capture(command)
+      if not(success) then
+        perr(out)
+        return false, log, nil
+      end
+      pinfo(out)
+
     end
 
+    if not(filetype == 'pdf') then
 
-    -- print("TIKZPICTURE OPTS:", join(table.unpack(opts)))
-    local template_name = default_template_name
-    if options.template then
-      template_name = options.template
-    end
-    local template_path = fmt('%s/templates/%s.tex',
-                              pandoc_script_dir,
-                              template_name)
+      local opts = {
+        png = '--export-type=png --export-dpi=300',
+        svg = '--export-type=svg --export-plain-svg'
+      }
 
+      local command = join(converter,
+                         opts[filetype],
+                         pdfpath)
 
-    local f = io.open(template_path, 'r')
-
-    local template = f:read('*all')
-
-    local tex = template:format(code)
-
-    local filename = pandoc.utils.sha1(tex .. join(table.unpack(opts)))
-
-    local pdfpath = fmt('%s/%s.%s', outdir, filename, 'pdf')
-    local outpath = fmt('%s/%s.%s', outdir, filename, filetype)
-    local texpath = fmt('%s/%s.%s', outdir, filename, "tex")
-    local logpath = fmt('%s/%s.%s', outdir, filename, "log")
-
-
-    if not(file_exists(outpath)) then
-
-      if not(file_exists(pdfpath)) then
-
-        if not(file_exists(texpath)) then
-
-          -- Write the Tikz code:
-          -- print('tikz file: ', tikz_file)
-          local f, msg, errcode = io.open(texpath, 'w')
-          -- print("File: ", f, msg, errcode)
-          f:write(tex)
-          f:close()
-        end
-
-
-        local output_dir = fmt('--output-directory=%s', outdir)
-
-        local command = join(pdfengine,
-                             '--halt-on-error',
-                             '--output-format=pdf',
-                             table.unpack(opts),
-                             output_dir,
-                             texpath)
-
-        pinfo(command)
-        local success, out = os.capture(command)
-        if not(success) then
-          perr(out)
-          return false, log, nil
-        end
+      pinfo(command)
+      local success, out = os.capture(command)
+      if not(success) then
+        perr(out)
+      else
         pinfo(out)
-
       end
+    end
+  end
 
-      if not(filetype == 'pdf') then
+  -- Try to open the written image:
+  local r = io.open(outpath, 'rb')
+  local imgFata = nil
+  if r then
+      imgData = r:read("*all")
+      r:close()
 
-        local opts = {
-          png = '--export-type=png --export-dpi=300',
-          svg = '--export-type=svg --export-plain-svg'
-        }
-
-        local command = join(converter,
-                           opts[filetype],
-                           pdfpath)
-
-        pinfo(command)
-        local success, out = os.capture(command)
-        if not(success) then
-          perr(out)
+      if options.filename then
+        local named_outpath = fmt('%s/%s.%s', tikz_output_dir, options.filename, filetype)
+        local out = io.open(named_outpath, 'w+')
+        if out then
+          out:write(imgData)
+          out:close()
         else
-          pinfo(out)
+          perrf("File '%s' could not be opened", named_outpath)
+          error 'Could not create named copy of image.'
         end
       end
-    end
-
-    -- Try to open the written image:
-    local r = io.open(outpath, 'rb')
-    local imgFata = nil
-    if r then
-        imgData = r:read("*all")
-        r:close()
-
-        if options.filename then
-          local named_outpath = fmt('%s/%s.%s', outdir, options.filename, filetype)
-          local out = io.open(named_outpath, 'w+')
-          if out then
-            out:write(imgData)
-            out:close()
-          else
-            perrf("File '%s' could not be opened", named_outpath)
-            error 'Could not create named copy of image.'
-          end
-        end
-    else
-        perrf("File '%s' could not be opened", outpath)
-        error 'Could not create image from tikz code.'
-    end
-    return true, imgData, outpath
-  end)
+  else
+      perrf("File '%s' could not be opened", outpath)
+      error 'Could not create image from tikz code.'
+  end
+  return true, imgData, relative_outpath
 end
 
 
