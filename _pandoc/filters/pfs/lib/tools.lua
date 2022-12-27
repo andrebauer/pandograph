@@ -1,9 +1,12 @@
 join = function (...) return table.concat({...}, ' ') end
 
-stringify = pandoc.utils.stringify
+-- stringify = pandoc.utils.stringify
 with_temporary_directory = pandoc.system.with_temporary_directory
 with_working_directory = pandoc.system.with_working_directory
 
+function first_class(el)
+  return el.classes[1]
+end
 
 function kv_of_list(l)
   local t = {}

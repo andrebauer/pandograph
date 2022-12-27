@@ -1,7 +1,7 @@
 (cram
  (deps
   (file center.lua)
-  (glob_files lib/{latex}.lua)
+  (glob_files lib/{latex,tools}.lua)
 ))
 
 (copy_files ../*.lua)
