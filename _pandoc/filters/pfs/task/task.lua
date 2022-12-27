@@ -24,10 +24,11 @@ require 'lib.latex'
 
 local task_class = "task"
 local task = "Aufgabe"
-local points = "P."
+local points_text = "P."
 local nonnumbered_class = "nonnumbered"
 local subtask_class = "subtask"
 local default_level = 3
+local points = "margin"
 
 local subtask_style = "LowerAlpha"
 -- DefaultStyle, Example, Decimal, LowerRoman, UpperRoman, LowerAlpha, or UpperAlpha
@@ -87,11 +88,11 @@ function Div(div)
                                      , delimiter)
     subtask_number = subtask_number + 1
 
-    if given_points then
-      local p = inlines(fmt("(%g %s) ", given_points, points))
+    if points and given_points then
+      local p = inlines(fmt("(%g %s) ", given_points, points_text))
       local i = emph(p)
 
-      if latex then
+      if points == 'margin' and latex then
         i = inline_latex_fmt('\\marginpar{\\small\\sf {~~/ %s}}',
                              given_points)
         div.content[1].content:insert(2, i)
@@ -130,7 +131,7 @@ function Div(div)
      end
 
      local margin = nil
-     if given_points then
+     if points and given_points then
        local pts
        if given_points == "auto" then
          pts = subtask_points_sum
@@ -138,12 +139,12 @@ function Div(div)
          pts = given_points
        end
 
-       if latex then
+       if points == 'margin' and latex then
          margin = blocks(block_latex_fmt(
                            '\\marginpar{\\sf\\vspace*{-0.8em} {~~ %s~%s}}',
-                           pts, points))
+                           pts, points_text))
        else
-         hd = fmt("%s (%g %s)", hd, pts, points)
+         hd = fmt("%s (%g %s)", hd, pts, points_text)
        end
      end
 
@@ -172,15 +173,23 @@ function Div(div)
 end
 
 function Meta(meta)
-  local ehl = meta["exercise-heading-level"]
-  if ehl then
-    header_level =  tonumber(stringify(ehl))
-  end
+  local task = meta.task
+  if task then
+    header_level = task["header-level"] or default_level
+    points = task.points or 'margin'
+    points_text = task["points-text"] or points_text
+  else
+    -- legacy and deprecated
+    local ehl = meta["exercise-heading-level"]
+    if ehl then
+      header_level =  tonumber(stringify(ehl))
+    end
 
-  local pom = meta["points-on-margin"]
-  if pom then
-    points_on_margin = not (stringify(pom) == "false")
-  end
+    local pom = meta["points-on-margin"]
+    if pom then
+      points_on_margin = not (stringify(pom) == "false")
+    end
+    end
 
   return nil
 end
@@ -189,3 +198,10 @@ return {
   { Meta = Meta },
   { Div = Div }
 }
+
+--[[
+TODO: Metadata k,v inside task:
+points optional
+points inline versus margin
+
+----]]
