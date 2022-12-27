@@ -1,5 +1,10 @@
 (cram
  (deps
-  (glob_files clear.lua)))
+  (glob_files clear.lua)
+  (glob_files lib/{log}.lua)
+))
 
 (copy_files ../*.lua)
+
+(subdir lib
+ (copy_files %{project_root}/lib/*.lua))
