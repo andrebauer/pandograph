@@ -87,9 +87,47 @@ function get_template(chosen_options, template_root)
 end
 
 
+function run_engine(codepath, output_dir, code, opts)
+  if not(file_exists(codepath)) then
+    file.write(codepath, code)
+  end
+
+  local output_dir = fmt('--output-directory=%s', output_dir)
+
+  local command = join(engine,
+                       '--halt-on-error',
+                       '--output-format=pdf',
+                       table.unpack(opts) or '',
+                       output_dir,
+                       codepath)
+
+  return os.run(command)
+  --[[
+  pinfo(command)
+  local success, out = os.capture(command)
+  if not(success) then
+    perr(out)
+    return false, log, nil
+  end
+  pinfo(out)
+  --]]
+end
 
 
-function run_engine(data, filetype, chosen_options)
+function run_converter(pdfpath, opts)
+  local opts = {
+    png = '--export-type=png --export-dpi=300',
+    svg = '--export-type=svg --export-plain-svg'
+  }
+
+  local command = join(converter,
+                       opts[filetype],
+                       pdfpath)
+
+  return os.run(command)
+end
+
+function run(data, filetype, chosen_options)
   os.execute('mkdir -p '  .. output_dir)
 
   local opts = get_opts(known_options, chosen_options)
@@ -109,59 +147,29 @@ function run_engine(data, filetype, chosen_options)
   local pdfpath = fmt('%s/%s.%s', output_dir, filename, 'pdf')
   local outpath = fmt('%s/%s.%s', output_dir, filename, filetype)
   local codepath = fmt('%s/%s.%s', output_dir, filename, ext)
-  local logpath = fmt('%s/%s.%s', output_dir, filename, "log")
+  -- local logpath = fmt('%s/%s.%s', output_dir, filename, "log")
   local relative_outpath = fmt('%s/%s.%s', outdir, filename, filetype)
 
   if not(file_exists(outpath)) then
 
     if not(file_exists(pdfpath)) then
-
-      if not(file_exists(codepath)) then
-
-        -- Write the code
-        file.write(codepath, code)
-      end
-
-      local output_dir = fmt('--output-directory=%s', output_dir)
-
-      local command = join(engine,
-                           '--halt-on-error',
-                           '--output-format=pdf',
-                           table.unpack(opts) or '',
-                           output_dir,
-                           codepath)
-
-      pinfo(command)
-      local success, out = os.capture(command)
-      if not(success) then
-        perr(out)
-        return false, log, nil
-      end
-      pinfo(out)
-
+      run_engine(codepath, output_dir, code, opts)
     end
 
     if not(filetype == 'pdf') then
-
-      local opts = {
-        png = '--export-type=png --export-dpi=300',
-        svg = '--export-type=svg --export-plain-svg'
-      }
-
-      local command = join(converter,
-                           opts[filetype],
-                           pdfpath)
-
-      pinfo(command)
-      local success, out = os.capture(command)
-      if not(success) then
-        perr(out)
-      else
-        pinfo(out)
-      end
+      run_converter(pdfpath, opts)
     end
   end
 
+  local imgData = file.read(outpath)
+
+  if chosen_options.filename then
+    local named_outpath = fmt('%s/%s.%s', output_dir, chosen_options.filename, filetype)
+
+    file.write(named_outpath, imgData)
+  end
+
+  --[[
   -- Try to open the written image:
   local r = io.open(outpath, 'rb')
   local imgFata = nil
@@ -178,6 +186,7 @@ function run_engine(data, filetype, chosen_options)
       perrf("File '%s' could not be opened", outpath)
       error 'Could not create image from tikz code.'
   end
+  --]]
   return true, imgData, relative_outpath
 end
 
@@ -199,7 +208,7 @@ function render(el)
     end
 
     -- Call the correct converter which belongs to the used class:
-    local success, data, fpath = run_engine(el.text, filetype, options)
+    local success, data, fpath = run(el.text, filetype, options)
 
     -- Was ok?
     if success then
