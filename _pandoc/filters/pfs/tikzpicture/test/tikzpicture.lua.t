@@ -48,3 +48,19 @@
   > EOF
   <p><img
   src="_tikzpicture/d228af5099f36dacc9c3db58fa0b91714c7fb204.svg" /></p>
+
+  $ pandoc --to html -L tikzpicture.lua << EOF
+  > ---
+  > tikzpicture:
+  >   cache: false
+  >   engine:
+  >     template: default-serif
+  > ---
+  > \`\`\`tikzpicture
+  > \usetikzlibrary {graphs,graphdrawing} \usegdlibrary {trees}
+  > \tikz \graph [tree layout, nodes={draw,circle}, sibling sep=0pt]
+  >  { r -> { a, , ,b -> {c,d}, ,e} };
+  > \`\`\`
+  > EOF
+  <p><img
+  src="_tikzpicture/db4faa6c47d2139fa2a062c2bb89d582430ff11e.svg" /></p>

@@ -29,7 +29,7 @@ end
 -- converter
 -- general
 
-outdir = outdir or fmt('_%s', general.name)
+outdir = outdir or fmt('_%s', options.name)
 
 output_dir = pandoc.path.directory(PANDOC_STATE.output_file or '')
 output_dir = fmt("%s/%s", output_dir, outdir)
@@ -43,7 +43,7 @@ output_dir = fmt("%s/%s", output_dir, outdir)
 
 
 function get_template(chosen_options, template_root)
-  local template_name = engine.template
+  local template_name = options.engine.template
   if chosen_options.template then
     template_name = chosen_options.template
   end
@@ -51,7 +51,7 @@ function get_template(chosen_options, template_root)
   local template_path = fmt('%s/templates/%s.%s',
                             template_root,
                             template_name,
-                            engine.from)
+                            options.engine.from)
 
   pinfo('Template path is', template_path)
 
@@ -73,15 +73,15 @@ function run(data, filetype, chosen_options)
   -- print('HASH_DATA', hash_data)
   local filename = pandoc.utils.sha1(hash_data)
 
-  local pdfpath = fmt('%s/%s.%s', output_dir, filename, 'pdf')
+  local engine_outpath = fmt('%s/%s.%s', output_dir, filename, options.converter.from)
   local outpath = fmt('%s/%s.%s', output_dir, filename, filetype)
-  local codepath = fmt('%s/%s.%s', output_dir, filename, engine.from)
+  local codepath = fmt('%s/%s.%s', output_dir, filename, options.engine.from)
   -- local logpath = fmt('%s/%s.%s', output_dir, filename, "log")
   local relative_outpath = fmt('%s/%s.%s', outdir, filename, filetype)
 
   if not(file_exists(outpath)) then
 
-    if not(file_exists(pdfpath)) then
+    if not(file_exists(engine_outpath)) then
 
       if not(file_exists(codepath)) then
         file.write(codepath, code)
@@ -92,19 +92,19 @@ function run(data, filetype, chosen_options)
 
       local engine = get_engine(codepath, output_dir, opts)
       local success, out = os.run(engine)
-      if not(success) then return false, out end
+      -- if not(success) then return false, out end
     else
       pinfof('Skip running engine, file %s already exists',
-             pdfpath)
+             engine_outpath)
     end
 
-    if not(filetype == converter.from) then
-      local converter = get_converter(pdfpath, opts)
+    if not(filetype == options.converter.from) then
+      local converter = get_converter(engine_outpath, opts)
       local success, out = os.run(converter)
-      if not(success) then return false, out end
+      -- if not(success) then return false, out end
     else
       pinfof('Skip running converter, file %s already type %s',
-             pdfpath, filetype)
+             engine_outpath, filetype)
     end
   end
 
@@ -192,7 +192,7 @@ function CodeBlock(block)
   local classes = block.classes
   local first_class = classes[1]
 
-  if not(first_class == general.name) then
+  if not(first_class == options.name) then
       return nil
   end
 
@@ -206,7 +206,7 @@ function Code(inline)
   local classes = inline.classes
   local first_class = classes[1]
 
-  if not(first_class == general.name) then
+  if not(first_class == options.name) then
       return nil
   end
 
