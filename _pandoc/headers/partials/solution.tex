@@ -1,25 +1,25 @@
 \usepackage[most]{tcolorbox}
 
-\definecolor{lsgbg}[rgb]{HTML}{fcfcd0}
+\definecolor{solbg}[rgb]{HTML}{fcfcd0}
 
-\newlength{\lsgmargins}
-\setlength{\lsgmargins}{\dimexpr(\paperwidth-\textwidth)/2\relax}
+\newlength{\solmargins}
+\setlength{\solmargins}{\dimexpr(\paperwidth-\textwidth)/2\relax}
 
-\newtcolorbox{lsgbox2}[1][]{
+\newtcolorbox{solbox2}[1][]{
     breakable,
-    colback=lsgbg,
-    colframe=lsgbg,
+    colback=solbg,
+    colframe=solbg,
     spread sidewards,
     left*=0pt,
-    right=\lsgmargins,
+    right=\solmargins,
     #1,
 }
     
 \tcbset{list/.style={%
-            enlarge left by=-\lsgmargins-#1,
+            enlarge left by=-\solmargins-#1,
             after skip=0pt,
             parbox=true,
         }%
 }
 
-\newenvironment{loesung}{\begin{lsgbox2}}{\end{lsgbox2}}
+\newenvironment{solution}{\begin{solbox2}}{\end{solbox2}}
