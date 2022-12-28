@@ -1,6 +1,7 @@
 
 blocks = pandoc.Blocks
 emph = pandoc.Emph
+fmt = string.format
 header = pandoc.Header
 includes = pandoc.List.includes
 inlines = pandoc.Inlines

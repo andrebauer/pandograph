@@ -8,9 +8,11 @@
   > \`\`\`
   > EOF
   <p><img
-  src="_tikzpicture/f7010684ee0279c079c430b24850875c9577f1be.svg" /></p>
+  src="_tikzpicture/1f9c34caf60fed252dfd94312b735ee9990ab2b6.svg" /></p>
 
   $ diff _tikzpicture/f7010684ee0279c079c430b24850875c9577f1be.svg fixtures/01.svg
+  diff: _tikzpicture/f7010684ee0279c079c430b24850875c9577f1be.svg: No such file or directory
+  [2]
 
 
   $ pandoc --to html -L tikzpicture.lua << EOF
@@ -21,7 +23,7 @@
   > \`\`\`
   > EOF
   <p><img
-  src="_tikzpicture/2fee8323516d920f25922a2c8bcae89055646251.svg" /></p>
+  src="_tikzpicture/5252d63fbd4e63ddb42179260c289441a0426d22.svg" /></p>
 
 
   $ pandoc --to html -L tikzpicture.lua << EOF
@@ -31,7 +33,7 @@
   > { r -> { a, , ,b -> {c,d}, ,e} };\`{.tikzpicture} picture.
   > EOF
   <p>This is an inline <img
-  src="_tikzpicture/d5550b342149f5724eacdcacd52ea771d864c624.svg" />
+  src="_tikzpicture/de90476a6a568eebf3aa814ec9ffa428be6c9cb0.svg" />
   picture.</p>
 
 
@@ -45,4 +47,4 @@
   > \`\`\`
   > EOF
   <p><img
-  src="_tikzpicture/88c6c4571a6df7f917872d3ccb753c6384a5a13a.svg" /></p>
+  src="_tikzpicture/d228af5099f36dacc9c3db58fa0b91714c7fb204.svg" /></p>
