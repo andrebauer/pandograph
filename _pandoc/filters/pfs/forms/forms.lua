@@ -6,8 +6,6 @@ package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
 require 'lib.metavalue'
 require 'lib.latex'
 
--- local inline_latex = function (text) return pandoc.RawInline('latex', text) end
--- local block_latex = function (text) return pandoc.RawBlock('latex', text) end
 local stringify = pandoc.utils.stringify
 
 meta = {}
@@ -24,8 +22,6 @@ function width(w)
   end
   return w
 end
-
-
 
 local function nofieldWithContent(span)
   local inlines = pandoc.List()
@@ -55,8 +51,6 @@ local function field(ty, span)
   return inlines
 end
 
-
-
 function Span(span)
   if span.classes:includes("field") then
     return field('field', span)
@@ -82,4 +76,8 @@ function Div(div)
   end
 end
 
-return {{Meta = Meta}, {Div = Div}, {Span=Span}}
+return {
+  {Meta = Meta},
+  {Div = Div},
+  {Span=Span}
+}
