@@ -1,9 +1,9 @@
 (cram
  (deps
   (file solution.lua)
-  (file lib/list.lua)))
+  (glob_files lib/{list,latex}.lua)))
 
 (copy_files ../*.lua)
+
 (subdir lib
  (copy_files %{project_root}/lib/*.lua))
-

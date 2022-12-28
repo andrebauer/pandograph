@@ -8,6 +8,19 @@
       [ Div ( "" , [ "lsg" ] , [] ) [ Para [ Str "Test" ] ] ]
   ]
 
+
+  $ pandoc --to latex -L solution.lua <<EOF
+  > ::: solution
+  > Test
+  > :::
+  > EOF
+  \begin{solution}
+  
+  Test
+  
+  \end{solution}
+
+
   $ pandoc --to native -L solution.lua <<EOF
   > :::: lsg
   > | Zeichen | Dateityp |
