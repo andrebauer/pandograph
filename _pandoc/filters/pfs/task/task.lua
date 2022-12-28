@@ -1,26 +1,10 @@
---[[
---TODO
---  - marginnotes für punkte bei latex
---
---
---
-\usepackage{marginnote}
-\usepackage{hang}
-\usepackage{ifthen}
-
-\newcommand{\maybe}[2]{\ifthenelse{\equal{#1}{Nothing}}{}{#2}}
-
-\newcommand{\taskPoints}[1]{\marginpar{\sf\vspace*{-1em} {~~ #1~P.}}}
-\newcommand{\subtaskPoints}[1]{\marginpar{\small\sf {~~/ #1}}}
-\newcommand{\divSubtaskPoints}[1]{\marginnote{\small\sf {~~/ #1}}}
-
---]]
 local fmt = string.format
 
 local pandoc_script_dir = pandoc.path.directory(PANDOC_SCRIPT_FILE)
 package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
 
 require 'lib.latex'
+require 'lib.shortening'
 
 local task_class = "task"
 local task = "Aufgabe"
@@ -50,16 +34,6 @@ local function html_list(content)
   blocks:insert(block_html("<li/></ol>"))
   return blocks
 end
-
-local header = pandoc.Header
-local inlines = pandoc.Inlines
-local blocks = pandoc.Blocks
-local list = pandoc.List
-local stringify = pandoc.utils.stringify
-local ol = pandoc.OrderedList
-local insert = pandoc.List.insert
-local strong = pandoc.Strong
-local emph = pandoc.Emph
 
 local task_number = 1
 
@@ -198,10 +172,3 @@ return {
   { Meta = Meta },
   { Div = Div }
 }
-
---[[
-TODO: Metadata k,v inside task:
-points optional
-points inline versus margin
-
-----]]
