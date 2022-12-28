@@ -34,17 +34,17 @@ end
 local thinspace = {
   Str = function(e)
     if is_numeric(e) then
-      pinfof('Skip %s as numeric.', e.text)
+      pinfof('Skip %s as numeric', e.text)
       return nil
     end
 
     if is_uri(e) then
-      pinfof('Skip %s as URI.', e.text)
+      pinfof('Skip %s as URI', e.text)
       return nil
     end
 
     if is_mail_address(e) then
-      pinfof('Skip %s as email-address.', e.text)
+      pinfof('Skip %s as email-address', e.text)
       return nil
     end
 
