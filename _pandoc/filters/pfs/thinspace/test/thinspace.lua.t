@@ -95,3 +95,28 @@ Preserve email-addresses
           ( "mailto:send.me.mail@example.org" , "" )
       ]
   ]
+
+Verbose log messages
+  $ pandoc --to html5 -L thinspace.lua --verbose << EOF
+  > <send.me.mail@example.org>  
+  > <https://example.org/>  
+  > 203.0.113.195/27  
+  > 203.0.113.195  
+  > O.B.d.A.  
+  > 2.5  
+  > EOF
+  [INFO] Running filter thinspace.lua
+  [thinspace.lua] Skip send.me.mail@example.org as email-address. 
+  [thinspace.lua] Skip https://example.org/ as URI. 
+  [thinspace.lua] Skip 203.0.113.195/27 as numeric. 
+  [thinspace.lua] Skip 203.0.113.195 as numeric. 
+  [thinspace.lua] Skip 2.5 as numeric. 
+  [INFO] Completed filter thinspace.lua in 8 ms
+  <p><a href="mailto:send.me.mail@example.org"
+  class="email">send.me.mail@example.org</a><br />
+  <a href="https://example.org/"
+  class="uri">https://example.org/</a><br />
+  203.0.113.195/27<br />
+  203.0.113.195<br />
+  O. B. d. A.<br />
+  2.5</p>

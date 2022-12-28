@@ -1,3 +1,11 @@
+local fmt = string.format
+
+local pandoc_script_dir = pandoc.path.directory(PANDOC_SCRIPT_FILE)
+package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
+
+require 'lib.log'
+set_log_source 'thinspace.lua'
+
 local thinsp = "\xe2\x80\xaf"
 
 local function is_numeric(e)
@@ -25,7 +33,18 @@ end
 
 local thinspace = {
   Str = function(e)
-    if is_numeric(e) or is_uri(e) or is_mail_address(e) then
+    if is_numeric(e) then
+      pinfof('Skip %s as numeric.', e.text)
+      return nil
+    end
+
+    if is_uri(e) then
+      pinfof('Skip %s as URI.', e.text)
+      return nil
+    end
+
+    if is_mail_address(e) then
+      pinfof('Skip %s as email-address.', e.text)
       return nil
     end
 
