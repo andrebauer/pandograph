@@ -12,5 +12,3 @@ function Link(link)
     return link
   end
 end
-
--- return
