@@ -6,7 +6,8 @@ local fmt = string.format
 local pandoc_script_dir = pandoc.path.directory(PANDOC_SCRIPT_FILE)
 package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
 
-local tools = require 'lib.tools'
+require 'lib.tools'
+require 'lib.shortening'
 
 local output_dir = pandoc.path.directory(PANDOC_STATE.output_file or '')
 local outdir = '_ditaa'
@@ -15,9 +16,6 @@ local ditaa_output_dir = fmt("%s/%s", output_dir, outdir)
 local env = pandoc.system.environment()
 
 local ditaa_path = os.getenv("DITAA") or "ditaa"
-local insert = pandoc.List.insert
-local includes = pandoc.List.includes
-local remove = pandoc.List.remove
 
 local filetype = "svg"
 local mimetype = "image/svg+xml"
@@ -229,3 +227,8 @@ return {
     {Meta = Meta},
     {CodeBlock = CodeBlock},
 }
+
+--[[
+  TODO: Spans?
+
+]]
