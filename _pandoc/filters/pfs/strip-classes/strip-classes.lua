@@ -1,27 +1,20 @@
-local stringify = pandoc.utils.stringify
+local fmt = string.format
+
+local pandoc_script_dir = pandoc.path.directory(PANDOC_SCRIPT_FILE)
+package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
+
+require 'lib.list'
+require 'lib.shortening'
+
 
 local strip_div = {}
 local strip_span = {}
 
-function intersect(m,n)
-  local res = {}
-  for _, x in ipairs(m) do
-    for _, y in ipairs(n) do
-      if x == y then
-        table.insert(res, x)
-        break
-      end
-    end
-  end
-  return res
-end
 
 function Div(div)
   if next(intersect(div.classes, strip_div)) then
     return {}
   end
-
-  -- return nil
 end
 
 function Span(span)
