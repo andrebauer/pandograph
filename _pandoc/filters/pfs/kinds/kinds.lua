@@ -1,27 +1,13 @@
+local fmt = string.format
+
+local pandoc_script_dir = pandoc.path.directory(PANDOC_SCRIPT_FILE)
+package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
+
+require 'lib.metadata'
+
 local stringify = pandoc.utils.stringify
 
-function find(t, key)
-  local key = stringify(key)
-  local type = pandoc.utils.type(t)
-  if type == 'table' then
-    local k = t[key]
-    if k then
-      return k
-    end
-  end
-  if type == 'List' then
-    for i, v in ipairs(t) do
-      for k, data in pairs(v) do
-        if k == key then
-          return data
-        end
-      end
-    end
-  end
-  return nil
-end
-
-function copy_metadata(k, meta)
+local function copy_metadata(k, meta)
   local metadata = find(k, 'metadata')
   if metadata then
     for k, v in pairs(metadata) do
@@ -42,15 +28,6 @@ function Meta(meta)
 
   if outpath then
     outpath = stringify(outpath)
-  end
-
-  local function includes(l, elm)
-    for i, v in ipairs(l) do
-      if stringify(v) == elm then
-        return true
-      end
-    end
-    return false
   end
 
   local function match_outpath_and_copy_metadata(t)
