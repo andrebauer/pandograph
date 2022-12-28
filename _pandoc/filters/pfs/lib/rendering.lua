@@ -29,39 +29,21 @@ end
 -- converter
 -- general
 
-outdir = outdir or fmt('_%s', name)
+outdir = outdir or fmt('_%s', general.name)
 
 output_dir = pandoc.path.directory(PANDOC_STATE.output_file or '')
 output_dir = fmt("%s/%s", output_dir, outdir)
 
-Known_opts_kv = kv_of_list(Known_opts)
+-- Known_opts_kv = kv_of_list(Known_opts)
 
-Known_args_kv = kv_of_list(Known_args)
+-- Known_args_kv = kv_of_list(Known_args)
 
-global_options = merge(Known_opts_kv, Known_args_kv)
+-- global_options = merge(Known_opts_kv, Known_args_kv)
 
-function Meta(meta)
-  if meta[name] then
-    if meta[name].engine then
-      engine = stringify(
-        meta[name].engine
-      )
-    end
-
-    if meta[name].converter then
-      converter = stringify(
-        meta[name].converter
-      )
-    end
-
-    assign(global_options,
-           stringify_obj(meta[name]))
-  end
-end
 
 
 function get_template(chosen_options, template_root)
-  local template_name = default_template_name
+  local template_name = engine.template
   if chosen_options.template then
     template_name = chosen_options.template
   end
@@ -69,72 +51,19 @@ function get_template(chosen_options, template_root)
   local template_path = fmt('%s/templates/%s.%s',
                             template_root,
                             template_name,
-                            ext)
+                            engine.from)
 
   pinfo('Template path is', template_path)
-  local t = io.open(template_path, 'r')
 
-  local template = nil
-
-  if t then
-    template = t:read('*all')
-    t:close()
-  else
-    error('Cannot open template ' .. template_path, 1)
-  end
-
-  return template
-end
-
-
-function run_engine(codepath, output_dir, code, opts)
-  if not(file_exists(codepath)) then
-    file.write(codepath, code)
-  end
-
-  local output_dir = fmt('--output-directory=%s', output_dir)
-
-  local command = join(engine,
-                       '--halt-on-error',
-                       '--output-format=pdf',
-                       table.unpack(opts) or '',
-                       output_dir,
-                       codepath)
-
-  return os.run(command)
-  --[[
-  pinfo(command)
-  local success, out = os.capture(command)
-  if not(success) then
-    perr(out)
-    return false, log, nil
-  end
-  pinfo(out)
-  --]]
-end
-
-
-function run_converter(pdfpath, opts)
-  local opts = {
-    png = '--export-type=png --export-dpi=300',
-    svg = '--export-type=svg --export-plain-svg'
-  }
-
-  local command = join(converter,
-                       opts[filetype],
-                       pdfpath)
-
-  return os.run(command)
+  return file.read(template_path, 'r')
 end
 
 function run(data, filetype, chosen_options)
   os.execute('mkdir -p '  .. output_dir)
 
-  local opts = get_opts(known_options, chosen_options)
+  local opts = {} --  get_opts(known_options, chosen_options)
 
   -- print('OPTS', table.unpack(opts))
-
-  -- print("TIKZPICTURE OPTS:", join(table.unpack(opts)))
 
   local template = get_template(chosen_options, pandoc_script_dir)
 
@@ -146,18 +75,36 @@ function run(data, filetype, chosen_options)
 
   local pdfpath = fmt('%s/%s.%s', output_dir, filename, 'pdf')
   local outpath = fmt('%s/%s.%s', output_dir, filename, filetype)
-  local codepath = fmt('%s/%s.%s', output_dir, filename, ext)
+  local codepath = fmt('%s/%s.%s', output_dir, filename, engine.from)
   -- local logpath = fmt('%s/%s.%s', output_dir, filename, "log")
   local relative_outpath = fmt('%s/%s.%s', outdir, filename, filetype)
 
   if not(file_exists(outpath)) then
 
     if not(file_exists(pdfpath)) then
-      run_engine(codepath, output_dir, code, opts)
+
+      if not(file_exists(codepath)) then
+        file.write(codepath, code)
+      else
+        pinfof('Skip writing %s, file already exists',
+               codepath)
+      end
+
+      local engine = get_engine(codepath, output_dir, opts)
+      local success, out = os.run(engine)
+      if not(success) then return false, out end
+    else
+      pinfof('Skip running engine, file %s already exists',
+             pdfpath)
     end
 
-    if not(filetype == 'pdf') then
-      run_converter(pdfpath, opts)
+    if not(filetype == converter.from) then
+      local converter = get_converter(pdfpath, opts)
+      local success, out = os.run(converter)
+      if not(success) then return false, out end
+    else
+      pinfof('Skip running converter, file %s already type %s',
+             pdfpath, filetype)
     end
   end
 
@@ -169,24 +116,6 @@ function run(data, filetype, chosen_options)
     file.write(named_outpath, imgData)
   end
 
-  --[[
-  -- Try to open the written image:
-  local r = io.open(outpath, 'rb')
-  local imgFata = nil
-  if r then
-      imgData = r:read("*all")
-      r:close()
-
-      if chosen_options.filename then
-        local named_outpath = fmt('%s/%s.%s', output_dir, chosen_options.filename, filetype)
-
-        file.write(named_outpath, imgData)
-      end
-  else
-      perrf("File '%s' could not be opened", outpath)
-      error 'Could not create image from tikz code.'
-  end
-  --]]
   return true, imgData, relative_outpath
 end
 
@@ -194,7 +123,7 @@ end
 function render(el)
     local classes = el.classes
 
-    local options = copy(global_options)
+    local options = {} -- copy(global_options)
 
     if filetype == "svg" then
       options.svg = true
@@ -243,9 +172,11 @@ function render(el)
         --
         -- to be referenced as @fig:example outside of the figure when used
         -- with `pandoc-crossref`.
+        --
         local img_attr = {
             id = el.identifier,
-            name = el.attributes.name,
+            title = el.attributes.title,
+            name = el.attributes.name, -- ???
             width = el.attributes.width,
             height = el.attributes.height
         }
@@ -261,7 +192,7 @@ function CodeBlock(block)
   local classes = block.classes
   local first_class = classes[1]
 
-  if not(first_class == name) then
+  if not(first_class == general.name) then
       return nil
   end
 
@@ -275,7 +206,7 @@ function Code(inline)
   local classes = inline.classes
   local first_class = classes[1]
 
-  if not(first_class == name) then
+  if not(first_class == general.name) then
       return nil
   end
 

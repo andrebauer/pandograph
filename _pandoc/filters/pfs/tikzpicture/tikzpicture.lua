@@ -7,41 +7,62 @@ package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
 require 'lib.log'
 set_log_source('tikzpicture.lua')
 
-name = 'tikzpicture'
-ext = 'tex'
-
-default_template_name = 'default'
-
-engine = os.getenv("TIKZPICTURE_PDFENGINE") or "lualatex"
-converter = os.getenv("TIKZPICTURE_CONVERTER") or "inkscape"
-
-known_options = {
-  general = {
-    args = {
-      "scale",
-    },
-    opts = {
-      "cache"
-    }
-  },
-  engine = {
-    args = {
-      template = 'default'
-    }
-  },
-  converter = {
-
-  }
+general = {
+  name = 'tikzpicture',
+  cache = true
 }
 
-Known_opts =
-  { "debug" }
+engine = {
+  binary = os.getenv("TIKZPICTURE_PDFENGINE") or "lualatex",
+  from = 'tex',
+  template = 'default'
+}
+engine['template-root'] = fmt('%s/%s', pandoc_script_dir, 'templates')
 
-Known_args =
-  { "scale",
-    "template" }
+converter = {
+  binary = os.getenv("TIKZPICTURE_CONVERTER") or "inkscape",
+  from = 'pdf',
+}
 
--- Filename option
+function Meta(meta)
+  if meta[general.name] then
+    if meta[general.name].engine then
+      engine = stringify(
+        meta[general.name].engine
+      )
+    end
+
+    if meta[general.name].converter then
+      converter = stringify(
+        meta[general.name].converter
+      )
+    end
+
+    assign(global_options,
+           stringify_obj(meta[general.name]))
+  end
+end
+
+function get_engine(codepath, output_dir, opts)
+  local output_dir = fmt('--output-directory=%s', output_dir)
+  return join(engine.binary,
+              '--halt-on-error',
+              '--output-format=pdf',
+              table.unpack(opts) or '',
+              output_dir,
+              codepath)
+end
+
+function get_converter(pdfpath, opts)
+  local opts = {
+    png = '--export-type=png --export-dpi=300',
+    svg = '--export-type=svg --export-plain-svg'
+  }
+
+  return join(converter.binary,
+              opts[filetype],
+              pdfpath)
+end
 
 require 'lib.rendering'
 
