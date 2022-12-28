@@ -3,7 +3,8 @@ _build/
 *.lock
 README.pdf
 .lock-waf*
-_pandoc/headers/.auctex-auto/
+.auctex-auto
 .RData
 .Rhistory
 _pandoc/writers/sample.lua
+_tikzpicture
