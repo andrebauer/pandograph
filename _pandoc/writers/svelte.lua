@@ -240,7 +240,7 @@ end
 function Image(s, src, tit, attr)
   useComponent('element', 'Image')
   return '<Image src="' .. escape(src,true) .. '" title="' ..
-         escape(tit,true) .. '"/>'
+         escape(tit,true) .. '"' .. attributes(attr) .. '/>'
 end
 
 function Code(s, attr)
@@ -388,13 +388,10 @@ function CodeBlock(s, attr)
 
     local component = useComponent('codeblock', class_name)
 
-    -- raw = { questionsAsJSON = json.encode(yaml.eval(s)) }
-
-    -- print("ATTR", attr, type(attr))
-    -- table.insert(
-
-    -- return createComponent(component.name, attr, '', raw)
-
+    if component.text == 'yaml' then
+      local raw = { questionsAsJSON = json.encode(yaml.eval(s)) }
+      return createComponent(component.name, attr, '', raw)
+    end
 
     return createComponent(component.name, attr, s)
   end
