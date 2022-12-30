@@ -34,84 +34,60 @@ outdir = outdir or fmt('_%s', options.name)
 output_dir = pandoc.path.directory(PANDOC_STATE.output_file or '')
 output_dir = fmt("%s/%s", output_dir, outdir)
 
--- Known_opts_kv = kv_of_list(Known_opts)
-
--- Known_args_kv = kv_of_list(Known_args)
-
--- global_options = merge(Known_opts_kv, Known_args_kv)
 
 
 
-function get_template(chosen_options, template_root)
-  local template_name = options.engine.template
-  if chosen_options.template then
-    template_name = chosen_options.template
-  end
-
-  local template_path = fmt('%s/templates/%s.%s',
-                            template_root,
-                            template_name,
-                            options.engine.from)
-
-  pinfo('Template path is', template_path)
-
-  return file.read(template_path, 'r')
-end
-
-function run(data, filetype, chosen_options)
+function run(data, filetype, options)
   os.execute('mkdir -p '  .. output_dir)
 
-  local opts = {} --  get_opts(known_options, chosen_options)
+  local code, hash = get_data(data, options.template)
 
-  -- print('OPTS', table.unpack(opts))
+  local engine_in_filename = join_ext(hash, options.engine.from)
 
-  local template = get_template(chosen_options, pandoc_script_dir)
+  local engine_in_path = join_path(output_dir, engine_in_filename)
 
-  local code = template:format(data)
+  local engine, engine_out_path = get_engine(engine_in_path,
+                                              output_dir,
+                                              options.engine)
 
-  local hash_data = code .. join(table.unpack(opts))
-  -- print('HASH_DATA', hash_data)
-  local filename = pandoc.utils.sha1(hash_data)
+  local converter, converter_out_path =
+    get_converter(engine_out_path, options.converter)
 
-  local engine_outpath = fmt('%s/%s.%s', output_dir, filename, options.converter.from)
-  local outpath = fmt('%s/%s.%s', output_dir, filename, filetype)
-  local codepath = fmt('%s/%s.%s', output_dir, filename, options.engine.from)
-  -- local logpath = fmt('%s/%s.%s', output_dir, filename, "log")
-  local relative_outpath = fmt('%s/%s.%s', outdir, filename, filetype)
+  local relative_outpath = fmt('%s/%s.%s', outdir, hash, filetype)
 
-  if not(file_exists(outpath)) then
+  if not(file_exists(converter_out_path)) then
 
-    if not(file_exists(engine_outpath)) then
+    if not(file_exists(engine_out_path)) then
 
-      if not(file_exists(codepath)) then
-        file.write(codepath, code)
+      if not(file_exists(engine_in_path)) then
+        file.write(engine_in_path, code)
       else
         pinfof('Skip writing %s, file already exists',
-               codepath)
+               engine_in_path)
       end
 
-      local engine = get_engine(codepath, output_dir, opts)
       local success, out = os.run(engine)
-      -- if not(success) then return false, out end
+      if not(success) then return false, out end
     else
       pinfof('Skip running engine, file %s already exists',
              engine_outpath)
     end
 
-    if not(filetype == options.converter.from) then
-      local converter = get_converter(engine_outpath, opts)
+    local _, engine_out_ext = split_ext(engine_out_path)
+
+    if not(filetype == engine_out_ext) then
       local success, out = os.run(converter)
-      -- if not(success) then return false, out end
+      if not(success) then return false, out end
     else
-      pinfof('Skip running converter, file %s already type %s',
+      pinfof('Skip running converter, file %s has already type %s',
              engine_outpath, filetype)
     end
   end
 
-  local imgData = file.read(outpath)
+  local imgData = file.read(converter_out_path)
 
-  if chosen_options.filename then
-    local named_outpath = fmt('%s/%s.%s', output_dir, chosen_options.filename, filetype)
+  if options.filename then
+    local named_outpath = fmt('%s/%s.%s', output_dir, options.filename, filetype)
 
     file.write(named_outpath, imgData)
   end
@@ -120,23 +96,9 @@ function run(data, filetype, chosen_options)
 end
 
 -- Executes each document's code block to find matching code blocks:
-function render(el)
-    local classes = el.classes
+function render(el, options)
+    local options = get_options(el.attr, options)
 
-    local options = {} -- copy(global_options)
-
-    if filetype == "svg" then
-      options.svg = true
-    end
-
-    for _, c in ipairs(classes) do
-      options[c] = true
-    end
-    for k,v in pairs(el.attributes) do
-      options[k] = stringify(v)
-    end
-
-    -- Call the correct converter which belongs to the used class:
     local success, data, fpath = run(el.text, filetype, options)
 
     -- Was ok?
@@ -188,6 +150,32 @@ function render(el)
     end
 end
 
+function Meta(meta)
+  local main = meta[options.name]
+  if main then
+    for k, v in pairs(options) do
+      if k ~= 'sealed' and not(includes(options.sealed, k)) then
+        local main_v = main[k]
+        if main_v then
+          local type = pandoc.utils.type(main_v)
+          if type == 'Inlines' then
+            options[k] = stringify(main_v)
+          elseif type == 'table' then
+            for k_, v_ in pairs(main_v) do
+              if k_ ~= 'sealed' and not(includes(options[k].sealed, k_)) then
+                local sub_v = main[k][k_]
+                if sub_v then
+                  options[k][k_] = stringify(sub_v)
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+end
+
 function CodeBlock(block)
   local classes = block.classes
   local first_class = classes[1]
@@ -199,7 +187,7 @@ function CodeBlock(block)
   -- Finally, put the image inside an empty paragraph. By returning the
   -- resulting paragraph object, the source code block gets replaced by
   -- the image:
-  return pandoc.Para( render(block) )
+  return pandoc.Para( render(block, options) )
 end
 
 function Code(inline)
@@ -210,5 +198,5 @@ function Code(inline)
       return nil
   end
 
-  return render(inline)
+  return render(inline, options)
 end
