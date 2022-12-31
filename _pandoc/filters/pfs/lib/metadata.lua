@@ -29,3 +29,30 @@ function includes(l, elm)
   end
   return false
 end
+
+function parse_meta(meta, options)
+  local main = meta[options.name]
+  if main then
+    for k, v in pairs(options) do
+      if k ~= 'sealed' and not(includes(options.sealed, k)) then
+        local main_v = main[k]
+        if main_v then
+          local type = pandoc.utils.type(main_v)
+          if type == 'Inlines' then
+            options[k] = stringify(main_v)
+          elseif type == 'table' then
+            for k_, v_ in pairs(main_v) do
+              if k_ ~= 'sealed' and not(includes(options[k].sealed, k_)) then
+                local sub_v = main[k][k_]
+                if sub_v then
+                  options[k][k_] = stringify(sub_v)
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+  return options
+end

@@ -1,5 +1,3 @@
-join = function (...) return table.concat({...}, ' ') end
-
 -- stringify = pandoc.utils.stringify
 with_temporary_directory = pandoc.system.with_temporary_directory
 with_working_directory = pandoc.system.with_working_directory
@@ -75,12 +73,3 @@ function sha1_16(s)
   return string.sub(pandoc.utils.sha1(s), 1, 16)
 end
 
-function file_exists(path)
-   local f = io.open(path, "r")
-   if f ~= nil then
-     io.close(f)
-     return true
-   else
-     return false
-   end
-end

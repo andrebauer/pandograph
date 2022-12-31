@@ -7,6 +7,10 @@ package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
 require 'lib.shortening'
 require 'lib.log'
 require 'lib.file'
+require 'lib.metadata'
+require 'lib.mimetype'
+require 'lib.rendering'
+
 set_log_source('tikzpicture.lua')
 
 default_image_options = {
@@ -18,11 +22,13 @@ default_image_options = {
     height = nil,
   }
 
+-- outdir = outdir or fmt('_%s', options.name)
+
 options = {
   name = 'tikzpicture',
   cache = true,
-  sealed = { 'name' },
   filename = false,
+  sealed = { 'name' },
 
   template = {
     root = fmt('%s/%s', pandoc_script_dir, 'templates'),
@@ -47,6 +53,9 @@ options = {
 }
 options.engine['template-root'] = fmt('%s/%s', pandoc_script_dir, 'templates')
 options.outdir = fmt('_%s', options.name)
+local output_dir = pandoc.path.directory(PANDOC_STATE.output_file or '')
+options.output_dir = fmt("%s/%s", output_dir, options.outdir)
+
 
 function get_options(attr, options)
   local a = attr.attributes
@@ -101,7 +110,7 @@ function get_engine(in_path, out_dir, options)
 end
 
 -- converter_in, converter_out_dir, opts || converter creates hash filename?
-function get_converter(in_path, options)
+function get_converter(in_path, filetype, options)
   local opts = {
     png = '--export-type=png --export-dpi=300',
     svg = '--export-type=svg --export-plain-svg'
@@ -115,7 +124,34 @@ function get_converter(in_path, options)
   return converter, out_path
 end
 
-require 'lib.rendering'
+function Meta(meta)
+  options = parse_meta(meta, options)
+end
+
+function CodeBlock(block)
+  local classes = block.classes
+  local first_class = classes[1]
+
+  if not(first_class == options.name) then
+      return nil
+  end
+
+  -- Finally, put the image inside an empty paragraph. By returning the
+  -- resulting paragraph object, the source code block gets replaced by
+  -- the image:
+  return pandoc.Para( render(block, options) )
+end
+
+function Code(inline)
+  local classes = inline.classes
+  local first_class = classes[1]
+
+  if not(first_class == options.name) then
+      return nil
+  end
+
+  return render(inline, options)
+end
 
 return {
     {Meta = Meta},

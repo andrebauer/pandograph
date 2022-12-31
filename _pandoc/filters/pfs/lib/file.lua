@@ -3,6 +3,16 @@ require 'lib.log'
 
 file = {}
 
+function file.exists(path)
+   local f = io.open(path, "r")
+   if f ~= nil then
+     io.close(f)
+     return true
+   else
+     return false
+   end
+end
+
 function file.read(path, mode)
   mode = mode or 'rb'
   local f, msg, errcode = io.open(path, mode)

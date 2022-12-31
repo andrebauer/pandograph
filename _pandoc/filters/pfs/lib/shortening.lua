@@ -11,6 +11,7 @@ includes = function(list, elm)
 end
 inlines = pandoc.Inlines
 insert = pandoc.List.insert
+join = function (...) return table.concat({...}, ' ') end
 list = pandoc.List
 ol = pandoc.OrderedList
 remove = pandoc.List.remove
