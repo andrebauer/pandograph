@@ -27,7 +27,7 @@ local rootdir = pandoc.path.directory(PANDOC_STATE.output_file or '')
 local absolute_outdir = fmt("%s/%s", rootdir, outdir)
 
 
-options = {
+local options = {
   name = 'tikzpicture',
   cache = true,
   rootdir = rootdir,
@@ -63,11 +63,11 @@ options = {
 options.engine['template-root'] = fmt('%s/%s', pandoc_script_dir, 'templates')
 
 
-function get_options(attr, options)
+local function get_options(attr, options)
   local a = attr.attributes
-  local n = a.template
-  if n then
-    options.template.name = n
+  local tn = a.template
+  if tn then
+    options.template.name = tn
   end
   local ap = a['additional-packages']
   if ap then
@@ -84,7 +84,7 @@ function get_options(attr, options)
   return options
 end
 
-function get_data(data, options)
+local function get_data(data, options)
   local template_path = fmt('%s/%s.%s',
                             options.rootdir,
                             options.name,
@@ -103,7 +103,7 @@ function get_data(data, options)
   return code, hash
 end
 
-function get_engine(inpath, options)
+local function get_engine(inpath, options)
   local outdir_arg = fmt('--output-directory=%s', options.outdir)
   local engine = join(options.binary,
                       '--halt-on-error',
@@ -114,7 +114,9 @@ function get_engine(inpath, options)
   return engine, fname
 end
 
-get_converter = inkscape_converter
+local get_converter = inkscape_converter
+
+local render = get_wrapper(options, get_options, get_renderer(get_data, get_engine, get_converter))
 
 function Meta(meta)
   options = parse_meta(meta, options)

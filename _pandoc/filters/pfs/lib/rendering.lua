@@ -19,7 +19,8 @@ function inkscape_converter(inpath, options)
   return converter, fname
 end
 
-function run(data, options)
+function get_renderer(get_data, get_engine, get_converter)
+ return function(data, options)
   local code, hash = get_data(data, options.template)
 
   local engine_in_filename = join_ext(hash, options.template.ext)
@@ -90,13 +91,15 @@ function run(data, options)
   end
 
   return true, imgData, path
+ end
 end
 
 -- Executes each document's code block to find matching code blocks:
-function render(el, options)
+function get_wrapper(options, get_options, renderer)
+  return function(el)
     local options = get_options(el.attr, options)
 
-    local success, data, fpath = run(el.text, options)
+    local success, data, fpath = renderer(el.text, options)
 
     -- Was ok?
     if success then
@@ -145,4 +148,5 @@ function render(el, options)
         -- figure i.e. attach a caption to the image.
         return pandoc.Image(caption, fpath, title, img_attr)
     end
+  end
 end
