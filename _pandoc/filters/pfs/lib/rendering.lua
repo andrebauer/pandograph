@@ -5,27 +5,45 @@ require 'lib.os'
 require 'lib.file'
 require 'lib.shortening'
 
-function run(data, filetype, options)
-  os.execute('mkdir -p '  .. options.output_dir)
+function inkscape_converter(inpath, options)
+  local args = {
+    png = '--export-type=png --export-dpi=300',
+    svg = '--export-type=svg --export-plain-svg'
+  }
+  local fname = change_ext(filename(inpath), options.filetype)
+  local outpath = join_path(options.outdir, fname)
+  local converter = join(options.binary,
+                         args[options.filetype],
+                         '-o', outpath,
+                         in_path)
+  return converter, fname
+end
 
+function run(data, options)
   local code, hash = get_data(data, options.template)
 
-  local engine_in_filename = join_ext(hash, options.engine.from)
+  local engine_in_filename = join_ext(hash, options.template.ext)
 
-  local engine_in_path = join_path(options.output_dir, engine_in_filename)
+  local engine_in_path = join_path(options.template.outdir,
+                                   engine_in_filename)
 
-  local engine, engine_out_path = get_engine(engine_in_path,
-                                             options.output_dir,
+  local engine, engine_out_file = get_engine(engine_in_path,
                                              options.engine)
 
-  local converter, converter_out_path =
-    get_converter(engine_out_path, filetype, options.converter)
+  local engine_abs_out_path = join_path(options.engine.outdir,
+                                        engine_out_file)
 
-  local relative_outpath = fmt('%s/%s.%s', options  .outdir, hash, filetype)
+  local converter, converter_out_file =
+    get_converter(engine_abs_out_path, options.converter)
 
-  if not(file.exists(converter_out_path)) then
+  local converter_abs_out_path = join_path(options.converter.outdir,
+                                           converter_out_file)
 
-    if not(file.exists(engine_out_path)) then
+  if not(file.exists(converter_abs_out_path)) then
+      os.execute('mkdir -p '  .. options.converter.outdir)
+
+    if not(file.exists(engine_abs_out_path)) then
+      os.execute('mkdir -p '  .. options.engine.outdir)
 
       if not(file.exists(engine_in_path)) then
         file.write(engine_in_path, code)
@@ -38,36 +56,47 @@ function run(data, filetype, options)
       if not(success) then return false, out end
     else
       pinfof('Skip running engine, file %s already exists',
-             engine_outpath)
+             engine_abs_out_path)
     end
 
-    local _, engine_out_ext = split_ext(engine_out_path)
+    local _, engine_out_ext = split_ext(engine_out_file)
 
-    if not(filetype == engine_out_ext) then
+    if not(options.converter.filetype == engine_out_ext) then
       local success, out = os.run(converter)
       if not(success) then return false, out end
     else
       pinfof('Skip running converter, file %s has already type %s',
-             engine_outpath, filetype)
+             engine_abs_out_path, filetype)
     end
   end
 
-  local imgData = file.read(converter_out_path)
-
-  if options.filename then
-    local named_outpath = fmt('%s/%s.%s', output_dir, options.filename, filetype)
-
-    file.write(named_outpath, imgData)
+  local imgData, path
+  if options.converter.filetype == engine_out_ext then
+    imgData = file.read(engine_abs_out_path)
+    path = join_path(options.outdir, engine_out_file)
+  else
+    imgData = file.read(converter_abs_out_path)
+    path = join_path(options.outdir, converter_out_file)
   end
 
-  return true, imgData, relative_outpath
+  if options.filename then
+    local filename = join_ext(options.filename, filetype)
+    local named_outpath = is_abs_path(filename)
+      and filename:sub(2)
+      or join_path(options.rootdir, filename)
+    os.execute('mkdir -p ' .. split_path(named_outpath))
+    file.write(named_outpath, imgData)
+    path = filename
+  end
+
+  return true, imgData, path
 end
 
 -- Executes each document's code block to find matching code blocks:
 function render(el, options)
     local options = get_options(el.attr, options)
 
-    local success, data, fpath = run(el.text, filetype, options)
+    local success, data, fpath = run(el.text, options)
 
     -- Was ok?
     if success then

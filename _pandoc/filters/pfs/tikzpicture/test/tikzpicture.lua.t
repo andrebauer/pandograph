@@ -64,3 +64,48 @@
   > EOF
   <p><img
   src="_tikzpicture/9e5f0558dcc754dc47cc4d464190dabed655095d.svg" /></p>
+
+  $ pandoc --to html -L tikzpicture.lua << EOF
+  > ---
+  > tikzpicture:
+  >   cache: false
+  >   engine:
+  >     template: default-serif
+  > ---
+  > \`\`\`{.tikzpicture filename="tree"}
+  > \usetikzlibrary {graphs,graphdrawing} \usegdlibrary {trees}
+  > \tikz \graph [tree layout, nodes={draw,circle}, sibling sep=0pt]
+  >  { r -> { a, , ,b -> {c,d}, ,e} };
+  > \`\`\`
+  > EOF
+  <p><img src="tree.svg" /></p>
+
+  $ pandoc --to html -L tikzpicture.lua << EOF
+  > ---
+  > tikzpicture:
+  >   cache: false
+  >   engine:
+  >     template: default-serif
+  > ---
+  > \`\`\`{.tikzpicture filename="images/trees/first" }
+  > \usetikzlibrary {graphs,graphdrawing} \usegdlibrary {trees}
+  > \tikz \graph [tree layout, nodes={draw,circle}, sibling sep=0pt]
+  >  { r -> { a, , ,b -> {c,d}, ,e} };
+  > \`\`\`
+  > EOF
+  <p><img src="images/trees/first.svg" /></p>
+
+  $ pandoc --to html -L tikzpicture.lua << EOF
+  > ---
+  > tikzpicture:
+  >   cache: false
+  >   engine:
+  >     template: default-serif
+  > ---
+  > \`\`\`{.tikzpicture filename="/images/tree" }
+  > \usetikzlibrary {graphs,graphdrawing} \usegdlibrary {trees}
+  > \tikz \graph [tree layout, nodes={draw,circle}, sibling sep=0pt]
+  >  { r -> { a, , ,b -> {c,d}, ,e} };
+  > \`\`\`
+  > EOF
+  <p><img src="/images/tree.svg" /></p>

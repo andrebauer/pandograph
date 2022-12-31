@@ -22,18 +22,24 @@ default_image_options = {
     height = nil,
   }
 
--- outdir = outdir or fmt('_%s', options.name)
+local outdir = '_tikzpicture'
+local rootdir = pandoc.path.directory(PANDOC_STATE.output_file or '')
+local absolute_outdir = fmt("%s/%s", rootdir, outdir)
+
 
 options = {
   name = 'tikzpicture',
   cache = true,
+  rootdir = rootdir,
+  outdir = outdir,
   filename = false,
-  sealed = { 'name' },
+  sealed = { 'name', 'rootdir' },
 
   template = {
-    root = fmt('%s/%s', pandoc_script_dir, 'templates'),
+    rootdir = join_path(pandoc_script_dir, 'templates'),
     name = 'default',
     ext = 'tex',
+    outdir = absolute_outdir,
     additional_packages = nil,
     tikz_class_options = '%%',
     sealed = {}
@@ -41,20 +47,20 @@ options = {
 
   engine = {
     binary = os.getenv("TIKZPICTURE_PDFENGINE") or "lualatex",
+    outdir = absolute_outdir,
     sealed = {}
   },
 
   converter = {
     binary = os.getenv("TIKZPICTURE_CONVERTER") or "inkscape",
+    outdir = absolute_outdir,
+    filetype = filetype,
     sealed = {}
   },
 
   image = default_image_options
 }
 options.engine['template-root'] = fmt('%s/%s', pandoc_script_dir, 'templates')
-options.outdir = fmt('_%s', options.name)
-local output_dir = pandoc.path.directory(PANDOC_STATE.output_file or '')
-options.output_dir = fmt("%s/%s", output_dir, options.outdir)
 
 
 function get_options(attr, options)
@@ -80,7 +86,7 @@ end
 
 function get_data(data, options)
   local template_path = fmt('%s/%s.%s',
-                            options.root,
+                            options.rootdir,
                             options.name,
                             options.ext)
   local template = file.read(template_path, 'r')
@@ -97,32 +103,18 @@ function get_data(data, options)
   return code, hash
 end
 
-function get_engine(in_path, out_dir, options)
-  local out_dir = fmt('--output-directory=%s', out_dir)
+function get_engine(inpath, options)
+  local outdir_arg = fmt('--output-directory=%s', options.outdir)
   local engine = join(options.binary,
                       '--halt-on-error',
                       '--output-format=pdf',
-                      out_dir,
-                      in_path)
-  local path_without_ext = split_ext(in_path)
-  local out_path = join_ext(path_without_ext, 'pdf')
-  return engine, out_path
+                      outdir_arg,
+                      inpath)
+  local fname = change_ext(filename(inpath), 'pdf')
+  return engine, fname
 end
 
--- converter_in, converter_out_dir, opts || converter creates hash filename?
-function get_converter(in_path, filetype, options)
-  local opts = {
-    png = '--export-type=png --export-dpi=300',
-    svg = '--export-type=svg --export-plain-svg'
-  }
-
-  local converter = join(options.binary,
-                         opts[filetype],
-                         in_path)
-  local path_without_ext = split_ext(in_path)
-  local out_path = join_ext(path_without_ext, filetype)
-  return converter, out_path
-end
+get_converter = inkscape_converter
 
 function Meta(meta)
   options = parse_meta(meta, options)
