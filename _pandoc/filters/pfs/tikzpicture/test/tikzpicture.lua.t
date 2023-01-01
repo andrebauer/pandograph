@@ -78,7 +78,7 @@
   >  { r -> { a, , ,b -> {c,d}, ,e} };
   > \`\`\`
   > EOF
-  <p><img src="tree.svg" data-filename="tree" /></p>
+  <p><img src="tree.svg" /></p>
 
   $ pandoc --to html -L tikzpicture.lua << EOF
   > ---
@@ -93,8 +93,7 @@
   >  { r -> { a, , ,b -> {c,d}, ,e} };
   > \`\`\`
   > EOF
-  <p><img src="images/trees/first.svg"
-  data-filename="images/trees/first" /></p>
+  <p><img src="images/trees/first.svg" /></p>
 
   $ pandoc --to html -L tikzpicture.lua << EOF
   > ---
@@ -109,7 +108,7 @@
   >  { r -> { a, , ,b -> {c,d}, ,e} };
   > \`\`\`
   > EOF
-  <p><img src="/images/tree.svg" data-filename="/images/tree" /></p>
+  <p><img src="/images/tree.svg" /></p>
 
   $ pandoc --to html -L tikzpicture.lua << EOF
   > ---
@@ -134,7 +133,7 @@
   >   engine:
   >     template: default-serif
   > ---
-  > \`\`\`{.tikzpicture #tree1 additions-packages="adjustbox" width="6cm" height="4cm" title="Tree 1" name="Tree Name" caption="This is a tree"}
+  > \`\`\`{.tikzpicture #tree1 additions-packages="adjustbox" width="6cm" height="4cm" title="Tree 1" caption="This is a tree"}
   > \usetikzlibrary {graphs,graphdrawing} \usegdlibrary {trees}
   > \tikz \graph [tree layout, nodes={draw,circle}, sibling sep=0pt]
   >  { r -> { a, , ,b -> {c,d}, ,e} };
@@ -143,6 +142,44 @@
   <figure>
   <img src="_tikzpicture/9e5f0558dcc754dc47cc4d464190dabed655095d.svg"
   id="tree1" style="width:6cm;height:4cm" title="Tree 1"
-  data-caption="This is a tree" alt="This is a tree" />
+  alt="This is a tree" />
   <figcaption aria-hidden="true">This is a tree</figcaption>
   </figure>
+
+  $ pandoc --to html -L tikzpicture.lua << EOF
+  > ---
+  > tikzpicture:
+  >   cache: false
+  >   engine:
+  >     template: default-serif
+  > ---
+  > \`\`\`{.tikzpicture #tree1 additions-packages="adjustbox" width="6cm" height="4cm" name="Tree Name" caption="This is a tree"}
+  > \usetikzlibrary {graphs,graphdrawing} \usegdlibrary {trees}
+  > \tikz \graph [tree layout, nodes={draw,circle}, sibling sep=0pt]
+  >  { r -> { a, , ,b -> {c,d}, ,e} };
+  > \`\`\`
+  > EOF
+  <figure>
+  <img src="_tikzpicture/9e5f0558dcc754dc47cc4d464190dabed655095d.svg"
+  id="tree1" style="width:6cm;height:4cm" name="Tree Name"
+  alt="This is a tree" />
+  <figcaption aria-hidden="true">This is a tree</figcaption>
+  </figure>
+
+
+  $ pandoc --to html -L tikzpicture.lua << EOF
+  > ---
+  > tikzpicture:
+  >   cache: false
+  >   engine:
+  >     template: default-serif
+  > ---
+  > \`\`\`
+  > \usetikzlibrary {graphs,graphdrawing} \usegdlibrary {trees}
+  > \tikz \graph [tree layout, nodes={draw,circle}, sibling sep=0pt]
+  >  { r -> { a, , ,b -> {c,d}, ,e} };
+  > \`\`\`
+  > EOF
+  <pre><code>\usetikzlibrary {graphs,graphdrawing} \usegdlibrary {trees}
+  \tikz \graph [tree layout, nodes={draw,circle}, sibling sep=0pt]
+   { r -&gt; { a, , ,b -&gt; {c,d}, ,e} };</code></pre>

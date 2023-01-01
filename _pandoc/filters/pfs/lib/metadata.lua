@@ -22,6 +22,7 @@ function find(t, key)
 end
 
 function includes(l, elm)
+  if not(l) then return false end
   for i, v in ipairs(l) do
     if stringify(v) == elm then
       return true
@@ -35,6 +36,7 @@ function parse_meta(meta, options)
   if main then
     for k, v in pairs(options) do
       if k ~= '__sealed__'
+        and pandoc.utils.type(k) ~= 'table'
         and not(includes(options.__sealed__, k)) then
         local main_v = main[k]
         if main_v then
