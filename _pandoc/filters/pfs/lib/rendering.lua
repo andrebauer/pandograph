@@ -20,6 +20,25 @@ function inkscape_converter(inpath, options)
   return converter, fname
 end
 
+default_image_options = {
+    id = nil, -- TODO
+    title = nil,
+    caption = nil,
+    filename = nil,
+    width = nil,
+    height = nil,
+  }
+
+default_attributes_map = {
+  title = { 'image', 'title' },
+  caption = { 'image', 'caption' },
+  filename = { 'image', 'filename' },
+  width = { 'image', 'width' },
+  height = { 'image', 'height'}
+}
+
+default_identifier_map = { 'image', 'id' }
+
 function get_renderer(get_data, get_engine, get_converter)
  return function(data, options)
   local code, hash = get_data(data, options.template)
@@ -81,8 +100,8 @@ function get_renderer(get_data, get_engine, get_converter)
     path = join_path(options.outdir, converter_out_file)
   end
 
-  if options.filename then
-    local filename = join_ext(options.filename, filetype)
+  if options.image.filename then
+    local filename = join_ext(options.image.filename, filetype)
     local named_outpath = is_abs_path(filename)
       and filename:sub(2)
       or join_path(options.rootdir, filename)
@@ -136,6 +155,8 @@ function get_create_image(options, get_options, renderer)
         -- to be referenced as @fig:example outside of the figure when used
         -- with `pandoc-crossref`.
         --
+        --
+      --[[
         local img_attr = {
             id = el.identifier,
             title = el.attributes.title,
@@ -143,6 +164,8 @@ function get_create_image(options, get_options, renderer)
             width = el.attributes.width,
             height = el.attributes.height
         }
+      ]]
+        img_attr = options.image
 
         -- Create a new image for the document's structure. Attach the user's
         -- caption. Also use a hack (fig:) to enforce pandoc to create a

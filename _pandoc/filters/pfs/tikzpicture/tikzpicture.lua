@@ -14,14 +14,7 @@ require 'lib.rendering'
 
 set_log_source('tikzpicture.lua')
 
-default_image_options = {
-    id = nil,
-    title = nil,
-    caption = nil,
-    filename = nil,
-    width = nil,
-    height = nil,
-  }
+
 
 local outdir = '_tikzpicture'
 local rootdir = pandoc.path.directory(PANDOC_STATE.output_file or '')
@@ -33,7 +26,6 @@ local options = {
   cache = true,
   rootdir = rootdir,
   outdir = outdir,
-  filename = false, -- TODO image options?
   __sealed__ = { 'name', 'rootdir' },
 
   template = {
@@ -64,21 +56,20 @@ local options = {
 options.engine['template-root'] = fmt('%s/%s', pandoc_script_dir, 'templates')
 
 
-local a = {
-  filename = {  'filename' },
-  template = { 'template', 'name' }
-}
+local a = default_attributes_map
+a['template'] = { 'template', 'name' }
 a['additional-packages'] = { 'template', 'additional_packages' }
 a['tikz-class-options'] = { 'template', 'tikz_class_options' }
 -- a['filename'] = { 'filename' }
 
-local attr_to_option_map = {
+local attr_option_map = {
+  identifier = default_identifier_map,
   classes = {},
   attributes = a
 }
 
 
-local get_options = get_attr_parser(attr_to_option_map)
+local get_options = get_attr_parser(attr_option_map)
 
 -- TODO get_attr_parser usw. in lib und testen
 

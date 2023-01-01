@@ -2,6 +2,9 @@ require 'lib.table'
 
 function get_attr_parser(map)
   return function(attr, options)
+    if attr.identifier then
+      options = table.set(options, map.identifier, attr.identifier)
+    end
     local classes = attr.classes
     for _, c in ipairs(classes) do
       local path = map.classes[c]
