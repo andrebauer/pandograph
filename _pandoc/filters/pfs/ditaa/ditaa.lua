@@ -6,8 +6,10 @@ local fmt = string.format
 local pandoc_script_dir = pandoc.path.directory(PANDOC_SCRIPT_FILE)
 package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
 
-require 'lib.tools'
+-- require 'lib.tools'
 require 'lib.shortening'
+require 'lib.file'
+require 'lib.tools'
 
 local output_dir = pandoc.path.directory(PANDOC_STATE.output_file or '')
 local outdir = '_ditaa'
@@ -104,7 +106,7 @@ local function ditaa(code, filetype, options)
     local ditaa_file = fmt('%s/%s.%s', outdir, hash, "ditaa")
 
 
-    if not(file_exists(outpath)) then
+    if not(file.exists(outpath)) then
 
         -- Write the Ditaa code:
         -- print('ditaa file: ', ditaa_file)

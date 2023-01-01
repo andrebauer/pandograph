@@ -1,7 +1,7 @@
 (cram
  (deps
   (file ditaa.lua)
-  (glob_files lib/{tools,shortening}.lua)
+  (glob_files lib/{file,log,shortening,tools}.lua)
 ))
 
 (copy_files ../*.lua)
