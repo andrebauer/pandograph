@@ -78,32 +78,6 @@ local attr_to_option_map = {
 }
 
 
-
---[[
-
-local function get_options(attr, options)
-  local a = attr.attributes
-  local tn = a.template
-  if tn then
-    options.template.name = tn
-  end
-  local ap = a['additional-packages']
-  if ap then
-    options.template.additional_packages = ap
-  end
-  local tco = a['tikz-class-options']
-  if tco then
-    options.template.tikz_class_options = tco
-  end
-  local fn = a.filename
-  if fn then
-    options.filename = fn
-  end
-  return options
-end
-]]
-
-
 local get_options = get_attr_parser(attr_to_option_map)
 
 -- TODO get_attr_parser usw. in lib und testen
