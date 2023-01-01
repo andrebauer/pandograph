@@ -32,8 +32,8 @@ local options = {
   cache = true,
   rootdir = rootdir,
   outdir = outdir,
-  filename = false,
-  sealed = { 'name', 'rootdir' },
+  filename = false, -- TODO image options?
+  __sealed__ = { 'name', 'rootdir' },
 
   template = {
     rootdir = join_path(pandoc_script_dir, 'templates'),
@@ -42,26 +42,71 @@ local options = {
     outdir = absolute_outdir,
     additional_packages = nil,
     tikz_class_options = '%%',
-    sealed = {}
+    __sealed__ = {}
   },
 
   engine = {
     binary = os.getenv("TIKZPICTURE_PDFENGINE") or "lualatex",
     outdir = absolute_outdir,
-    sealed = {}
+    __sealed__ = {}
   },
 
   converter = {
     binary = os.getenv("TIKZPICTURE_CONVERTER") or "inkscape",
     outdir = absolute_outdir,
     filetype = filetype,
-    sealed = {}
+    __sealed__ = {},
   },
 
   image = default_image_options
 }
 options.engine['template-root'] = fmt('%s/%s', pandoc_script_dir, 'templates')
 
+
+local a = {
+  filename = {  'filename' },
+  template = { 'template', 'name' }
+}
+a['additional-packages'] = { 'template', 'additional_packages' }
+a['tikz-class-options'] = { 'template', 'tikz_class_options' }
+a['filename'] = { 'filename' }
+
+local attr_to_option_map = {
+  classes = {},
+  attributes = a
+}
+
+local function set(options, path, value)
+  local pcomp = table.remove(path,1)
+  if pcomp then
+    options[pcomp] = set(options[pcomp], path, value)
+    return options
+  else
+    return value
+  end
+end
+
+local function get_attr_parser(map)
+  return function(attr, options)
+    local classes = attr.classes
+    for _, c in ipairs(classes) do
+      local path = map.classes[c]
+      if path then
+        options = set(options, path, true)
+      end
+    end
+    local attributes = attr.attributes
+    for k, v in pairs(attributes) do
+      local path = map.attributes[k]
+      if path then
+        options = set(options, path, v)
+      end
+    end
+    return options
+  end
+end
+
+--[[
 
 local function get_options(attr, options)
   local a = attr.attributes
@@ -83,6 +128,12 @@ local function get_options(attr, options)
   end
   return options
 end
+]]
+
+
+local get_options = get_attr_parser(attr_to_option_map)
+
+-- TODO get_attr_parser usw. in lib und testen
 
 local function get_data(data, options)
   local template_path = fmt('%s/%s.%s',
@@ -93,7 +144,7 @@ local function get_data(data, options)
 
   local ap = options.additional_packages
   if ap then
-    ap = fmt('\\usetikzlibrary{%s}', ap)
+    ap = fmt('\\usepackage{%s}', ap)
   end
   local code = template:format(options.tikz_class_options or '%%',
                                ap or '',
@@ -116,36 +167,16 @@ end
 
 local get_converter = inkscape_converter
 
-local render = get_wrapper(options, get_options, get_renderer(get_data, get_engine, get_converter))
+local create_image =
+  get_create_image(options, get_options,
+                   get_renderer(get_data, get_engine, get_converter))
 
-function Meta(meta)
+local function Meta(meta)
   options = parse_meta(meta, options)
 end
 
-function CodeBlock(block)
-  local classes = block.classes
-  local first_class = classes[1]
+local CodeBlock, Code = get_standard_filter(create_image, options)
 
-  if not(first_class == options.name) then
-      return nil
-  end
-
-  -- Finally, put the image inside an empty paragraph. By returning the
-  -- resulting paragraph object, the source code block gets replaced by
-  -- the image:
-  return pandoc.Para( render(block, options) )
-end
-
-function Code(inline)
-  local classes = inline.classes
-  local first_class = classes[1]
-
-  if not(first_class == options.name) then
-      return nil
-  end
-
-  return render(inline, options)
-end
 
 return {
     {Meta = Meta},

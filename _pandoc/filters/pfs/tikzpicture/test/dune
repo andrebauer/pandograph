@@ -3,7 +3,7 @@
   (file tikzpicture.lua)
   (glob_files templates/*.tex)
   (glob_files fixtures/*)
-  (glob_files lib/{file,log,metadata,mimetype,os,rendering,shortening}.lua)
+  (glob_files lib/{dir,file,log,metadata,mimetype,os,rendering,shortening}.lua)
 ))
 
 (copy_files ../*.lua)

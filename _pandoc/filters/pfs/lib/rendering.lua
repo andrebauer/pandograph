@@ -3,6 +3,7 @@
 require 'lib.log'
 require 'lib.os'
 require 'lib.file'
+require 'lib.dir'
 require 'lib.shortening'
 
 function inkscape_converter(inpath, options)
@@ -15,7 +16,7 @@ function inkscape_converter(inpath, options)
   local converter = join(options.binary,
                          args[options.filetype],
                          '-o', outpath,
-                         in_path)
+                         inpath)
   return converter, fname
 end
 
@@ -41,10 +42,10 @@ function get_renderer(get_data, get_engine, get_converter)
                                            converter_out_file)
 
   if not(file.exists(converter_abs_out_path)) then
-      os.execute('mkdir -p '  .. options.converter.outdir)
+      mkdir(options.converter.outdir)
 
     if not(file.exists(engine_abs_out_path)) then
-      os.execute('mkdir -p '  .. options.engine.outdir)
+      mkdir(options.engine.outdir)
 
       if not(file.exists(engine_in_path)) then
         file.write(engine_in_path, code)
@@ -85,7 +86,7 @@ function get_renderer(get_data, get_engine, get_converter)
     local named_outpath = is_abs_path(filename)
       and filename:sub(2)
       or join_path(options.rootdir, filename)
-    os.execute('mkdir -p ' .. split_path(named_outpath))
+    mkdir(split_path(named_outpath))
     file.write(named_outpath, imgData)
     path = filename
   end
@@ -95,7 +96,7 @@ function get_renderer(get_data, get_engine, get_converter)
 end
 
 -- Executes each document's code block to find matching code blocks:
-function get_wrapper(options, get_options, renderer)
+function get_create_image(options, get_options, renderer)
   return function(el)
     local options = get_options(el.attr, options)
 
@@ -149,4 +150,32 @@ function get_wrapper(options, get_options, renderer)
         return pandoc.Image(caption, fpath, title, img_attr)
     end
   end
+end
+
+function get_standard_filter(create_image, options)
+  local function CodeBlock(block)
+    local classes = block.classes
+    local first_class = classes[1]
+
+    if not(first_class == options.name) then
+        return nil
+    end
+
+    -- Finally, put the image inside an empty paragraph. By returning the
+    -- resulting paragraph object, the source code block gets replaced by
+    -- the image:
+    return pandoc.Para( create_image(block, options) )
+  end
+
+  local function Code(inline)
+    local classes = inline.classes
+    local first_class = classes[1]
+
+    if not(first_class == options.name) then
+        return nil
+    end
+
+    return create_image(inline, options)
+  end
+  return CodeBlock, Code
 end
