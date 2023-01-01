@@ -7,6 +7,7 @@ package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
 require 'lib.shortening'
 require 'lib.log'
 require 'lib.file'
+require 'lib.attr'
 require 'lib.metadata'
 require 'lib.mimetype'
 require 'lib.rendering'
@@ -69,42 +70,14 @@ local a = {
 }
 a['additional-packages'] = { 'template', 'additional_packages' }
 a['tikz-class-options'] = { 'template', 'tikz_class_options' }
-a['filename'] = { 'filename' }
+-- a['filename'] = { 'filename' }
 
 local attr_to_option_map = {
   classes = {},
   attributes = a
 }
 
-local function set(options, path, value)
-  local pcomp = table.remove(path,1)
-  if pcomp then
-    options[pcomp] = set(options[pcomp], path, value)
-    return options
-  else
-    return value
-  end
-end
 
-local function get_attr_parser(map)
-  return function(attr, options)
-    local classes = attr.classes
-    for _, c in ipairs(classes) do
-      local path = map.classes[c]
-      if path then
-        options = set(options, path, true)
-      end
-    end
-    local attributes = attr.attributes
-    for k, v in pairs(attributes) do
-      local path = map.attributes[k]
-      if path then
-        options = set(options, path, v)
-      end
-    end
-    return options
-  end
-end
 
 --[[
 
