@@ -21,7 +21,10 @@ strong = pandoc.Strong
 join_path = function(...) return pandoc.path.join(list({...})) end
 directory = pandoc.path.directory
 filename = pandoc.path.filename
-split_ext = pandoc.path.split_extension
+split_ext = function(path)
+  local path, ext = pandoc.path.split_extension(path)
+  return path, ext:sub(2)
+end
 join_ext = function(path, ext) return fmt('%s.%s', path, ext) end
 change_ext = function(path, ext)
   local path_without_ext = split_ext(path)
@@ -35,3 +38,5 @@ split_path = function(path)
   local last = remove(components)
   return pandoc.path.join(components), last
 end
+with_temporary_directory = pandoc.system.with_temporary_directory
+with_working_directory = pandoc.system.with_working_directory

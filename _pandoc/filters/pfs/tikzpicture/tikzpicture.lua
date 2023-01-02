@@ -21,7 +21,7 @@ local absolute_outdir = fmt("%s/%s", rootdir, outdir)
 
 local options = {
   name = 'tikzpicture',
-  cache = true,
+  caching = true,
   rootdir = rootdir,
   outdir = outdir,
   __sealed__ = { 'name', 'rootdir' },
@@ -33,21 +33,18 @@ local options = {
     outdir = absolute_outdir,
     additional_packages = nil,
     tikz_class_options = '%%',
-    -- __sealed__ = {}
   },
 
   engine = {
     binary = os.getenv("TIKZPICTURE_PDFENGINE") or "lualatex",
     outdir = absolute_outdir,
     filetype = filetype,
-    -- __sealed__ = {}
   },
 
   converter = {
     binary = os.getenv("TIKZPICTURE_CONVERTER") or "inkscape",
     outdir = absolute_outdir,
     filetype = filetype,
-    -- __sealed__ = {},
   },
 
   image = default_image_options
@@ -93,6 +90,7 @@ local function get_engine(inpath, options)
   local engine = join(options.binary,
                       '--halt-on-error',
                       '--output-format=pdf',
+                      '--shell-restricted',
                       outdir_arg,
                       inpath)
   local fname = change_ext(filename(inpath), 'pdf')

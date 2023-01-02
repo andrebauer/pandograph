@@ -1,5 +1,6 @@
 -- This code relies on https://github.com/pandoc/lua-filters/blob/master/diagram-generator/diagram-generator.lua
 
+require 'lib.tools'
 require 'lib.log'
 require 'lib.os'
 require 'lib.file'
@@ -8,14 +9,16 @@ require 'lib.shortening'
 
 
 function inkscape_converter(inpath, options)
+  local export_type = '--export-type=' .. options.filetype
   local args = {
-    png = '--export-type=png --export-dpi=300',
-    svg = '--export-type=svg --export-plain-svg'
+    png = '--export-dpi=300',
+    svg = '--export-plain-svg'
   }
   local fname = change_ext(filename(inpath), options.filetype)
   local outpath = join_path(options.outdir, fname)
   local converter = join(options.binary,
-                         args[options.filetype],
+                         export_type,
+                         args[options.filetype] or '',
                          '-o', outpath,
                          inpath)
   return converter, fname
@@ -45,86 +48,99 @@ default_attributes_map = {
 
 default_identifier_map = { 'image', 'id' }
 
-
 function get_renderer(get_data, get_engine, get_converter)
   return function(data, options)
     local code, hash = get_data(data, options.template)
 
-    local engine_in_filename = join_ext(hash, options.template.ext)
+    local function run()
 
-    local engine_in_path = join_path(options.template.outdir,
-                                     engine_in_filename)
+     local engine_in_filename = join_ext(hash, options.template.ext)
 
-    local engine, engine_out_file = get_engine(engine_in_path,
-                                               options.engine)
+     local engine_in_path = join_path(options.template.outdir,
+                                      engine_in_filename)
 
-    local engine_abs_out_path = join_path(options.engine.outdir,
-                                          engine_out_file)
+     local engine, engine_out_file = get_engine(engine_in_path,
+                                                options.engine)
 
-    local converter, converter_out_file =
-      get_converter(engine_abs_out_path, options.converter)
+     local engine_abs_out_path = join_path(options.engine.outdir,
+                                           engine_out_file)
 
-    local converter_abs_out_path = join_path(options.converter.outdir,
-                                             converter_out_file)
+     local converter, converter_out_file =
+       get_converter(engine_abs_out_path, options.converter)
 
-    if not(file.exists(converter_abs_out_path)) then
-        mkdir(options.converter.outdir)
+     local converter_abs_out_path = join_path(options.converter.outdir,
+                                              converter_out_file)
 
-      if not(file.exists(engine_abs_out_path)) then
-        mkdir(options.engine.outdir)
+     if not(file.exists(converter_abs_out_path)) then
+         mkdir(options.converter.outdir)
 
-        if not(file.exists(engine_in_path)) then
-          file.write(engine_in_path, code)
-        else
-          pinfof('Skip writing %s, file already exists',
-                 engine_in_path)
-        end
+       if not(file.exists(engine_abs_out_path)) then
+         mkdir(options.engine.outdir)
 
-        local success, out = os.run(engine)
-        if not(success) then return false, out end
-      else
-        pinfof('Skip running engine, file %s already exists',
-               engine_abs_out_path)
-      end
+         if not(file.exists(engine_in_path)) then
+           file.write(engine_in_path, code)
+         else
+           pinfof('Skip writing %s, file already exists',
+                  engine_in_path)
+         end
 
-      local _, engine_out_ext = split_ext(engine_out_file)
+         local success, out = os.run(engine)
 
-      if not(options.converter.filetype == engine_out_ext) then
-        local success, out = os.run(converter)
-        if not(success) then return false, out end
-      else
-        pinfof('Skip running converter, file %s has already type %s',
-               engine_abs_out_path, filetype)
-      end
+         if not(success) then return false, out end
+       else
+         pinfof('Skip running engine, file %s already exists',
+                engine_abs_out_path)
+       end
+
+       local _, engine_out_ext = split_ext(engine_out_file)
+
+       if options.converter.filetype ~= engine_out_ext then
+         local success, out = os.run(converter)
+         if not(success) then return false, out end
+       else
+         pinfof('Skip running converter, file %s has already type %s',
+                engine_abs_out_path, filetype)
+       end
+     end
+
+     local imgData, path
+     if options.converter.filetype == engine_out_ext then
+       imgData = file.read(engine_abs_out_path)
+       path = join_path(options.outdir, engine_out_file)
+     else
+       imgData = file.read(converter_abs_out_path)
+       path = join_path(options.outdir, converter_out_file)
+     end
+
+     if options.image.filename then
+       local filename = join_ext(options.image.filename, filetype)
+       local named_outpath = is_abs_path(filename)
+         and filename:sub(2)
+         or join_path(options.rootdir, filename)
+       mkdir(split_path(named_outpath))
+       file.write(named_outpath, imgData)
+       path = filename
+     end
+
+     return true, imgData, path
     end
-
-    local imgData, path
-    if options.converter.filetype == engine_out_ext then
-      imgData = file.read(engine_abs_out_path)
-      path = join_path(options.outdir, engine_out_file)
+    if options.caching then
+      return run()
     else
-      imgData = file.read(converter_abs_out_path)
-      path = join_path(options.outdir, converter_out_file)
+      return with_temporary_directory(options.name, function (tmpdir)
+        return with_working_directory(tmpdir, function ()
+          perr('NO CACHING')
+          return run()
+        end)
+      end)
     end
-
-    if options.image.filename then
-      local filename = join_ext(options.image.filename, filetype)
-      local named_outpath = is_abs_path(filename)
-        and filename:sub(2)
-        or join_path(options.rootdir, filename)
-      mkdir(split_path(named_outpath))
-      file.write(named_outpath, imgData)
-      path = filename
-    end
-
-    return true, imgData, path
   end
 end
 
 
 function get_create_image(options, get_options, renderer)
   return function(el)
-    local options = get_options(el.attr, options)
+    local options = get_options(el.attr, copy(options))
 
     local success, data, fpath = renderer(el.text, options)
 
@@ -137,7 +153,6 @@ function get_create_image(options, get_options, renderer)
       error 'Image conversion failed. Aborting.'
     end
 
-    -- Case: This code block was an image e.g. PlantUML or dot/Graphviz, etc.:
     if fpath then
 
       -- If the user defines a caption, use it:

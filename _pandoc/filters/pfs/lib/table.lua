@@ -1,4 +1,7 @@
+require 'lib.tools'
+
 function table.set(t, path, value)
+  local path = copy(path)
   local path_comp = table.remove(path, 1)
   if path_comp then
     t[path_comp] = table.set(t[path_comp], path, value)

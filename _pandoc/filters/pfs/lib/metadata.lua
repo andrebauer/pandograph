@@ -62,4 +62,5 @@ function parse_meta(meta, options)
 end
 
 -- TODO: Test programmieren, parse_meta rekusiv
---
+-- Kann ein Wert auf false gesetzt werden?
+-- Können Werte auf der obersten Ebene gesetzt werden?

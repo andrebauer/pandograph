@@ -39,7 +39,7 @@ function copy(t)
   local t2 = {}
   for k,v in pairs(t) do
     if type(t[k]) == 'table' then
-      t2[k] = copy(t)
+      t2[k] = copy(t[k])
     else
       t2[k] = v
     end

@@ -167,6 +167,20 @@
   </figure>
 
 
+  $ pandoc --to pdf -o tree.pdf -L tikzpicture.lua << EOF
+  > ---
+  > tikzpicture:
+  >   cache: false
+  >   engine:
+  >     template: default-serif
+  > ---
+  > \`\`\`{.tikzpicture #tree1 additions-packages="adjustbox" width="6cm" height="4cm" name="Tree Name" caption="This is a tree"}
+  > \usetikzlibrary {graphs,graphdrawing} \usegdlibrary {trees}
+  > \tikz \graph [tree layout, nodes={draw,circle}, sibling sep=0pt]
+  >  { r -> { a, , ,b -> {c,d}, ,e} };
+  > \`\`\`
+  > EOF
+
   $ pandoc --to html -L tikzpicture.lua << EOF
   > ---
   > tikzpicture:
@@ -183,3 +197,28 @@
   <pre><code>\usetikzlibrary {graphs,graphdrawing} \usegdlibrary {trees}
   \tikz \graph [tree layout, nodes={draw,circle}, sibling sep=0pt]
    { r -&gt; { a, , ,b -&gt; {c,d}, ,e} };</code></pre>
+
+
+
+  $ pandoc --to pdf -o tree.pdf -L tikzpicture.lua << EOF
+  > ---
+  > tikzpicture:
+  >   cache: false
+  >   engine:
+  >     template: default-serif
+  > ---
+  > \`\`\`{.tikzpicture #tree1 additions-packages="adjustbox" width="6cm" height="4cm" name="Tree Name" caption="This is a tree"}
+  > \usetikzlibrary {graphs,graphdrawing} \usegdlibrary {trees}
+  > \tikz \graph [tree layout, nodes={draw,circle}, sibling sep=0pt]
+  >  { r -> { a, , ,b -> {c,d}, ,e} };
+  > \`\`\`
+  > 
+  > \`\`\`{.tikzpicture template=default-serif }
+  > \usetikzlibrary {graphs,graphdrawing} \usegdlibrary {circular}
+  > \tikz \graph [simple necklace layout, componentwise] {
+  >   a -- b -- c -- d -- a,
+  >   1 -- 2 -- 3 -- 1
+  > };
+  > \`\`\`
+  > 
+  > EOF
