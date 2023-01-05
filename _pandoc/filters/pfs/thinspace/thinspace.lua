@@ -3,14 +3,11 @@ local fmt = string.format
 local pandoc_script_dir = pandoc.path.directory(PANDOC_SCRIPT_FILE)
 package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
 
+require 'lib.number'
 require 'lib.log'
 set_log_source 'thinspace.lua'
 
 local thinsp = "\xe2\x80\xaf"
-
-local function is_numeric(e)
-  return next({e.text:match '^[%d%p]+$'})
-end
 
 local function is_uri(e)
   return next({e.text:match '%a+://.+'})

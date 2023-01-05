@@ -483,3 +483,8 @@
   \subsubsection{Aufgabe}\label{aufgabe-nn-2}}
   
   World
+
+  $ pandoc -L task.lua -t plain <<EOF
+  > Test [1]{.p}
+  > EOF
+  Test 1 P.

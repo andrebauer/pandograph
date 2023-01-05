@@ -4,6 +4,7 @@ local pandoc_script_dir = pandoc.path.directory(PANDOC_SCRIPT_FILE)
 package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
 
 require 'lib.latex'
+require 'lib.number'
 require 'lib.shortening'
 
 local task_class = "task"
@@ -146,6 +147,19 @@ function Div(div)
   return nil
 end
 
+local nbspace = "\xc2\xa0"
+
+function Span(span)
+  if span.classes[1] ~= 'p' then
+    return nil
+  end
+
+  if is_numeric(span) then
+    span.content = stringify(span.content) .. nbspace .. 'P.'
+    return span
+  end
+end
+
 function Meta(meta)
   local task = meta.task
   if task then
@@ -163,12 +177,17 @@ function Meta(meta)
     if pom then
       points_on_margin = not (stringify(pom) == "false")
     end
-    end
+  end
 
   return nil
 end
 
 return {
   { Meta = Meta },
-  { Div = Div }
+  { Div = Div },
+  { Span = Span }
 }
+
+
+-- TODO: accumultate span-points, sum statt auto?
+-- Anzeige der Punkte deaktivierbar

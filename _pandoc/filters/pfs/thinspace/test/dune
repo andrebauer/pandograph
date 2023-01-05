@@ -1,7 +1,7 @@
 (cram
  (deps
   (glob_files thinspace.lua)
-  (glob_files lib/{log}.lua)
+  (glob_files lib/{log,number}.lua)
 ))
 
 (copy_files ../*.lua)
