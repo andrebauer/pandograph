@@ -177,6 +177,9 @@ function Meta(meta)
     header_level = task["header-level"] or default_level
     if task.points ~= nil then
       points = task.points
+      if type(points) ~= 'boolean' then
+        points = stringify(points)
+      end
     end
     points_text = task["points-text"] or points_text
   else

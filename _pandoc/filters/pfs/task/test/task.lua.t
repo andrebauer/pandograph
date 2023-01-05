@@ -351,7 +351,6 @@
   iv) Subtask d
 
 
-
   $ pandoc -L task.lua -t plain <<EOF
   > ::: {.task title="The First" points=sum}
   > fst
