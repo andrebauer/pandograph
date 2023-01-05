@@ -167,6 +167,11 @@ end
 
 function Meta(meta)
   local task = meta.task
+
+  if meta.lang and stringify(meta.lang) == 'de' then
+    os.setlocale("de_DE.UTF-8")
+  end
+
   if task then
     header_level = task["header-level"] or default_level
     points = task.points or 'margin'
