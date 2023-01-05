@@ -22,3 +22,5 @@ function get_attr_parser(map)
     return options
   end
 end
+
+-- TODO nil (not set) vs. false (set to false)
