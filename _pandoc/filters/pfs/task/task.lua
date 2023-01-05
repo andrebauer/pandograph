@@ -70,7 +70,7 @@ function Div(div)
       local i = emph(p)
 
       if points == 'margin' and latex then
-        i = inline_latex_fmt('\\marginpar{\\small\\sf {~~/ %s}}',
+        i = inline_latex_fmt('\\marginpar{\\small\\sf {~~/ %g}}',
                              given_points)
         div.content[1].content:insert(2, i)
       else
@@ -121,7 +121,7 @@ function Div(div)
 
        if points == 'margin' and latex then
          margin = blocks(block_latex_fmt(
-                           '\\marginpar{\\sf\\vspace*{-0.8em} {~~ %s~%s}}',
+                           '\\marginpar{\\sf\\vspace*{-0.8em} {~~ %g~%s}}',
                            pts, points_text))
        else
          hd = fmt("%s (%g %s)", hd, pts, points_text)

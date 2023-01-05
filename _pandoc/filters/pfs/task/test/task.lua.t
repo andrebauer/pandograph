@@ -276,8 +276,9 @@
   
   iv) Subtask d
 
+
   $ pandoc -L task.lua -t plain <<EOF
-  > ::: {.task title="The First" points=sum}
+  > ::: {.task title="The First" points=auto}
   > fst
   > 
   > ::: {.subtask points=2}
@@ -295,6 +296,7 @@
   > :::
   > :::
   > EOF
+  [task.lua] points=auto is deprecated, use points=sum instead 
   Aufgabe 1 (7 P.): The First
   
   fst
@@ -308,6 +310,92 @@
   snd
   
   iv) Subtask d
+
+
+  $ pandoc -L task.lua -t plain <<EOF
+  > ::: {.task title="The First" points=sum}
+  > fst
+  > 
+  > ::: {.subtask points=2.5}
+  > Subtask a
+  > :::
+  > ::: {.subtask points=5.5}
+  > Subtask b
+  > :::
+  > :::
+  > ::: {.task title="The Second"}
+  > snd
+  > 
+  > ::: {.subtask setcounter=4 style=LowerRoman}
+  > Subtask d
+  > :::
+  > :::
+  > EOF
+  Aufgabe 1 (8 P.): The First
+  
+  fst
+  
+  a)  (2.5 P.) Subtask a
+  
+  b)  (5.5 P.) Subtask b
+  
+  Aufgabe 2: The Second
+  
+  snd
+  
+  iv) Subtask d
+
+
+  $ pandoc -L task.lua -t latex <<EOF
+  > ::: {.task title="The First" points=sum}
+  > fst
+  > 
+  > ::: {.subtask points=2.5}
+  > Subtask a
+  > :::
+  > ::: {.subtask points=5.5}
+  > Subtask b
+  > :::
+  > :::
+  > ::: {.task title="The Second"}
+  > snd
+  > 
+  > ::: {.subtask setcounter=4 style=LowerRoman}
+  > Subtask d
+  > :::
+  > :::
+  > EOF
+  \hypertarget{aufgabe-1}{%
+  \subsubsection{Aufgabe 1: The First}\label{aufgabe-1}}
+  
+  \marginpar{\sf\vspace*{-0.8em} {~~ 8~P.}}
+  
+  fst
+  
+  \begin{enumerate}
+  \def\labelenumi{\alph{enumi})}
+  \item
+    Subtask\marginpar{\small\sf {~~/ 2.5}} a
+  \end{enumerate}
+  
+  \begin{enumerate}
+  \def\labelenumi{\alph{enumi})}
+  \setcounter{enumi}{1}
+  \item
+    Subtask\marginpar{\small\sf {~~/ 5.5}} b
+  \end{enumerate}
+  
+  \hypertarget{aufgabe-2}{%
+  \subsubsection{Aufgabe 2: The Second}\label{aufgabe-2}}
+  
+  snd
+  
+  \begin{enumerate}
+  \def\labelenumi{\roman{enumi})}
+  \setcounter{enumi}{3}
+  \item
+    Subtask d
+  \end{enumerate}
 
 
   $ pandoc -L task.lua -t native <<EOF
