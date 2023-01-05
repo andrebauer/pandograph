@@ -173,8 +173,11 @@ function Meta(meta)
   end
 
   if task then
+    -- perr('TP', task.points == nil, task.points == false, task['points'], task.points)
     header_level = task["header-level"] or default_level
-    points = task.points or 'margin'
+    if task.points ~= nil then
+      points = task.points
+    end
     points_text = task["points-text"] or points_text
   else
     -- legacy and deprecated

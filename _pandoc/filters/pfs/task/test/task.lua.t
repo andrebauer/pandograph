@@ -311,6 +311,46 @@
   
   iv) Subtask d
 
+  $ pandoc -L task.lua -t plain --standalone <<EOF
+  > ---
+  > task:
+  >   points: false
+  > ---
+  > ::: {.task title="The First" points=sum}
+  > fst
+  > 
+  > ::: {.subtask points=2}
+  > Subtask a
+  > :::
+  > ::: {.subtask points=5}
+  > Subtask b
+  > :::
+  > :::
+  > ::: {.task title="The Second"}
+  > snd
+  > 
+  > ::: {.subtask setcounter=4 style=LowerRoman}
+  > Subtask d
+  > :::
+  > :::
+  > EOF
+  
+  
+  Aufgabe 1: The First
+  
+  fst
+  
+  a)  Subtask a
+  
+  b)  Subtask b
+  
+  Aufgabe 2: The Second
+  
+  snd
+  
+  iv) Subtask d
+
+
 
   $ pandoc -L task.lua -t plain <<EOF
   > ::: {.task title="The First" points=sum}
