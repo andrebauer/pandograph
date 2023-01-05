@@ -168,7 +168,7 @@ end
 function Meta(meta)
   local task = meta.task
 
-  if meta.lang and stringify(meta.lang) == 'de' then
+  if meta.lang and stringify(meta.lang):match 'de' then
     os.setlocale("de_DE.UTF-8")
   end
 
