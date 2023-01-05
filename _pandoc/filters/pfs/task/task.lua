@@ -6,6 +6,8 @@ package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
 require 'lib.latex'
 require 'lib.number'
 require 'lib.shortening'
+require 'lib.log'
+set_log_source 'task.lua'
 
 local task_class = "task"
 local task = "Aufgabe"
@@ -108,7 +110,10 @@ function Div(div)
      local margin = nil
      if points and given_points then
        local pts
-       if given_points == "auto" then
+       if given_points == "sum" then
+         pts = subtask_points_sum
+       elseif given_points == "auto" then
+         pwarn('points=auto is deprecated, use points=sum instead' )
          pts = subtask_points_sum
        else
          pts = given_points

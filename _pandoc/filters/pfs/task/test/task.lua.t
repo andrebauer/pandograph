@@ -261,6 +261,40 @@
   > :::
   > :::
   > EOF
+  [task.lua] points=auto is deprecated, use points=sum instead 
+  Aufgabe 1 (7 P.): The First
+  
+  fst
+  
+  a)  (2 P.) Subtask a
+  
+  b)  (5 P.) Subtask b
+  
+  Aufgabe 2: The Second
+  
+  snd
+  
+  iv) Subtask d
+
+  $ pandoc -L task.lua -t plain <<EOF
+  > ::: {.task title="The First" points=sum}
+  > fst
+  > 
+  > ::: {.subtask points=2}
+  > Subtask a
+  > :::
+  > ::: {.subtask points=5}
+  > Subtask b
+  > :::
+  > :::
+  > ::: {.task title="The Second"}
+  > snd
+  > 
+  > ::: {.subtask setcounter=4 style=LowerRoman}
+  > Subtask d
+  > :::
+  > :::
+  > EOF
   Aufgabe 1 (7 P.): The First
   
   fst
@@ -295,6 +329,7 @@
   > :::
   > :::
   > EOF
+  [task.lua] points=auto is deprecated, use points=sum instead 
   [ Div
       ( ""
       , [ "task" ]
@@ -442,6 +477,7 @@
   > World
   > :::
   > EOF
+  [task.lua] points=auto is deprecated, use points=sum instead 
   \hypertarget{aufgabe-1}{%
   \section{Aufgabe 1: The First}\label{aufgabe-1}}
   
