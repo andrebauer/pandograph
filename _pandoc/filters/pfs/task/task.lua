@@ -155,8 +155,8 @@ end
 local nbspace = "\xc2\xa0"
 
 function Span(span)
-  if span.classes[1] ~= 'p' then
-    return nil
+  if span.classes[1] ~= 'p' or not(points) then
+    return pandoc.Space()
   end
 
   if is_numeric(span) then

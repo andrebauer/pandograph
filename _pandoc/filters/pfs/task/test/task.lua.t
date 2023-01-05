@@ -292,7 +292,7 @@
   > snd
   > 
   > ::: {.subtask setcounter=4 style=LowerRoman}
-  > Subtask d
+  > Subtask d [1]{.p}
   > :::
   > :::
   > EOF
@@ -309,7 +309,7 @@
   
   snd
   
-  iv) Subtask d
+  iv) Subtask d 1 P.
 
   $ pandoc -L task.lua -t plain --standalone <<EOF
   > ---
@@ -330,7 +330,7 @@
   > snd
   > 
   > ::: {.subtask setcounter=4 style=LowerRoman}
-  > Subtask d
+  > Subtask d [1]{.p}
   > :::
   > :::
   > EOF
