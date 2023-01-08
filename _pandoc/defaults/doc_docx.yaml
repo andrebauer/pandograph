@@ -1,1 +1,11 @@
+defaults:
+  - _pandoc/defaults/common
+metadata-files:
+  - _pandoc/metadata/common.yaml
+  - _pandoc/metadata/doc.yaml
 to: docx
+metadata:
+  strip-classes:
+    - lsg
+    - sol
+    - solution
