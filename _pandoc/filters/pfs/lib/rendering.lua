@@ -11,8 +11,8 @@ require 'lib.shortening'
 function inkscape_converter(inpath, options)
   local export_type = '--export-type=' .. options.filetype
   local args = {
-    png = '--export-dpi=300',
-    svg = '--export-plain-svg'
+    png = '--pdf-poppler --export-dpi=300',
+    svg = '--pdf-poppler --export-plain-svg'
   }
   local fname = change_ext(filename(inpath), options.filetype)
   local outpath = join_path(options.outdir, fname)
