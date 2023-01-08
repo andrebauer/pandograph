@@ -6,4 +6,4 @@
 	export let width: string;
 </script>
 
-<img {id} {src} {title} {height} {width} class="rounded-lg inline" />
+<p><img {id} {src} {title} {height} {width} class="rounded-lg" /></p>

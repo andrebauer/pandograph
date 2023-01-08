@@ -59,6 +59,9 @@ element:
   CodeBlock:
     name: CodeBlock
     path: $lib/components/element/block/CodeBlock.svelte
+  ImageBlock:
+    name: ImageBlock
+    path: $lib/components/element/block/ImageBlock.svelte
   OrderedList:
     name: OrderedList
     path: $lib/components/element/block/OrderedList.svelte

@@ -451,8 +451,8 @@ end
 
 function CaptionedImage(src, tit, caption, attr)
   if #caption == 0 then
-    useComponent('element', 'Image')
-    return '<Image src="' .. escape(src,true) .. '" id="' .. attr.id ..
+    useComponent('element', 'ImageBlock')
+    return '<ImageBlock src="' .. escape(src,true) .. '" id="' .. attr.id ..
       '"' .. attributes(attr) .. '/>'
   else
     useComponent('element', 'CaptionedImage')
