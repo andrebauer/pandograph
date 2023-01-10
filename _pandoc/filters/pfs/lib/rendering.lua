@@ -5,6 +5,8 @@ require 'lib.file'
 require 'lib.dir'
 require 'lib.shortening'
 
+local inkscape = os.getenv("TIKZPICTURE_CONVERTER") or "inkscape"
+
 function inkscape_converter(inpath, options)
   local export_type = '--export-type=' .. options.filetype
   local args = {
@@ -13,7 +15,7 @@ function inkscape_converter(inpath, options)
   }
   local fname = change_ext(filename(inpath), options.filetype)
   local outpath = join_path(options.outdir, fname)
-  local converter = join(options.binary,
+  local converter = join(inkscape,
                          export_type,
                          args[options.filetype] or '',
                          '-o', outpath,

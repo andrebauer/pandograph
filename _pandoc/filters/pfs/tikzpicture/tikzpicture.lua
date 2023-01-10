@@ -37,13 +37,11 @@ local options = {
   },
 
   engine = {
-    binary = os.getenv("TIKZPICTURE_PDFENGINE") or "lualatex",
     outdir = absolute_outdir,
     filetype = filetype,
   },
 
   converter = {
-    binary = os.getenv("TIKZPICTURE_CONVERTER") or "inkscape",
     outdir = absolute_outdir,
     filetype = filetype,
   },
@@ -81,9 +79,11 @@ local function get_data(data, options)
 end
 
 
+local lualatex = os.getenv("TIKZPICTURE_PDFENGINE") or "lualatex"
+
 local function get_engine(inpath, options)
   local outdir_arg = fmt('--output-directory=%s', options.outdir)
-  local engine = join(options.binary,
+  local engine = join(lualatex,
                       '--halt-on-error',
                       '--output-format=pdf',
                       '--shell-restricted',
