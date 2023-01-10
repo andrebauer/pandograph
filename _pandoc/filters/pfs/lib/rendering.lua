@@ -99,7 +99,7 @@ function get_renderer(get_data, get_engine, get_converter)
 
      return true, imgData, path
     end
-    if options.caching then
+    if options.caching == true then
       return run()
     else
       return with_temporary_directory(options.name, function (tmpdir)

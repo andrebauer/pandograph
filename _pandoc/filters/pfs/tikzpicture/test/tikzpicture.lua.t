@@ -52,7 +52,7 @@
   $ pandoc --to html -L tikzpicture.lua << EOF
   > ---
   > tikzpicture:
-  >   cache: true
+  >   caching: true
   >   engine:
   >     template: default-serif
   > ---
@@ -68,7 +68,7 @@
   $ pandoc --to html -L tikzpicture.lua << EOF
   > ---
   > tikzpicture:
-  >   cache: true
+  >   caching: true
   >   engine:
   >     template: default-serif
   > ---
@@ -83,7 +83,7 @@
   $ pandoc --to html -L tikzpicture.lua << EOF
   > ---
   > tikzpicture:
-  >   cache: true
+  >   caching: true
   >   engine:
   >     template: default-serif
   > ---
@@ -98,7 +98,7 @@
   $ pandoc --to html -L tikzpicture.lua << EOF
   > ---
   > tikzpicture:
-  >   cache: true
+  >   caching: true
   >   engine:
   >     template: default-serif
   > ---
@@ -113,7 +113,7 @@
   $ pandoc --to html -L tikzpicture.lua << EOF
   > ---
   > tikzpicture:
-  >   cache: true
+  >   caching: true
   >   engine:
   >     template: default-serif
   > ---
@@ -129,7 +129,7 @@
   $ pandoc --to html -L tikzpicture.lua << EOF
   > ---
   > tikzpicture:
-  >   cache: true
+  >   caching: true
   >   engine:
   >     template: default-serif
   > ---
@@ -149,7 +149,7 @@
   $ pandoc --to html -L tikzpicture.lua << EOF
   > ---
   > tikzpicture:
-  >   cache: true
+  >   caching: true
   >   engine:
   >     template: default-serif
   > ---
@@ -170,7 +170,7 @@
   $ pandoc --to pdf -o tree.pdf -L tikzpicture.lua << EOF
   > ---
   > tikzpicture:
-  >   cache: true
+  >   caching: true
   >   engine:
   >     template: default-serif
   > ---
@@ -184,7 +184,7 @@
   $ pandoc --to html -L tikzpicture.lua << EOF
   > ---
   > tikzpicture:
-  >   cache: true
+  >   caching: true
   >   engine:
   >     template: default-serif
   > ---
@@ -203,7 +203,7 @@
   $ pandoc --to pdf -o tree.pdf -L tikzpicture.lua << EOF
   > ---
   > tikzpicture:
-  >   cache: false
+  >   caching: false
   >   engine:
   >     template: default-serif
   > ---
@@ -222,3 +222,5 @@
   > \`\`\`
   > 
   > EOF
+  [tikzpicture.lua] NO CACHING 
+  [tikzpicture.lua] NO CACHING 

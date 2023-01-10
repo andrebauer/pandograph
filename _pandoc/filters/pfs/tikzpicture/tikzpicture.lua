@@ -103,7 +103,6 @@ local create_image =
 local function Meta(meta)
   options = parse_meta(meta.tikzpicture, options)
 end
--- TODO: caching in metadata file has no impact
 
 local CodeBlock, Code = get_standard_filter(create_image, options)
 
