@@ -25,13 +25,13 @@ end
 
 function get_renderer(get_data, get_engine, get_converter)
   return function(data, options)
-    local code, hash = get_data(data, options.template)
+    local code, hash = get_data(data, options.data)
 
     local function run()
 
-     local engine_in_filename = join_ext(hash, options.template.ext)
+     local engine_in_filename = join_ext(hash, options.data.ext)
 
-     local engine_in_path = join_path(options.template.outdir,
+     local engine_in_path = join_path(options.data.outdir,
                                       engine_in_filename)
 
      local engine, engine_out_file = get_engine(engine_in_path,
@@ -182,3 +182,5 @@ function get_standard_filter(create_image, options)
   end
   return CodeBlock, Code
 end
+
+-- TODO template is not generic ?

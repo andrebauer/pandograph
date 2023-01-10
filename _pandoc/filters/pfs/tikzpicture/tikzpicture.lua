@@ -27,9 +27,9 @@ local options = {
   outdir = outdir,
   __sealed__ = { 'name', 'rootdir' },
 
-  template = {
+  data = {
     rootdir = join_path(pandoc_script_dir, 'templates'),
-    name = 'default',
+    template = 'default',
     ext = 'tex',
     outdir = absolute_outdir,
     additional_packages = nil,
@@ -53,9 +53,9 @@ options.engine['template-root'] = fmt('%s/%s', pandoc_script_dir, 'templates')
 
 local map = default_map
 a = map.attributes
-a.template = { 'template', 'name' }
-a['additional-packages'] = { 'template', 'additional_packages' }
-a['tikz-class-options'] = { 'template', 'tikz_class_options' }
+a.template = { 'data', 'template' }
+a['additional-packages'] = { 'data', 'additional_packages' }
+a['tikz-class-options'] = { 'data', 'tikz_class_options' }
 
 local get_options = get_attr_parser(map)
 
@@ -63,7 +63,7 @@ local get_options = get_attr_parser(map)
 local function get_data(data, options)
   local template_path = fmt('%s/%s.%s',
                             options.rootdir,
-                            options.name,
+                            options.template,
                             options.ext)
   local template = file.read(template_path, 'r')
 
