@@ -105,7 +105,7 @@ local create_image =
 
 
 local function Meta(meta)
-  options = parse_meta(meta, options)
+  options = parse_meta(meta.tikzpicture, options)
 end
 -- TODO: caching in metadata file has no impact
 

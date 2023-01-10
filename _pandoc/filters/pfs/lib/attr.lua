@@ -1,7 +1,9 @@
+require 'lib.tools'
 require 'lib.table'
 
 function get_attr_parser(map)
   return function(attr, options)
+    local options = copy(options)
     if attr.identifier then
       options = table.set(options, map.identifier, attr.identifier)
     end
@@ -22,5 +24,3 @@ function get_attr_parser(map)
     return options
   end
 end
-
--- TODO nil (not set) vs. false (set to false)

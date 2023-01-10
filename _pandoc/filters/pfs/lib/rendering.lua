@@ -140,7 +140,7 @@ end
 
 function get_create_image(options, get_options, renderer)
   return function(el)
-    local options = get_options(el.attr, copy(options))
+    local options = get_options(el.attr, options)
 
     local success, data, fpath = renderer(el.text, options)
 

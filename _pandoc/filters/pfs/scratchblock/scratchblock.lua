@@ -2,7 +2,9 @@ local fmt = string.format
 local pandoc_script_dir = pandoc.path.directory(PANDOC_SCRIPT_FILE)
 package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
 
-local tools = require 'lib.tools'
+require 'lib.tools'
+require 'lib.shortening'
+require 'lib.file'
 
 local scratchblock_path = fmt("%s/%s", pandoc_script_dir, "scratchblock.js")
 
@@ -17,7 +19,7 @@ end
 local function scratchblock(code)
   local hash = pandoc.utils.sha1(code)
   local outpath = fmt('%s/%s.%s', outdir, hash, 'svg')
-  if not(file_exists(outpath)) then
+  if not(file.exists(outpath)) then
     pandoc.pipe(scratchblock_path, { "svg", "--output", outpath }, code)
   end
   return outpath

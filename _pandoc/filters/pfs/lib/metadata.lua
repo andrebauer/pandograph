@@ -1,4 +1,5 @@
 local stringify = pandoc.utils.stringify
+local type = pandoc.utils.type
 
 function find(t, key)
   local key = stringify(key)
@@ -31,28 +32,27 @@ function includes(l, elm)
   return false
 end
 
+sealed = '__sealed__'
+
 function parse_meta(meta, options)
-  local main = meta[options.name]
-  if main then
-    for k, v in pairs(options) do
-      if k ~= '__sealed__'
-        and pandoc.utils.type(k) ~= 'table'
-        and not(includes(options.__sealed__, k)) then
-        local main_v = main[k]
-        if main_v then
-          local type = pandoc.utils.type(main_v)
-          if type == 'Inlines' then
-            options[k] = stringify(main_v)
-          elseif type == 'table' then
-            for k_, v_ in pairs(main_v) do
-              if k_ ~= '__sealed__'
-                and not(includes(options[k].__sealed__, k_)) then
-                local sub_v = main[k][k_]
-                if sub_v then
-                  options[k][k_] = stringify(sub_v)
-                end
-              end
-            end
+  if meta ~= nil then
+    if type(meta) == 'boolean' then
+      return meta
+    elseif type(meta) == 'Inlines' then
+      return meta
+    elseif type(meta) == 'List' then
+      options = {}
+      for i, value in ipairs(meta) do
+        options[i] = value
+      end
+    elseif type(meta) == 'table' then
+      for key in pairs(options) do
+        if key ~= sealed
+          and type(key) ~= 'table'
+          and not(includes(options[sealed], key)) then
+          local meta_value = meta[key]
+          if meta_value ~= nil then
+            options[key] = parse_meta(meta_value, options[key])
           end
         end
       end
@@ -60,7 +60,3 @@ function parse_meta(meta, options)
   end
   return options
 end
-
--- TODO: Test programmieren, parse_meta rekusiv
--- Kann ein Wert auf false gesetzt werden?
--- Können Werte auf der obersten Ebene gesetzt werden?
