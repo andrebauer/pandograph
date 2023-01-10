@@ -1,16 +1,11 @@
+require 'lib.options'
 require 'lib.attr'
 require 'lib.log'
-require 'lib.rendering'
 
-local a = default_attributes_map
+local map = default_map
+a = map.attributes
 a.template = { 'template', 'name' }
 a.test = { 'test' }
-
-local map = {
-  identifier = default_identifier_map,
-  classes = {},
-  attributes = a
-}
 
 local get_options = get_attr_parser(map)
 

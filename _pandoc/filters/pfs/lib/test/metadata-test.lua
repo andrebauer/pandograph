@@ -1,9 +1,3 @@
-PANDOC_VERSION:must_be_at_least '2.7.3'
-
-local fmt = string.format
-pandoc_script_dir = pandoc.path.directory(PANDOC_SCRIPT_FILE)
-package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
-
 require 'lib.metadata'
 require 'lib.log'
 

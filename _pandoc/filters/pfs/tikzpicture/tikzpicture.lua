@@ -7,6 +7,7 @@ package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
 require 'lib.shortening'
 require 'lib.log'
 require 'lib.file'
+require 'lib.options'
 require 'lib.attr'
 require 'lib.metadata'
 require 'lib.mimetype'
@@ -52,18 +53,13 @@ local options = {
 options.engine['template-root'] = fmt('%s/%s', pandoc_script_dir, 'templates')
 
 
-local a = default_attributes_map
+local map = default_map
+a = map.attributes
 a.template = { 'template', 'name' }
 a['additional-packages'] = { 'template', 'additional_packages' }
 a['tikz-class-options'] = { 'template', 'tikz_class_options' }
 
-local attr_option_map = {
-  identifier = default_identifier_map,
-  classes = {},
-  attributes = a
-}
-
-local get_options = get_attr_parser(attr_option_map)
+local get_options = get_attr_parser(map)
 
 
 local function get_data(data, options)

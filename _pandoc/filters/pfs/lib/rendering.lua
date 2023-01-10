@@ -1,12 +1,9 @@
--- This code relies on https://github.com/pandoc/lua-filters/blob/master/diagram-generator/diagram-generator.lua
-
 require 'lib.tools'
 require 'lib.log'
 require 'lib.os'
 require 'lib.file'
 require 'lib.dir'
 require 'lib.shortening'
-
 
 function inkscape_converter(inpath, options)
   local export_type = '--export-type=' .. options.filetype
@@ -23,30 +20,6 @@ function inkscape_converter(inpath, options)
                          inpath)
   return converter, fname
 end
-
-
-default_image_options = {
-  id = nil,
-  title = nil,
-  caption = nil,
-  filename = nil,
-  name = nil,
-  width = nil,
-  height = nil,
-  __sealed__ = {}
-}
-
-
-default_attributes_map = {
-  title = { 'image', 'title' },
-  caption = { 'image', 'caption' },
-  filename = { 'image', 'filename' },
-  name = { 'image', 'name' },
-  width = { 'image', 'width' },
-  height = { 'image', 'height'}
-}
-
-default_identifier_map = { 'image', 'id' }
 
 function get_renderer(get_data, get_engine, get_converter)
   return function(data, options)
@@ -137,7 +110,7 @@ function get_renderer(get_data, get_engine, get_converter)
   end
 end
 
-
+-- The following code relies partly on https://github.com/pandoc/lua-filters/blob/master/diagram-generator/diagram-generator.lua
 function get_create_image(options, get_options, renderer)
   return function(el)
     local options = get_options(el.attr, options)

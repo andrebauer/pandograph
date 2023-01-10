@@ -1,6 +1,23 @@
 require 'lib.tools'
 require 'lib.table'
 
+default_identifier_map = { 'image', 'id' }
+
+default_attributes_map = {
+  title = { 'image', 'title' },
+  caption = { 'image', 'caption' },
+  filename = { 'image', 'filename' },
+  name = { 'image', 'name' },
+  width = { 'image', 'width' },
+  height = { 'image', 'height'}
+}
+
+default_map = {
+  identifier = default_identifier_map,
+  classes = {},
+  attributes = default_attributes_map
+}
+
 function get_attr_parser(map)
   return function(attr, options)
     local options = copy(options)
