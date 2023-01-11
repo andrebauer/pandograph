@@ -1,0 +1,6 @@
+(cram
+ (deps
+  (file rfc.lua)
+))
+
+(copy_files ../*.lua)
