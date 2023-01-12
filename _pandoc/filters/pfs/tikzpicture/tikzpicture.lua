@@ -39,6 +39,7 @@ local options = {
   engine = {
     outdir = absolute_outdir,
     filetype = filetype,
+    ['template-root'] = fmt('%s/%s', pandoc_script_dir, 'templates')
   },
 
   converter = {
@@ -48,7 +49,6 @@ local options = {
 
   image = default_image_options
 }
-options.engine['template-root'] = fmt('%s/%s', pandoc_script_dir, 'templates')
 
 
 local map = default_map
@@ -59,6 +59,9 @@ a['tikz-class-options'] = { 'data', 'tikz_class_options' }
 
 local get_options = get_attr_parser(map)
 
+local function extract_data(el)
+  return el.text
+end
 
 local function get_data(data, options)
   local template_path = fmt('%s/%s.%s',
@@ -75,7 +78,7 @@ local function get_data(data, options)
                                data)
 
   local hash = sha1(code)
-  return code, hash
+  return code, hash, 'application/x-tex'
 end
 
 
@@ -83,12 +86,15 @@ local lualatex = os.getenv("TIKZPICTURE_PDFENGINE") or "lualatex"
 
 local function get_engine(inpath, options)
   local outdir_arg = fmt('--output-directory=%s', options.outdir)
-  local engine = join(lualatex,
-                      '--halt-on-error',
-                      '--output-format=pdf',
-                      '--shell-restricted',
-                      outdir_arg,
-                      inpath)
+  local engine = function ()
+    local cmd = join(lualatex,
+                     '--halt-on-error',
+                     '--output-format=pdf',
+                     '--shell-restricted',
+                     outdir_arg,
+                     inpath)
+    return os.run(cmd)
+  end
   local fname = change_ext(filename(inpath), 'pdf')
   return engine, fname
 end
@@ -96,7 +102,7 @@ end
 local get_converter = inkscape_converter
 
 local create_image =
-  get_create_image(options, get_options,
+  get_create_image(options, get_options, extract_data,
                    get_renderer(get_data, get_engine, get_converter))
 
 

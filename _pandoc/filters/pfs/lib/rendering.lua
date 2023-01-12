@@ -15,17 +15,20 @@ function inkscape_converter(inpath, options)
   }
   local fname = change_ext(filename(inpath), options.filetype)
   local outpath = join_path(options.outdir, fname)
-  local converter = join(inkscape,
-                         export_type,
-                         args[options.filetype] or '',
-                         '-o', outpath,
-                         inpath)
+  local converter = function ()
+    local cmd = join(inkscape,
+                     export_type,
+                     args[options.filetype] or '',
+                     '-o', outpath,
+                     inpath)
+    return os.run(cmd)
+  end
   return converter, fname
 end
 
 function get_renderer(get_data, get_engine, get_converter)
-  return function(data, options)
-    local code, hash = get_data(data, options.data)
+  return function(rawdata, options)
+    local data, hash = get_data(rawdata, options.data)
 
     local function run()
 
@@ -53,13 +56,13 @@ function get_renderer(get_data, get_engine, get_converter)
          mkdir(options.engine.outdir)
 
          if not(file.exists(engine_in_path)) then
-           file.write(engine_in_path, code)
+           file.write(engine_in_path, data)
          else
            pinfof('Skip writing %s, file already exists',
                   engine_in_path)
          end
 
-         local success, out = os.run(engine)
+         local success, out = engine()
 
          if not(success) then return false, out end
        else
@@ -70,7 +73,7 @@ function get_renderer(get_data, get_engine, get_converter)
        local _, engine_out_ext = split_ext(engine_out_file)
 
        if options.converter.filetype ~= engine_out_ext then
-         local success, out = os.run(converter)
+         local success, out = converter()
          if not(success) then return false, out end
        else
          pinfof('Skip running converter, file %s has already type %s',
@@ -113,11 +116,11 @@ function get_renderer(get_data, get_engine, get_converter)
 end
 
 -- The following code relies partly on https://github.com/pandoc/lua-filters/blob/master/diagram-generator/diagram-generator.lua
-function get_create_image(options, get_options, renderer)
+function get_create_image(options, get_options, extract_data, renderer)
   return function(el)
     local options = get_options(el.attr, options)
 
-    local success, data, fpath = renderer(el.text, options)
+    local success, data, fpath = renderer(extract_data(el), options)
 
     if success then
       -- Store the data in the media bag:
