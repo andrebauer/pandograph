@@ -20,9 +20,18 @@ function block_latex_fmt(s, ...)
   return block_latex(fmt(s, ...))
 end
 
+function block_latex_begin(name)
+  return block_latex_fmt("\\begin{%s}", name)
+end
+
+function block_latex_end(name)
+  return block_latex_fmt("\\end{%s}", name)
+end
+
+
 function latex_environment(name, bs)
   local blocks = pandoc.List(pandoc.Blocks(bs))
-  blocks:insert(1,block_latex_fmt("\\begin{%s}", name))
-  blocks:insert(block_latex_fmt("\\end{%s}", name))
+  blocks:insert(1,block_latex_begin(name))
+  blocks:insert(block_latex_end(name))
   return blocks
 end

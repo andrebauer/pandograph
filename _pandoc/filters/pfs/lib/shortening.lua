@@ -21,6 +21,7 @@ strong = pandoc.Strong
 join_path = function(...) return pandoc.path.join(list({...})) end
 directory = pandoc.path.directory
 filename = pandoc.path.filename
+fetch = pandoc.mediabag.fetch
 split_ext = function(path)
   local path, ext = pandoc.path.split_extension(path)
   return path, ext:sub(2)
@@ -40,3 +41,13 @@ split_path = function(path)
 end
 with_temporary_directory = pandoc.system.with_temporary_directory
 with_working_directory = pandoc.system.with_working_directory
+function split (s, sep)
+  if sep == nil then
+     sep = "%s"
+  end
+  local t = {}
+  for str in string.gmatch(s, "([^"..sep.."]+)") do
+     table.insert(t, str)
+  end
+  return t
+end

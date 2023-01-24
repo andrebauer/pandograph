@@ -78,7 +78,7 @@ local function get_data(data, options)
                                data)
 
   local hash = sha1(code)
-  return code, hash, 'application/x-tex'
+  return code, hash -- , 'application/x-tex'
 end
 
 

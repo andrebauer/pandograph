@@ -16,6 +16,8 @@ filters:
   - pfs/center/center.lua
   - pfs/tikzpicture/tikzpicture.lua
   - lua-filters/list-table/list-table.lua
+  - pfs/io/io.lua
+  - pfs/file/file.lua
   # - pfs/mdsvex.lua
   # - markup-to-component.lua
 # resource-path: ['.', 'content']

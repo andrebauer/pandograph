@@ -174,7 +174,8 @@ function Meta(meta)
 
   if task then
     -- perr('TP', task.points == nil, task.points == false, task['points'], task.points)
-    header_level = task["header-level"] or default_level
+    header_level = tonumber(stringify(task["header-level"]
+                                      or default_level))
     if task.points ~= nil then
       points = task.points
       if type(points) ~= 'boolean' then
@@ -205,5 +206,4 @@ return {
 }
 
 
--- TODO: accumultate span-points, sum statt auto?
--- Anzeige der Punkte deaktivierbar
+-- TODO: accumultate span-points,

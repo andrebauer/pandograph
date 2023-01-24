@@ -8,8 +8,6 @@ require 'lib.latex'
 
 local solution_classes = {'lsg', 'sol', 'solution'}
 
-local block_latex = function (text) return pandoc.RawBlock('latex', text) end
-
 function Div(div)
   if next(intersect(div.classes, solution_classes)) then
     if FORMAT:match 'latex' then
@@ -32,3 +30,11 @@ function Div(div)
     return wrapper
   end  
 end
+
+--[[
+function Span(span)
+    if includes(solution_classes, div.classes[1]) then
+
+    end
+end
+--]]
