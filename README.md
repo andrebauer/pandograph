@@ -1,35 +1,42 @@
-# Pandoc-Projekt-Vorlage
+# Pandograph
 
-Dies ist eine Vorlage zum Erstellen von 
+Pandograph is a build system for documents using [Pandoc].
 
-- Vortragsfolien und Speakernotes,
-- Übungsaufgaben mit optionalen Lösungshinweisen,
-- Klausuren mit optionalen Lösungshinweisen und
-- Textdokumenten
+You can run 
 
-in [Pandoc's Markdown](https://pandoc.org/MANUAL.html#pandocs-markdown), 
-die mit [Pandoc](https://pandoc.org/) in PDF-Dokumente umgewandelt werden.
+# Prerequisites
 
-## Benötigte Software
+You need
 
-- [Pandoc und pandoc-citeproc](https://pandoc.org/installing.html)
-- [GNU Make](https://www.gnu.org/software/make/)
-- [LaTeX](https://www.latex-project.org/get/) einschließlich [PGF/TikZ](https://github.com/pgf-tikz/pgf)
-- [Haskell](https://www.haskell.org/downloads/) zum Ausführen der Filter
+- [Pandoc](https://pandoc.org/installing.html)
+- [Waf](https://waf.io/)
 
-## Erste Schritte
 
-Um Weiterentwicklungen per Merging oder Cherry-Picking übernehmen zu können,
-ist es empfehlenswert, das Repository zu clonen.
+Optionally you need 
 
-Der Ordner `content` enthält vier Beispiel-Dokumente und die zugehörigen Bilder.
-Mit `make build` werden die entsprechenden PDF-Dokumente im Ordner `_build`
-generiert. Der Befehl `make build_handout` generiert Handouts zu den 
-Dokumenten in `content/lecture`. 
-Die Ziele `build_slides_tex`, `build_notes_tex`, `build_exam_tex` und 
-`build_exercise_tex` generieren LaTeX-Dokumente statt PDFs. 
+- [R](https://www.r-project.org/) if you opt to use
+  [knitr](https://yihui.org/knitr/) as a preprocessor.
+  
+- [Node.js](https://nodejs.org/en/) if you opt to use [SvelteKit]
+  as the UI-Framework for the Website-Generation.
 
-## Build-Automation
+# Installation
 
-Mit dem Shell-Skript `watch.sh` wird automatisch `make build` bei Änderungen 
-im Ordner `content` ausgeführt.
+Clone this repository and run
+
+```bash
+waf configure build_svelte build_pdf
+```
+
+
+If you opt to use [SvelteKit], then run
+
+```bash
+cd _web
+npm install_
+npm run dev
+```
+
+
+[Pandoc]: https://pandoc.org/
+[SvelteKit]: https://kit.svelte.dev/

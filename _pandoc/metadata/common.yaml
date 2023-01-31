@@ -1,0 +1,22 @@
+title: 'Pandoc Template'
+author: B. Beispiel
+lang: de-DE
+breakurl: true
+hyphens: URL
+institute: Institue
+date: Date
+logo: 'assets/images/path/to/logo.pdf'
+link-citations: true
+titlegraphic: 'assets/images/path/to/title-graphic.pdf'
+toc: true
+reference-section-title: Literatur 
+biblio-title: Literatur
+colorlinks: true
+linkcolor: myblue
+filecolor: myblue
+citecolor: myblue
+urlcolor: myblue
+plantumlPath: /usr/share/java/plantuml/plantuml.jar
+csl: _pandoc/csl/autor-jahr-3.csl
+bibliography:
+  - _pandoc/references/literature.bib
