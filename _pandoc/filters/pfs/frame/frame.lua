@@ -6,7 +6,7 @@ package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
 require 'lib.latex'
 
 function Div(div)
-  if div.classes[1] == 'file' then
+  if div.classes[1] == 'file' or div.classes[1] == 'frame' then
     if FORMAT:match 'latex' then
       local blocks = pandoc.List(pandoc.Blocks(div.content))
       blocks:insert(1, block_latex_fmt('\\begin{%s}{%s}','filebox',div.attributes.title))
