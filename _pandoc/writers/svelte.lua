@@ -20,6 +20,13 @@ local fmt = string.format
 local pipe = pandoc.pipe
 local stringify = (require 'pandoc.utils').stringify
 
+function Writer (doc, opts)
+  PANDOC_DOCUMENT = doc
+  PANDOC_WRITER_OPTIONS = opts
+  loadfile(PANDOC_SCRIPT_FILE)()
+  return pandoc.write_classic(doc, opts)
+end
+
 -- The global variable PANDOC_DOCUMENT contains the full AST of
 -- the document which is going to be written. It can be used to
 -- configure the writer.
