@@ -20,8 +20,11 @@ local fmt = string.format
 local pipe = pandoc.pipe
 local stringify = (require 'pandoc.utils').stringify
 
+meta = {}
+
 function Writer (doc, opts)
   PANDOC_DOCUMENT = doc
+  meta = doc.meta
   PANDOC_WRITER_OPTIONS = opts
   loadfile(PANDOC_SCRIPT_FILE)()
   return pandoc.write_classic(doc, opts)
@@ -30,7 +33,7 @@ end
 -- The global variable PANDOC_DOCUMENT contains the full AST of
 -- the document which is going to be written. It can be used to
 -- configure the writer.
-local meta = PANDOC_DOCUMENT.meta
+-- local meta = PANDOC_DOCUMENT.meta
 
 -- Choose the image format based on the value of the
 -- `image_format` meta value.
