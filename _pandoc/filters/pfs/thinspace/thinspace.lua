@@ -4,7 +4,9 @@ local pandoc_script_dir = pandoc.path.directory(PANDOC_SCRIPT_FILE)
 package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
 
 require 'lib.number'
+require 'lib.list'
 require 'lib.log'
+
 set_log_source 'thinspace.lua'
 
 local thinsp = "\xe2\x80\xaf"
@@ -21,10 +23,24 @@ local function split_after_each_dot(s)
   return s:gmatch '([^%.]+%.?)'
 end
 
+local exceptions = {'«', '‹', '“' ,'"'}
+
+function utf8.first(s)
+  local second = utf8.offset(s, 2)
+  return s:sub(1, second)
+end
+
 local function concat(i, sep)
   local s = i()
   if not(s) then return "" end
-  for e in i do s = s .. sep .. e end
+  for e in i do
+    if contains(exceptions, utf8.first(e)) then
+      pinfof('Skip thinspace before substring %s', e)
+      s = s .. e
+    else
+      s = s .. sep .. e
+    end
+  end
   return s
 end
 

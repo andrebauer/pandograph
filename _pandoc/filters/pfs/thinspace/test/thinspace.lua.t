@@ -54,6 +54,26 @@ Thinspace-Filter
   $ echo 1.120.113.195,27 | pandoc -t latex -L thinspace.lua
   1.120.113.195,27
 
+  $ echo »Hello.« | pandoc -t latex -L thinspace.lua
+  »Hello.«
+
+  $ echo ›Hello.‹ | pandoc -t latex -L thinspace.lua --verbose 2>&1 | grep --invert -E "Completed filter thinspace.lua"
+  [INFO] Running filter thinspace.lua
+  [thinspace.lua] Skip thinspace before substring ‹ 
+  ›Hello.‹
+
+
+  $ echo „Hello.“ | pandoc -t latex -L thinspace.lua
+  „Hello.``
+
+
+  $ echo '"Hello."' | pandoc -t latex -L thinspace.lua
+  ``Hello.''
+
+
+  $ echo »Hello.« | pandoc -t latex -L thinspace.lua
+  »Hello.«
+
   $ pandoc --to gfm -L thinspace.lua -s <<EOF
   > ---
   > logo: assets/images/ars-logo-2015.pdf
