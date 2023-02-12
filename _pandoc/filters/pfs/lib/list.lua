@@ -10,3 +10,12 @@ function intersect(m,n)
     end
     return res
   end
+
+function contains(t, elm)
+  for _, x in ipairs(t) do
+    if x == elm then
+      return true
+    end
+  end
+  return false
+end
