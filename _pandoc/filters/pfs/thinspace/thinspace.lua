@@ -23,17 +23,18 @@ local function split_after_each_dot(s)
   return s:gmatch '([^%.]+%.?)'
 end
 
-local exceptions = {'«', '‹', '“' ,'"'}
+local exceptions = {'«', '‹', '“' ,'"', ','}
 
 function utf8.first(s)
   local second = utf8.offset(s, 2)
-  return s:sub(1, second)
+  return s:sub(1, second - 1)
 end
 
 local function concat(i, sep)
   local s = i()
   if not(s) then return "" end
   for e in i do
+    -- print(s, e, utf8.first(e))
     if contains(exceptions, utf8.first(e)) then
       pinfof('Skip thinspace before substring %s', e)
       s = s .. e

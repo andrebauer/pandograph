@@ -74,6 +74,12 @@ Thinspace-Filter
   $ echo »Hello.« | pandoc -t latex -L thinspace.lua
   »Hello.«
 
+  $ echo d.h., | pandoc -t latex -L thinspace.lua
+  d.\,h.,
+
+  $ echo »d.h.,« | pandoc -t latex -L thinspace.lua
+  »d.\,h.,«
+
   $ pandoc --to gfm -L thinspace.lua -s <<EOF
   > ---
   > logo: assets/images/ars-logo-2015.pdf
