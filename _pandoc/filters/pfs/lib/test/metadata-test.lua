@@ -19,7 +19,8 @@ local options = {
     __sealed__ = { 'h' }
   },
   n = { m = { o = 1 }},
-  list = { 'a', 'b', 'h', 'f', 'g' }
+  list = { 'a', 'b', 'h', 'f', 'g' },
+  cl = { [1] = 'hallo', [2] = { name = 'John' }}
 }
 
 function Meta(meta)

@@ -1,7 +1,7 @@
 (cram
  (deps
   (glob_files size.lua)
-  (glob_files lib/{latex,log}.lua)
+  (glob_files lib/{metadata,latex,log}.lua)
 ))
 
 (copy_files ../*.lua)

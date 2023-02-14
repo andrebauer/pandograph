@@ -2,7 +2,7 @@ require 'lib.options'
 require 'lib.attr'
 require 'lib.log'
 
-local map = default_map
+local map = default_image_map
 a = map.attributes
 a.template = { 'template', 'name' }
 a.test = { 'test' }

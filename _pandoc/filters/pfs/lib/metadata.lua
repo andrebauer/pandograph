@@ -34,25 +34,38 @@ end
 
 sealed = '__sealed__'
 
-function parse_meta(meta, options)
+local function id(x) return x end
+
+function parse_meta(meta, options, conv)
+  local conv = conv or id
   if meta ~= nil then
     if type(meta) == 'boolean' then
       return meta
     elseif type(meta) == 'Inlines' then
-      return meta
+      return conv(meta)
     elseif type(meta) == 'List' then
-      options = {}
+      opts = {}
       for i, value in ipairs(meta) do
-        options[i] = value
+        opts[i] = parse_meta(value, options[i], conv)
       end
+      options = opts
     elseif type(meta) == 'table' then
+      if type(options) ~= 'table' then
+        require 'lib.log'
+        set_log_source 'lib/log.lua'
+        perr('Mismatch between options and metadata:')
+        perr('Options:')
+        perrobj(options)
+        perr('\nMetadata:')
+        perrobj(meta)
+      end
       for key in pairs(options) do
         if key ~= sealed
           and type(key) ~= 'table'
           and not(includes(options[sealed], key)) then
           local meta_value = meta[key]
           if meta_value ~= nil then
-            options[key] = parse_meta(meta_value, options[key])
+            options[key] = parse_meta(meta_value, options[key], conv)
           end
         end
       end

@@ -3,12 +3,17 @@ local fmt = string.format
 local pandoc_script_dir = pandoc.path.directory(PANDOC_SCRIPT_FILE)
 package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
 
--- require 'lib.number'
--- require 'lib.list'
+require 'lib.metadata'
 require 'lib.latex'
 require 'lib.log'
 
 set_log_source 'size.lua'
+
+local options = {
+  ['html-prefix'] = 'text-',
+  classes = false,
+  attribute = 'text'
+}
 
 local latex_font_sizes = {
   ['3xs'] = 'tiny',
@@ -28,16 +33,40 @@ local latex_font_sizes = {
   ['9xl'] = 'Huge'
 }
 
-function Div(div)
+local function Meta(meta)
+  options = parse_meta(meta.fontsize, options, pandoc.utils.stringify)
+end
+
+local function apply(div, font_size)
   local blocks = pandoc.List(pandoc.Blocks(div.content))
-  if div.attributes[1][1] == 'text' then
-    local font_size = div.attributes[1][2]
-    if FORMAT:match 'latex' or FORMAT:match 'beamer' then
-      local latex_font_size = latex_font_sizes[font_size]
-      return latex_environment(latex_font_size, blocks)
-    elseif FORMAT:match 'html5' then
-      div.classes:insert('text-' .. font_size)
-      return div
-    end
+  if FORMAT:match 'latex' or FORMAT:match 'beamer' then
+    local latex_font_size = latex_font_sizes[font_size]
+    return latex_environment(latex_font_size, blocks)
+  elseif FORMAT:match 'html5' then
+    div.classes:insert(options['html-prefix'] .. font_size)
+    return div
   end
 end
+
+function Div(div)
+  if options.classes
+    and div.classes[1]
+    and latex_font_sizes[div.classes[1]] then
+    local font_size = div.classes[1]
+    return apply(div, font_size)
+  end
+
+  if options.attribute
+    and div.attributes[1]
+    and div.attributes[1][1] == options.attribute then
+    local font_size = div.attributes[1][2]
+    return apply(div, font_size)
+  end
+end
+
+return {
+  { Meta = Meta },
+  { Div = Div }
+}
+
+-- TODO size.lua → fontsize.lua

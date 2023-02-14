@@ -51,7 +51,7 @@ local options = {
 }
 
 
-local map = default_map
+local map = default_image_map
 a = map.attributes
 a.template = { 'data', 'template' }
 a['additional-packages'] = { 'data', 'additional_packages' }
