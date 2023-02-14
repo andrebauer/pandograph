@@ -1,4 +1,4 @@
-  $ pandoc -t latex -L size.lua << EOF
+  $ pandoc -t latex -L fontsize.lua << EOF
   > ::: {text=sm}
   > Small
   > :::
@@ -9,7 +9,7 @@
   
   \end{small}
 
-  $ pandoc -t latex -L size.lua << EOF
+  $ pandoc -t latex -L fontsize.lua << EOF
   > ---
   > fontsize:
   >   classes: true
@@ -30,7 +30,7 @@
   
   \end{LARGE}
 
-  $ pandoc -t latex -L size.lua << EOF
+  $ pandoc -t latex -L fontsize.lua << EOF
   > ---
   > fontsize:
   >   classes: false
@@ -51,7 +51,7 @@
   
   Huge
 
-  $ pandoc -t latex -L size.lua << EOF
+  $ pandoc -t latex -L fontsize.lua << EOF
   > ---
   > fontsize:
   >   classes: true
@@ -67,7 +67,7 @@
   \end{large}
 
 
-  $ pandoc -t html5 -L size.lua << EOF
+  $ pandoc -t html5 -L fontsize.lua << EOF
   > ::: {text=lg}
   > Large
   > :::
@@ -77,7 +77,7 @@
   </div>
 
 
-  $ pandoc -t latex -L size.lua << EOF
+  $ pandoc -t latex -L fontsize.lua << EOF
   > ::: other
   > Other
   > :::

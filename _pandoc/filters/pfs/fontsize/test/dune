@@ -1,6 +1,6 @@
 (cram
  (deps
-  (glob_files size.lua)
+  (glob_files fontsize.lua)
   (glob_files lib/{metadata,latex,log}.lua)
 ))
 

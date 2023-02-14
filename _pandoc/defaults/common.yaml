@@ -18,7 +18,7 @@ filters:
   - lua-filters/list-table/list-table.lua
   - pfs/io/io.lua
   - pfs/frame/frame.lua
-  - pfs/size/size.lua
+  - pfs/fontsize/fontsize.lua
   # - pfs/mdsvex.lua
   # - markup-to-component.lua
 # resource-path: ['.', 'content']
