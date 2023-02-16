@@ -57,11 +57,11 @@ end
 
 function Div(div)
   if div.classes[1] == 'if' then
-    return verify(equal, div) or pandoc.Null()
+    return verify(equal, div) or pandoc.Blocks({})
   end
 
   if div.classes[1] == 'if-def' then
-    return verify(exist, div) or pandoc.Null()
+    return verify(exist, div) or pandoc.Blocks({})
   end
 
   if div.classes[1] == 'for' then
