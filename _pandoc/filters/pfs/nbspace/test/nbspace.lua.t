@@ -20,3 +20,8 @@ Non-breaking Space Filter
 
   $ pandoc -t latex nbspace.odt
   2nd~place
+
+  $ pandoc -t native -L nbspace.lua << EOF
+  > 3.~place
+  > EOF
+  [ Para [ Str "3.~place" ] ]

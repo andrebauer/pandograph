@@ -34,9 +34,7 @@ local latex_font_sizes = {
 }
 
 local function Meta(meta)
-  options = parse_meta(meta['fontsize.lua'],
-                       options,
-                       pandoc.utils.stringify)
+  options = parse_meta(meta.fontsize, options, pandoc.utils.stringify)
 end
 
 local function apply(div, font_size)
