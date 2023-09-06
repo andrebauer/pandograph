@@ -1,0 +1,6 @@
+(cram
+ (deps
+  (glob_files title-to-first-heading.lua)
+))
+
+(copy_files ../*.lua)
