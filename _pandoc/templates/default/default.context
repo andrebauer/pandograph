@@ -23,6 +23,7 @@ $endif$
   style=$linkstyle$,
   color=$linkcolor$,
   contrastcolor=$linkcontrastcolor$]
+\setupurl[style=$urlstyle$]
 
 % make chapter, section bookmarks visible when opening document
 \placebookmarks[chapter, section, subsection, subsubsection, subsubsubsection, subsubsubsubsection][chapter, section]
@@ -114,6 +115,12 @@ $endif$
 \setupxtable[foot][]
 \setupxtable[lastrow][bottomframe=on]
 
+$if(emphasis-commands)$
+$emphasis-commands$
+$endif$
+$if(highlighting-commands)$
+$highlighting-commands$
+$endif$
 $if(csl-refs)$
 \definemeasure[cslhangindent][1.5em]
 \definenarrower[hangingreferences][left=\measure{cslhangindent}]

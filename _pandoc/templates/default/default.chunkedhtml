@@ -18,6 +18,9 @@ $if(description-meta)$
 $endif$
   <title>$if(title-prefix)$$title-prefix$ – $endif$$pagetitle$</title>
   <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
     $styles.html()$
   </style>
 $for(css)$
@@ -27,19 +30,42 @@ $for(header-includes)$
   $header-includes$
 $endfor$
 $if(math)$
-$if(mathjax)$
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-$endif$
   $math$
 $endif$
-  <!--[if lt IE 9]>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
-  <![endif]-->
 </head>
 <body>
 $for(include-before)$
 $include-before$
 $endfor$
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+$if(up.url)$
+<span class="navlink-label">Up:</span> <a href="$up.url$" accesskey="u" rel="up">$up.title$</a>
+$endif$
+</span>
+<span class="navlink">
+$if(top)$
+<span class="navlink-label">Top:</span> <a href="$top.url$" accesskey="t" rel="top">$top.title$</a>
+$endif$
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+$if(next.url)$
+<span class="navlink-label">Next:</span> <a href="$next.url$" accesskey="n" rel="next">$next.title$</a>
+$endif$
+</span>
+<span class="navlink">
+$if(previous.url)$
+<span class="navlink-label">Previous:</span> <a href="$previous.url$" accesskey="p" rel="previous">$previous.title$</a>
+$endif$
+</span>
+</div>
+</nav>
+$if(top)$
+$-- only print title block if this is NOT the top page
+$else$
 $if(title)$
 <header id="title-block-header">
 <h1 class="title">$title$</h1>
@@ -57,6 +83,7 @@ $if(abstract)$
 <div class="abstract-title">$abstract-title$</div>
 $abstract$
 </div>
+$endif$
 $endif$
 </header>
 $endif$
