@@ -459,6 +459,11 @@ local function html_align(align)
   end
 end
 
+function Figure(s, caption, attr)
+  return s
+end
+
+
 function CaptionedImage(src, tit, caption, attr)
   if #caption == 0 then
     useComponent('element', 'ImageBlock')
