@@ -5,6 +5,7 @@ package.path = fmt("%s;%s/../?.lua", package.path, pandoc_script_dir)
 
 require 'lib.list'
 require 'lib.latex'
+require 'lib.html'
 
 local solution_classes = {'lsg', 'sol', 'solution'}
 
@@ -13,13 +14,18 @@ function Div(div)
     if FORMAT:match 'latex' then
       return latex_environment('solution', div.content)
     end
+    if gfm then
+        return html_environment('details',
+                                html_environment('summary', pandoc.Strong('Lösung')) ..
+                                div.content)
+    end
     --[[
     if FORMAT:match 'docx' then
         local wrapper = pandoc.Div(div)
         wrapper.attributes['custom-style'] = 'Solution'
         return wrapper
     end
-    ]]
+    --]]
     if div.content[1] and div.content[1].t == "Table" then
         local table = div.content[1]
         table.attributes['custom-style'] = 'Solution'

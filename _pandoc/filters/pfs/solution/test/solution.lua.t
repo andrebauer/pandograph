@@ -21,6 +21,21 @@
   \end{solution}
 
 
+  $ pandoc --to gfm -L solution.lua <<EOF
+  > ::: solution
+  > Test
+  > :::
+  > EOF
+  <details>
+  <summary>
+  **Lösung**
+  </summary>
+  
+  Test
+  
+  </details>
+
+
   $ pandoc --to native -L solution.lua <<EOF
   > :::: lsg
   > | Zeichen | Dateityp |

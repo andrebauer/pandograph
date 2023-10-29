@@ -1,7 +1,8 @@
 (cram
  (deps
-  (file solution.lua)
-  (glob_files lib/{list,latex,html}.lua)))
+  (glob_files align.lua)
+  (glob_files lib/{latex}.lua)
+))
 
 (copy_files ../*.lua)
 
