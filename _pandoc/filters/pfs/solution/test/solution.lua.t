@@ -28,7 +28,9 @@
   > EOF
   <details>
   <summary>
+  
   **Lösung**
+  
   </summary>
   
   Test

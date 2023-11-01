@@ -16,7 +16,7 @@ function Div(div)
     end
     if gfm then
         return html_environment('details',
-                                html_environment('summary', pandoc.Strong('Lösung')) ..
+                                html_environment('summary', pandoc.Para(pandoc.Strong('Lösung'))) ..
                                 div.content)
     end
     --[[
